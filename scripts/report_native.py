@@ -116,7 +116,7 @@ def main():
     intro += 'Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.\n\n'
     def fmt_ms(value):
         if value >= env['timeout_ms']:
-            return f'> {env["timeout_ms"]:g}'
+            return f'> {env["timeout_ms"]:.2f}'
         return '<0.001' if 0 < value < 0.001 else f'{value:.3f}'
 
     def table(featured, with_memory=False, highlight_min=False, transpose=False, svg_path=None):
@@ -161,9 +161,11 @@ def main():
     image_path = f'docs/assets/{stem}.svg'
     data_table = table(featured_methods, with_memory=bool(memory), highlight_min=True, transpose=True,
                        svg_path=ROOT/image_path)
-    featured = intro + f'![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.]({image_path})\n\n'
+    image_version = sha(ROOT/image_path)[:12]
+    image_url = f'{image_path}?v={image_version}'
+    featured = intro + f'![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.]({image_url})\n\n'
     featured += '<details>\n<summary>Table data and paper links</summary>\n\n' + data_table + '\n</details>\n'
-    featured += f'\nOne variant per exact-method family, selected by completion rate then P95. Timing percentiles reaching the timeout limit are shown as **> {env["timeout_ms"]:g} ms**.\n'
+    featured += f'\nOne variant per exact-method family, selected by completion rate then P95. Timing percentiles reaching the timeout limit are shown as **> {env["timeout_ms"]:.2f} ms**.\n'
     if memory:
         featured += '\nMemory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.\n'
     readme_path = ROOT/'README.md'; readme = readme_path.read_text()
@@ -171,7 +173,7 @@ def main():
     begin, end = f'<!-- {marker}:start -->', f'<!-- {marker}:end -->'
     a,b = readme.index(begin)+len(begin),readme.index(end)
     readme_path.write_text(readme[:a]+'\n'+featured+readme[b:])
-    report = ('# MiniZinc public benchmark\n\n' if mini else '# Native Rust benchmark\n\n')+featured.replace(f']({image_path})', f'](assets/{stem}.svg)')
+    report = ('# MiniZinc public benchmark\n\n' if mini else '# Native Rust benchmark\n\n')+featured.replace(f']({image_url})', f'](assets/{stem}.svg?v={image_version})')
     if memory:
         report += f'\n[Memory measurement details and completion counts]({stem}-memory.md).\n'
     if mini:

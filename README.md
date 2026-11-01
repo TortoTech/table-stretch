@@ -41,7 +41,7 @@ Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **1383 real ebook cases**, sin
 
 Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](docs/assets/benchmark-native.svg)
+![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](docs/assets/benchmark-native.svg?v=a7fe80c13c54)
 
 <details>
 <summary>Table data and paper links</summary>
@@ -56,7 +56,7 @@ Timing uses **Rust library calls in one persistent process**. Times include prep
 
 </details>
 
-One variant per exact-method family, selected by completion rate then P95. Timing percentiles reaching the timeout limit are shown as **> 1000 ms**.
+One variant per exact-method family, selected by completion rate then P95. Timing percentiles reaching the timeout limit are shown as **> 1000.00 ms**.
 
 Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
 <!-- benchmark:end -->
@@ -72,22 +72,22 @@ Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **26 MiniZinc public cases**, 
 
 Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](docs/assets/benchmark-minizinc.svg)
+![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](docs/assets/benchmark-minizinc.svg?v=a7583ed1dfcc)
 
 <details>
 <summary>Table data and paper links</summary>
 
 | Metric | **Pareto DP** | A* | [LCG](https://doi.org/10.1145/2034691.2034697) | [MIP](https://doi.org/10.1287/ijoc.2014.0637) | [CP](https://doi.org/10.1145/2034691.2034697) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| P50 (ms) | $\color{green}{0.163}$ | 0.246 | 4.781 | 4.448 | > 1000 |
-| P95 (ms) | 2.008 | $\color{green}{0.843}$ | 17.582 | 26.624 | > 1000 |
+| P50 (ms) | $\color{green}{0.163}$ | 0.246 | 4.781 | 4.448 | > 1000.00 |
+| P95 (ms) | 2.008 | $\color{green}{0.843}$ | 17.582 | 26.624 | > 1000.00 |
 | Extra heap P95 (KiB) | $\color{green}{264.41}$ | 640.64 | 2420.35 | 760.18 | 2272.55 |
 | RSS P95 (KiB) | $\color{green}{2848.00}$ | 2896.00 | 6176.00 | 4416.00 | 5856.00 |
 | Completed | 26/26 | 26/26 | 26/26 | 26/26 | 5/26 |
 
 </details>
 
-One variant per exact-method family, selected by completion rate then P95. Timing percentiles reaching the timeout limit are shown as **> 1000 ms**.
+One variant per exact-method family, selected by completion rate then P95. Timing percentiles reaching the timeout limit are shown as **> 1000.00 ms**.
 
 Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
 <!-- benchmark-minizinc:end -->

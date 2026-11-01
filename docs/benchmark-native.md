@@ -4,7 +4,7 @@ Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **1383 real ebook cases**, sin
 
 Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](assets/benchmark-native.svg)
+![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](assets/benchmark-native.svg?v=a7fe80c13c54)
 
 <details>
 <summary>Table data and paper links</summary>
@@ -19,7 +19,7 @@ Timing uses **Rust library calls in one persistent process**. Times include prep
 
 </details>
 
-One variant per exact-method family, selected by completion rate then P95. Timing percentiles reaching the timeout limit are shown as **> 1000 ms**.
+One variant per exact-method family, selected by completion rate then P95. Timing percentiles reaching the timeout limit are shown as **> 1000.00 ms**.
 
 Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
 
