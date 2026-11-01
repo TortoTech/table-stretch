@@ -6,7 +6,7 @@ use std::{
     io::{self, BufRead, Write},
     time::{Duration, Instant},
 };
-use table_stretch::{Limits, NativeAlgorithm, Table, solve_measured_with_timeout};
+use table_stretch::{AblationOptions, Limits, NativeAlgorithm, Table, solve_ablation_with_timeout};
 
 #[derive(Deserialize)]
 struct Case {
@@ -18,6 +18,8 @@ struct Request {
     case: usize,
     algorithm: NativeAlgorithm,
     timeout_ms: u64,
+    #[serde(default)]
+    options: AblationOptions,
 }
 fn error_status(e: &table_stretch::Error) -> &'static str {
     match e {
@@ -41,10 +43,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             max_frontier: usize::MAX,
         };
         let start = Instant::now();
-        let result = solve_measured_with_timeout(
+        let result = solve_ablation_with_timeout(
             table,
             limits,
             request.algorithm,
+            request.options,
             Some(Duration::from_millis(request.timeout_ms)),
         );
         let wall_ns = start.elapsed().as_nanos();

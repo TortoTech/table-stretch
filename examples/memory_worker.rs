@@ -6,7 +6,7 @@ use std::{
     sync::atomic::{AtomicUsize, Ordering::Relaxed},
     time::{Duration, Instant},
 };
-use table_stretch::{Limits, NativeAlgorithm, Table, solve_measured_with_timeout};
+use table_stretch::{AblationOptions, Limits, NativeAlgorithm, Table, solve_ablation_with_timeout};
 
 struct MeasuredAllocator {
     live: AtomicUsize,
@@ -81,6 +81,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let algorithm: NativeAlgorithm =
         serde_json::from_value(json!(args.next().ok_or("expected algorithm")?))?;
     let timeout_ms: u64 = args.next().ok_or("expected timeout in ms")?.parse()?;
+    let options: AblationOptions = args
+        .next()
+        .map(|s| serde_json::from_str(&s))
+        .transpose()?
+        .unwrap_or_default();
     let table: Table = serde_json::from_slice(&fs::read(path)?)?;
     // The temporary JSON buffer has been dropped. Only this case is resident.
     let limits = Limits {
@@ -90,10 +95,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     let baseline = ALLOCATOR.begin();
     let start = Instant::now();
-    let result = solve_measured_with_timeout(
+    let result = solve_ablation_with_timeout(
         &table,
         limits,
         algorithm,
+        options,
         Some(Duration::from_millis(timeout_ms)),
     );
     let wall_ns = start.elapsed().as_nanos();

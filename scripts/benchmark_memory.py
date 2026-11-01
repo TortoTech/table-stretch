@@ -26,9 +26,11 @@ def parse_rss(stderr):
     return value
 
 
-def measure(path, method, timeout_ms):
-    raw = run_process(['/usr/bin/time', '-l', str(ROOT/'target/release/examples/memory_worker'),
-                       str(path), method, str(timeout_ms)], timeout_ms+2000,
+def measure(path, method, timeout_ms, options=None):
+    command = ['/usr/bin/time', '-l', str(ROOT/'target/release/examples/memory_worker'), str(path), method, str(timeout_ms)]
+    if options is not None:
+        command.append(json.dumps(options))
+    raw = run_process(command, timeout_ms+2000,
                       env={**os.environ, 'LC_ALL':'C', 'OMP_NUM_THREADS':'1', 'OPENBLAS_NUM_THREADS':'1'})
     if raw['timeout'] or raw['returncode'] != 0:
         return dict(status='timeout' if raw['timeout'] else 'error', layout=None,

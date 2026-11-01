@@ -35,7 +35,7 @@ class Worker:
             self.proc.stdout.close()
             self.proc = None
 
-    def run(self, case, algorithm):
+    def run(self, case, algorithm, options=None):
         if self.proc is None:
             self.proc = subprocess.Popen([str(ROOT/'target/release/examples/native_worker'), str(self.manifest)],
                                          stdin=subprocess.PIPE, stdout=subprocess.PIPE, cwd=ROOT,
@@ -43,6 +43,8 @@ class Worker:
             self.generation += 1
         self.request_id += 1
         request = dict(id=self.request_id, case=case, algorithm=algorithm, timeout_ms=self.timeout_ms)
+        if options is not None:
+            request['options'] = options
         try:
             self.proc.stdin.write(json.dumps(request).encode()+b'\n')
             self.proc.stdin.flush()

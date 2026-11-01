@@ -30,6 +30,80 @@ pub enum NativeAlgorithm {
     Mip2015Cellfree,
 }
 
+/// Experimental controls for reproducible ablations. Defaults are the normal
+/// production algorithm. Some controls apply only to a particular family;
+/// the experiment protocol records their effective combinations explicitly.
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct AblationOptions {
+    pub incumbent: bool,
+    pub area_bound: bool,
+    pub floor_bound: bool,
+    pub column_caps: bool,
+    pub terminal_column: bool,
+    pub compact_paths: bool,
+    pub row_caps: bool,
+    pub root_certificate: bool,
+}
+impl Default for AblationOptions {
+    fn default() -> Self {
+        Self {
+            incumbent: true,
+            area_bound: true,
+            floor_bound: true,
+            column_caps: true,
+            terminal_column: true,
+            compact_paths: true,
+            row_caps: true,
+            root_certificate: true,
+        }
+    }
+}
+
+struct TraceLink {
+    parent: Option<usize>,
+    width: u32,
+}
+trait Trace: Clone {
+    fn root() -> Self;
+    fn append(&self, width: u32, arena: &mut Vec<TraceLink>) -> Self;
+    fn reversed<'a>(&'a self, arena: &'a [TraceLink]) -> impl Iterator<Item = u32> + 'a;
+    fn widths(&self, arena: &[TraceLink]) -> Vec<u32> {
+        let mut widths: Vec<_> = self.reversed(arena).collect();
+        widths.reverse();
+        widths
+    }
+}
+impl Trace for Option<usize> {
+    fn root() -> Self {
+        None
+    }
+    fn append(&self, width: u32, arena: &mut Vec<TraceLink>) -> Self {
+        let index = arena.len();
+        arena.push(TraceLink {
+            parent: *self,
+            width,
+        });
+        Some(index)
+    }
+    fn reversed<'a>(&'a self, arena: &'a [TraceLink]) -> impl Iterator<Item = u32> + 'a {
+        std::iter::successors(*self, |&i| arena[i].parent).map(|i| arena[i].width)
+    }
+}
+impl Trace for Vec<u32> {
+    fn root() -> Self {
+        Vec::new()
+    }
+    fn append(&self, width: u32, _: &mut Vec<TraceLink>) -> Self {
+        let mut result = self.clone();
+        result.push(width);
+        result
+    }
+    fn reversed<'a>(&'a self, _: &'a [TraceLink]) -> impl Iterator<Item = u32> + 'a {
+        self.iter().rev().copied()
+    }
+}
+
 struct PhaseClock {
     start: Instant,
     times: PhaseTimes,
@@ -73,6 +147,23 @@ pub fn solve_measured_with_timeout(
     algorithm: NativeAlgorithm,
     timeout: Option<Duration>,
 ) -> Result<(Layout, PhaseTimes), Error> {
+    solve_ablation_with_timeout(
+        table,
+        limits,
+        algorithm,
+        AblationOptions::default(),
+        timeout,
+    )
+}
+
+/// Controlled experimental solve; limits and optimality checks are unchanged.
+pub fn solve_ablation_with_timeout(
+    table: &Table,
+    limits: Limits,
+    algorithm: NativeAlgorithm,
+    options: AblationOptions,
+    timeout: Option<Duration>,
+) -> Result<(Layout, PhaseTimes), Error> {
     let start = Instant::now();
     let mut clock = PhaseClock {
         start,
@@ -83,10 +174,14 @@ pub fn solve_measured_with_timeout(
     };
     clock.check()?;
     let layout = match algorithm {
-        NativeAlgorithm::Pareto => solve_impl(table, limits, Some(&mut clock)),
-        NativeAlgorithm::Astar2011 => algorithms::astar_impl(table, limits, Some(&mut clock)),
+        NativeAlgorithm::Pareto => {
+            pareto::solve_configured(table, limits, Some(&mut clock), options)
+        }
+        NativeAlgorithm::Astar2011 => {
+            algorithms::astar_configured(table, limits, Some(&mut clock), options)
+        }
         NativeAlgorithm::Html => algorithms::html_impl(table, Some(&mut clock)),
-        other => research::solve_impl(table, other, &mut clock),
+        other => research::solve_impl(table, other, &mut clock, options),
     }?;
     clock.check()?;
     Ok((layout, clock.times))

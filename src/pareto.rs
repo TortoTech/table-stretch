@@ -1,16 +1,11 @@
 //! Exact Pareto search with objective bounds and a monotone terminal column.
 use super::*;
 
-struct Label {
+struct Label<P: Trace> {
     used: u32,
     heights: Vec<u32>,
-    path: Option<usize>,
+    path: P,
     tail: u32,
-}
-
-struct Link {
-    parent: Option<usize>,
-    width: u32,
 }
 
 pub(super) struct Bounds {
@@ -19,19 +14,30 @@ pub(super) struct Bounds {
 }
 
 impl Bounds {
-    pub(super) fn new(candidates: &Options, rows: usize) -> Result<Self, Error> {
+    pub(super) fn configured(
+        candidates: &Options,
+        rows: usize,
+        use_area: bool,
+        use_floor: bool,
+    ) -> Result<Self, Error> {
         let n = candidates.len();
         let mut area = vec![vec![0u128; rows]; n + 1];
         let mut floor = vec![vec![0; rows]; n + 1];
         for j in (0..n).rev() {
             for r in 0..rows {
-                let minimum = candidates[j]
-                    .iter()
-                    .map(|(w, h)| *w as u128 * h[r] as u128)
-                    .min()
-                    .unwrap();
+                let minimum = if use_area {
+                    candidates[j]
+                        .iter()
+                        .map(|(w, h)| *w as u128 * h[r] as u128)
+                        .min()
+                        .unwrap()
+                } else {
+                    0
+                };
                 area[j][r] = area[j + 1][r].checked_add(minimum).ok_or(Error::Overflow)?;
-                floor[j][r] = floor[j + 1][r].max(candidates[j].last().unwrap().1[r]);
+                if use_floor {
+                    floor[j][r] = floor[j + 1][r].max(candidates[j].last().unwrap().1[r]);
+                }
             }
         }
         Ok(Self { area, floor })
@@ -60,7 +66,11 @@ impl Bounds {
     ) -> Result<u64, Error> {
         let mut lower = 0u64;
         for (r, &height) in heights.iter().enumerate() {
-            let area = self.area[next][r].div_ceil(remaining as u128);
+            let area = if next + 1 == self.area.len() {
+                0
+            } else {
+                self.area[next][r].div_ceil(remaining as u128)
+            };
             let value = area.max(height as u128).max(self.floor[next][r] as u128);
             lower = lower
                 .checked_add(u64::try_from(value).map_err(|_| Error::Overflow)?)
@@ -82,12 +92,12 @@ impl Incumbent {
     // The prefix has n-1 columns. Increasing the final width cannot increase
     // height, so one endpoint replaces all final-column choices. A pending
     // penultimate width is not allocated in the path arena.
-    fn complete(
+    fn complete<P: Trace>(
         &mut self,
         table: &Table,
-        prefix: &Label,
+        prefix: &Label<P>,
         pending: Option<u32>,
-        arena: &[Link],
+        arena: &[TraceLink],
         stats: &mut Stats,
     ) -> Result<(), Error> {
         stats.terminal_evaluations = stats
@@ -108,13 +118,7 @@ impl Incumbent {
                 return Ok(());
             }
         }
-        let mut widths = Vec::with_capacity(table.columns.len());
-        let mut path = prefix.path;
-        while let Some(index) = path {
-            widths.push(arena[index].width);
-            path = arena[index].parent;
-        }
-        widths.reverse();
+        let mut widths = prefix.path.widths(arena);
         if let Some(w) = pending {
             widths.push(w);
         }
@@ -137,7 +141,28 @@ fn compare(stats: &mut Stats, limits: Limits) -> Result<(), Error> {
 pub(super) fn solve_impl(
     table: &Table,
     limits: Limits,
+    clock: Option<&mut PhaseClock>,
+) -> Result<Layout, Error> {
+    solve_configured(table, limits, clock, AblationOptions::default())
+}
+
+pub(super) fn solve_configured(
+    table: &Table,
+    limits: Limits,
+    clock: Option<&mut PhaseClock>,
+    options: AblationOptions,
+) -> Result<Layout, Error> {
+    if options.compact_paths {
+        search::<Option<usize>>(table, limits, clock, options)
+    } else {
+        search::<Vec<u32>>(table, limits, clock, options)
+    }
+}
+fn search<P: Trace>(
+    table: &Table,
+    limits: Limits,
     mut clock: Option<&mut PhaseClock>,
+    options: AblationOptions,
 ) -> Result<Layout, Error> {
     if limits.max_generated == 0 || limits.max_comparisons == 0 || limits.max_frontier == 0 {
         return Err(Error::Invalid("search limits must be positive"));
@@ -150,15 +175,24 @@ pub(super) fn solve_impl(
     } = prepare(table, true)?;
     // Tighten each column using the mandatory minima of every other column.
     // This cap is global, so it remains valid under every search prefix.
-    for (j, options) in candidates.iter_mut().enumerate() {
-        let cap = budget as u64 - (suffix[0] - (suffix[j] - suffix[j + 1]));
-        options.truncate(options.partition_point(|(w, _)| *w as u64 <= cap));
+    if options.column_caps {
+        for (j, options) in candidates.iter_mut().enumerate() {
+            let cap = budget as u64 - (suffix[0] - (suffix[j] - suffix[j + 1]));
+            options.truncate(options.partition_point(|(w, _)| *w as u64 <= cap));
+        }
     }
-    let bounds = Bounds::new(&candidates, rows)?;
-    let initial = solve_html(table)?;
-    let mut best = Incumbent {
-        height: initial.total_height,
-        widths: initial.column_widths,
+    let bounds = Bounds::configured(&candidates, rows, options.area_bound, options.floor_bound)?;
+    let mut best = if options.incumbent {
+        let initial = solve_html(table)?;
+        Incumbent {
+            height: initial.total_height,
+            widths: initial.column_widths,
+        }
+    } else {
+        Incumbent {
+            height: u64::MAX,
+            widths: vec![],
+        }
     };
     let mut stats = Stats {
         candidates_per_column: candidates.iter().map(Vec::len).collect(),
@@ -168,7 +202,7 @@ pub(super) fn solve_impl(
     let root = Label {
         used: 0,
         heights: vec![0; rows],
-        path: None,
+        path: P::root(),
         tail: 0,
     };
     if let Some(clock) = clock.as_deref_mut() {
@@ -180,7 +214,7 @@ pub(super) fn solve_impl(
     }
     let n = candidates.len();
     let mut arena = Vec::new();
-    if n == 1 {
+    if options.terminal_column && n == 1 {
         best.complete(table, &root, None, &arena, &mut stats)?;
         return finish_measured(table, budget, best.widths, stats, true, clock);
     }
@@ -188,11 +222,11 @@ pub(super) fn solve_impl(
     let mut scratch = Label {
         used: 0,
         heights: vec![0; rows],
-        path: None,
+        path: P::root(),
         tail: 0,
     };
-    for j in 0..n - 1 {
-        let mut next: Vec<Label> = Vec::new();
+    for j in 0..if options.terminal_column { n - 1 } else { n } {
+        let mut next: Vec<Label<P>> = Vec::new();
         for state in &frontier {
             if let Some(clock) = clock.as_deref() {
                 clock.check()?;
@@ -209,16 +243,26 @@ pub(super) fn solve_impl(
                 }
                 stats.generated += 1;
                 scratch.used = state.used + *width;
-                scratch.path = state.path;
+                scratch.path = state.path.clone();
                 scratch.tail = *width;
                 for ((dest, &old), &new) in
                     scratch.heights.iter_mut().zip(&state.heights).zip(heights)
                 {
                     *dest = old.max(new);
                 }
-                if j + 2 == n {
+                if options.terminal_column && j + 2 == n {
                     // No frontier is needed for the penultimate or last column.
                     best.complete(table, &scratch, Some(*width), &arena, &mut stats)?;
+                    continue;
+                }
+                if j + 1 == n {
+                    let height = total_height(&scratch.heights)?;
+                    if height < best.height {
+                        best.height = height;
+                        best.widths = scratch.path.widths(&arena);
+                        best.widths.push(*width);
+                        stats.incumbent_updates += 1;
+                    }
                     continue;
                 }
                 if bounds.cannot_improve(
@@ -273,7 +317,7 @@ pub(super) fn solve_impl(
                 next.push(Label {
                     used: scratch.used,
                     heights: std::mem::replace(&mut scratch.heights, vec![0; rows]),
-                    path: scratch.path,
+                    path: scratch.path.clone(),
                     tail: scratch.tail,
                 });
                 stats.peak_frontier = stats.peak_frontier.max(next.len());
@@ -281,11 +325,7 @@ pub(super) fn solve_impl(
         }
         // Allocate a path node only after the entire layer has been pruned.
         for label in &mut next {
-            arena.push(Link {
-                parent: label.path,
-                width: label.tail,
-            });
-            label.path = Some(arena.len() - 1);
+            label.path = label.path.append(label.tail, &mut arena);
         }
         frontier = next;
         if frontier.is_empty() {

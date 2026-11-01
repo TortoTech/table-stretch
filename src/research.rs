@@ -26,7 +26,7 @@ struct Data {
     heights: Vec<Vec<u32>>,
 }
 
-fn data(table: &Table) -> Result<Data, Error> {
+fn data(table: &Table, options: AblationOptions) -> Result<Data, Error> {
     let p = prepare(table, false)?;
     let mut d = Data {
         budget: p.budget,
@@ -77,15 +77,19 @@ fn data(table: &Table) -> Result<Data, Error> {
             .unwrap();
         // H_r * budget >= sum_j min_w(w * h_jr(w)). Each minimum is
         // attained at a retained plateau start, including the clipped lo.
-        let area = d.cells.iter().try_fold(0u128, |sum, c| {
-            sum.checked_add(
-                c[r].iter()
-                    .map(|s| s.width as u128 * s.height as u128)
-                    .min()
-                    .unwrap(),
-            )
-            .ok_or(Error::Overflow)
-        })?;
+        let area = if options.area_bound {
+            d.cells.iter().try_fold(0u128, |sum, c| {
+                sum.checked_add(
+                    c[r].iter()
+                        .map(|s| s.width as u128 * s.height as u128)
+                        .min()
+                        .unwrap(),
+                )
+                .ok_or(Error::Overflow)
+            })?
+        } else {
+            0
+        };
         let minimum = (minimum as u128).max(area.div_ceil(d.budget as u128));
         h.retain(|&value| value as u128 >= minimum);
     }
@@ -182,7 +186,7 @@ fn cp(
     d: &Data,
     algorithm: NativeAlgorithm,
     clock: &mut PhaseClock,
-    upper: u64,
+    upper: Option<u64>,
 ) -> Result<(Vec<u32>, u64), Error> {
     let no_learning = matches!(algorithm, NativeAlgorithm::Cp2011);
     let cellfree = matches!(algorithm, NativeAlgorithm::Lcg2015);
@@ -252,7 +256,8 @@ fn cp(
         })
         .collect();
     let min_h: u32 = d.heights.iter().map(|v| v[0]).sum();
-    let objective = solver.new_bounded_integer(min_h as i32, sum_h.min(upper) as i32);
+    let objective =
+        solver.new_bounded_integer(min_h as i32, sum_h.min(upper.unwrap_or(sum_h)) as i32);
     let tag = solver.new_constraint_tag();
     solver
         .add_constraint(less_than_or_equals(
@@ -413,7 +418,7 @@ fn mip(
     d: &Data,
     algorithm: NativeAlgorithm,
     clock: &mut PhaseClock,
-    upper: u64,
+    upper: Option<u64>,
 ) -> Result<(Vec<u32>, u64), Error> {
     if d.hi
         .iter()
@@ -435,11 +440,13 @@ fn mip(
             .map(|v| Unary::new(&mut p, v, 1.))
             .collect();
         offset = uh.iter().map(|v| v.values[0] as u64).sum();
-        p.add_constraint(
-            uh.iter().flat_map(Unary::terms).collect::<Vec<_>>(),
-            Op::Le,
-            (upper - offset) as f64,
-        );
+        if let Some(upper) = upper {
+            p.add_constraint(
+                uh.iter().flat_map(Unary::terms).collect::<Vec<_>>(),
+                Op::Le,
+                (upper - offset) as f64,
+            );
+        }
         p.add_constraint(
             uw.iter().flat_map(Unary::terms).collect::<Vec<_>>(),
             Op::Le,
@@ -473,11 +480,13 @@ fn mip(
             Op::Le,
             d.budget as f64,
         );
-        p.add_constraint(
-            h.iter().map(|&v| (v, 1.)).collect::<Vec<_>>(),
-            Op::Le,
-            upper as f64,
-        );
+        if let Some(upper) = upper {
+            p.add_constraint(
+                h.iter().map(|&v| (v, 1.)).collect::<Vec<_>>(),
+                Op::Le,
+                upper as f64,
+            );
+        }
         for (j, col) in d.cells.iter().enumerate() {
             clock.check()?;
             for (r, curve) in col.iter().enumerate() {
@@ -543,26 +552,33 @@ pub(super) fn solve_impl(
     table: &Table,
     algorithm: NativeAlgorithm,
     clock: &mut PhaseClock,
+    options: AblationOptions,
 ) -> Result<Layout, Error> {
-    let mut d = data(table)?;
-    let initial = solve_html(table)?;
-    let upper = initial.total_height;
+    let mut d = data(table, options)?;
+    let initial = if options.incumbent {
+        Some(solve_html(table)?)
+    } else {
+        None
+    };
+    let upper = initial.as_ref().map(|layout| layout.total_height);
     let lower = d.heights.iter().try_fold(0u64, |sum, h| {
         sum.checked_add(h[0] as u64).ok_or(Error::Overflow)
     })?;
     // Keep at least one global optimum: the feasible incumbent proves that
     // height > upper is unnecessary. Other rows must still meet their floors.
-    for heights in &mut d.heights {
-        let cap = upper - (lower - heights[0] as u64);
-        heights.retain(|&h| h as u64 <= cap);
+    if let Some(upper) = upper.filter(|_| options.row_caps) {
+        for heights in &mut d.heights {
+            let cap = upper - (lower - heights[0] as u64);
+            heights.retain(|&h| h as u64 <= cap);
+        }
     }
     clock.check()?;
     clock.prepared();
-    if lower == upper {
+    if options.root_certificate && upper == Some(lower) {
         return finish_measured(
             table,
             d.budget,
-            initial.column_widths,
+            initial.unwrap().column_widths,
             Stats {
                 bound_pruned: 1,
                 ..Stats::default()

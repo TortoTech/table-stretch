@@ -43,31 +43,26 @@ pub(super) fn html_impl(
     finish_measured(table, budget, widths, Stats::default(), false, clock)
 }
 
-struct Link {
-    parent: Option<usize>,
-    width: u32,
-}
-
-struct Node {
+struct Node<P: Trace> {
     bound: u64,
     serial: u64,
     depth: usize,
     used: u32,
     heights: Vec<u32>,
-    path: Option<usize>,
+    path: P,
 }
-impl PartialEq for Node {
+impl<P: Trace> PartialEq for Node<P> {
     fn eq(&self, other: &Self) -> bool {
         self.cmp(other) == Ordering::Equal
     }
 }
-impl Eq for Node {}
-impl PartialOrd for Node {
+impl<P: Trace> Eq for Node<P> {}
+impl<P: Trace> PartialOrd for Node<P> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
-impl Ord for Node {
+impl<P: Trace> Ord for Node<P> {
     fn cmp(&self, other: &Self) -> Ordering {
         other
             .bound
@@ -82,11 +77,11 @@ struct Incumbent {
     widths: Vec<u32>,
 }
 impl Incumbent {
-    fn complete(
+    fn complete<P: Trace>(
         &mut self,
         table: &Table,
-        prefix: &Node,
-        arena: &[Link],
+        prefix: &Node<P>,
+        arena: &[TraceLink],
         stats: &mut Stats,
     ) -> Result<(), Error> {
         stats.terminal_evaluations += 1;
@@ -103,13 +98,7 @@ impl Incumbent {
                 return Ok(());
             }
         }
-        let mut widths = Vec::with_capacity(table.columns.len());
-        let mut path = prefix.path;
-        while let Some(index) = path {
-            widths.push(arena[index].width);
-            path = arena[index].parent;
-        }
-        widths.reverse();
+        let mut widths = prefix.path.widths(arena);
         widths.push(width);
         self.height = height;
         self.widths = widths;
@@ -128,7 +117,29 @@ pub fn solve_astar(table: &Table, limits: Limits) -> Result<Layout, Error> {
 pub(super) fn astar_impl(
     table: &Table,
     limits: Limits,
+    clock: Option<&mut PhaseClock>,
+) -> Result<Layout, Error> {
+    astar_configured(table, limits, clock, AblationOptions::default())
+}
+
+pub(super) fn astar_configured(
+    table: &Table,
+    limits: Limits,
+    clock: Option<&mut PhaseClock>,
+    options: AblationOptions,
+) -> Result<Layout, Error> {
+    if options.compact_paths {
+        astar_search::<Option<usize>>(table, limits, clock, options)
+    } else {
+        astar_search::<Vec<u32>>(table, limits, clock, options)
+    }
+}
+
+fn astar_search<P: Trace>(
+    table: &Table,
+    limits: Limits,
     mut clock: Option<&mut PhaseClock>,
+    options: AblationOptions,
 ) -> Result<Layout, Error> {
     if limits.max_generated == 0 || limits.max_comparisons == 0 || limits.max_frontier == 0 {
         return Err(Error::Invalid("search limits must be positive"));
@@ -139,15 +150,25 @@ pub(super) fn astar_impl(
         mut candidates,
         suffix,
     } = prepare(table, true)?;
-    for (j, options) in candidates.iter_mut().enumerate() {
-        let cap = budget as u64 - (suffix[0] - (suffix[j] - suffix[j + 1]));
-        options.truncate(options.partition_point(|(w, _)| *w as u64 <= cap));
+    if options.column_caps {
+        for (j, options) in candidates.iter_mut().enumerate() {
+            let cap = budget as u64 - (suffix[0] - (suffix[j] - suffix[j + 1]));
+            options.truncate(options.partition_point(|(w, _)| *w as u64 <= cap));
+        }
     }
-    let bounds = pareto::Bounds::new(&candidates, rows)?;
-    let initial = solve_html(table)?;
-    let mut best = Incumbent {
-        height: initial.total_height,
-        widths: initial.column_widths,
+    let bounds =
+        pareto::Bounds::configured(&candidates, rows, options.area_bound, options.floor_bound)?;
+    let mut best = if options.incumbent {
+        let initial = solve_html(table)?;
+        Incumbent {
+            height: initial.total_height,
+            widths: initial.column_widths,
+        }
+    } else {
+        Incumbent {
+            height: u64::MAX,
+            widths: vec![],
+        }
     };
     let mut stats = Stats {
         peak_frontier: 1,
@@ -160,14 +181,14 @@ pub(super) fn astar_impl(
         depth: 0,
         used: 0,
         heights: vec![0; rows],
-        path: None,
+        path: P::root(),
     };
     if let Some(clock) = clock.as_deref_mut() {
         clock.prepared();
     }
     let n = table.columns.len();
     let mut heap = BinaryHeap::new();
-    let mut arena: Vec<Link> = Vec::new();
+    let mut arena: Vec<TraceLink> = Vec::new();
     heap.push(root);
     while let Some(node) = heap.pop() {
         if let Some(clock) = clock.as_deref() {
@@ -180,7 +201,16 @@ pub(super) fn astar_impl(
             break;
         }
         let j = node.depth;
-        if j + 1 == n {
+        if j == n {
+            let height = total_height(&node.heights)?;
+            if height < best.height {
+                best.height = height;
+                best.widths = node.path.widths(&arena);
+                stats.incumbent_updates += 1;
+            }
+            continue;
+        }
+        if options.terminal_column && j + 1 == n {
             best.complete(table, &node, &arena, &mut stats)?;
             continue;
         }
@@ -202,7 +232,7 @@ pub(super) fn astar_impl(
                     .zip(h)
                     .map(|(&a, &b)| a.max(b))
                     .collect(),
-                path: None,
+                path: P::root(),
             };
             child.bound = bounds.lower_bound(
                 &child.heights,
@@ -217,9 +247,8 @@ pub(super) fn astar_impl(
             // Check the new column and then traverse the prefix without
             // allocating/copying an entire width vector for each queue entry.
             let mut minimal = true;
-            let mut path = node.path;
-            let mut width = *w;
-            for c in (0..=j).rev() {
+            let widths = std::iter::once(*w).chain(node.path.reversed(&arena));
+            for (c, width) in (0..=j).rev().zip(widths) {
                 if width as u64 != suffix[c] - suffix[c + 1] {
                     let mut witness = false;
                     for (r, cell) in table.columns[c].cells.iter().enumerate() {
@@ -240,24 +269,17 @@ pub(super) fn astar_impl(
                         break;
                     }
                 }
-                if let Some(index) = path {
-                    width = arena[index].width;
-                    path = arena[index].parent;
-                }
             }
             if !minimal {
                 stats.pruned += 1;
                 continue;
             }
             // Last-column evaluation needs the current link only transiently.
-            child.path = Some(arena.len());
-            arena.push(Link {
-                parent: node.path,
-                width: *w,
-            });
-            if child.depth + 1 == n {
+            let checkpoint = arena.len();
+            child.path = node.path.append(*w, &mut arena);
+            if options.terminal_column && child.depth + 1 == n {
                 best.complete(table, &child, &arena, &mut stats)?;
-                arena.pop();
+                arena.truncate(checkpoint);
                 continue;
             }
             if heap.len() >= limits.max_frontier {
