@@ -1,33 +1,35 @@
 # Native Rust benchmark
 
-Latest run: **2026-10-31**, Apple M6, 16 GiB RAM. **64 real ebook cases**, single thread, 3 measurements per case, 1-second limit.
+Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **1383 real ebook cases**, single thread, 3 measurements per case, 1-second limit.
 
 All methods run as **Rust library calls in one process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
 | Method | Completed | P50 (ms) | P95 (ms) |
 | --- | ---: | ---: | ---: |
-| Pareto DP | 64/64 | 0.009 | 0.040 |
-| A* | 64/64 | 0.012 | 0.074 |
-| HTML heuristic | 64/64 | 0.001 | 0.002 |
-| CP (Pumpkin) | 58/64 | 0.559 | 1000.000 |
-| LCG (Pumpkin) | 64/64 | 0.416 | 8.344 |
-| MIP (microlp) | 64/64 | 0.591 | 22.387 |
+| Pareto DP | 1383/1383 | 0.002 | 0.011 |
+| A* | 1383/1383 | 0.003 | 0.017 |
+| HTML heuristic | 1383/1383 | <0.001 | <0.001 |
+| CP (Pumpkin) | 1367/1383 | 0.081 | 2.079 |
+| LCG (Pumpkin) | 1383/1383 | 0.061 | 0.514 |
+| MIP (microlp) | 1383/1383 | 0.063 | 1.155 |
 
-Fastest variant per family, ranked by completion rate then P95. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 30/64 cases.
+Fastest variant per family, ranked by completion rate then P95. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 733/1383 cases.
+
+[Dataset coverage and extraction](library-coverage.md). The expanded dataset includes complete EPUB tables, rectangular bodies, and visually reviewed PDF tables.
 
 ## All variants
 
 | Method | Completed | P50 (ms) | P95 (ms) |
 | --- | ---: | ---: | ---: |
-| Pareto DP | 64/64 | 0.009 | 0.040 |
-| A* | 64/64 | 0.012 | 0.074 |
-| HTML heuristic | 64/64 | 0.001 | 0.002 |
-| CP (2011, Pumpkin) | 58/64 | 0.559 | 1000.000 |
-| LCG (2011, Pumpkin) | 64/64 | 0.527 | 11.543 |
-| LCG (2015 cell-free, Pumpkin) | 64/64 | 0.416 | 8.344 |
-| MIP (unary, microlp) | 64/64 | 0.545 | 36.464 |
-| MIP (one-hot, microlp) | 62/64 | 0.802 | 276.990 |
-| MIP (cell-free, microlp) | 64/64 | 0.591 | 22.387 |
+| Pareto DP | 1383/1383 | 0.002 | 0.011 |
+| A* | 1383/1383 | 0.003 | 0.017 |
+| HTML heuristic | 1383/1383 | <0.001 | <0.001 |
+| CP (2011, Pumpkin) | 1367/1383 | 0.081 | 2.079 |
+| LCG (2011, Pumpkin) | 1383/1383 | 0.088 | 0.831 |
+| LCG (2015 cell-free, Pumpkin) | 1383/1383 | 0.061 | 0.514 |
+| MIP (unary, microlp) | 1383/1383 | 0.063 | 1.155 |
+| MIP (one-hot, microlp) | 1379/1383 | 0.081 | 2.757 |
+| MIP (cell-free, microlp) | 1383/1383 | 0.059 | 1.164 |
 
 Each percentile uses one median per case. Failures and timeouts are censored at the common limit, including in selection. A case completes only when every measured repetition completes. All returned layouts are checked against the original profiles and the fixed reference optimum.
 
@@ -37,15 +39,15 @@ Medians over completed cases only; each case uses the median of its repetitions.
 
 | Method | Prepare (ms) | Model (ms) | Search (ms) | Finalize (ms) |
 | --- | ---: | ---: | ---: | ---: |
-| Pareto DP | 0.0064 | 0.0000 | 0.0010 | 0.0001 |
-| A* | 0.0053 | 0.0000 | 0.0060 | 0.0001 |
-| HTML heuristic | 0.0005 | 0.0000 | 0.0000 | 0.0001 |
-| CP (2011, Pumpkin) | 0.0050 | 0.0877 | 0.2605 | 0.0002 |
-| LCG (2011, Pumpkin) | 0.0055 | 0.1007 | 0.3610 | 0.0003 |
-| LCG (2015 cell-free, Pumpkin) | 0.0056 | 0.0912 | 0.3034 | 0.0003 |
-| MIP (unary, microlp) | 0.0054 | 0.0143 | 0.5257 | 0.0003 |
-| MIP (one-hot, microlp) | 0.0051 | 0.0196 | 0.7143 | 0.0003 |
-| MIP (cell-free, microlp) | 0.0052 | 0.0179 | 0.5417 | 0.0003 |
+| Pareto DP | 0.0017 | 0.0000 | 0.0002 | 0.0000 |
+| A* | 0.0013 | 0.0000 | 0.0017 | 0.0001 |
+| HTML heuristic | 0.0002 | 0.0000 | 0.0000 | 0.0000 |
+| CP (2011, Pumpkin) | 0.0016 | 0.0295 | 0.0460 | 0.0001 |
+| LCG (2011, Pumpkin) | 0.0017 | 0.0300 | 0.0549 | 0.0001 |
+| LCG (2015 cell-free, Pumpkin) | 0.0016 | 0.0248 | 0.0333 | 0.0001 |
+| MIP (unary, microlp) | 0.0016 | 0.0044 | 0.0563 | 0.0001 |
+| MIP (one-hot, microlp) | 0.0016 | 0.0057 | 0.0727 | 0.0001 |
+| MIP (cell-free, microlp) | 0.0017 | 0.0050 | 0.0508 | 0.0001 |
 
 ## Reproduce
 
@@ -56,6 +58,6 @@ python3 scripts/report_native.py
 
 One warmup per method/case precedes the measured repetitions. Method order is shuffled with seed 1. Every call creates a fresh solver; there is no reused model or cross-method incumbent. All methods share the full-call wall limit; a watchdog kills and restarts the worker if cooperative termination overruns by two seconds. Raw records preserve errors, actual elapsed times and worker generations. Count limits are disabled for this benchmark.
 
-[Raw measurements](benchmark-native.jsonl) · [Summary](benchmark-native-summary.json) · [Inputs](benchmark-unified-inputs.json) · [Model mappings](native-models.md)
+[Raw measurements](benchmark-native.jsonl) · [Summary](benchmark-native-summary.json) · [Inputs](benchmark-library-inputs.json) · [Model mappings](native-models.md)
 
 The [external-solver benchmark](benchmark-unified.md) remains a separate process-level reference. Its timings include startup and MiniZinc compilation and must not be mixed with this table.

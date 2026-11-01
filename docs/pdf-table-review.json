@@ -1,0 +1,95 @@
+{
+  "reviewer": "Codex visual inspection",
+  "candidates": [
+    {
+      "book": "Reading Letters",
+      "book_sha256": "a409e35397916ef65e868e7c482fbeb9d99362bbd6eb4c20940696d69149e59f",
+      "document": "page:8",
+      "table_index": 0,
+      "bbox": [
+        663.4321,
+        55.40019999999993,
+        1159.3701,
+        496.28309999999993
+      ],
+      "metrics_sha256": "18d65ca417437832532cd7ce7c0d1d4a376dc27f8e8c71b7e024049a305b2c79",
+      "decision": "reject",
+      "reason": "Typeface names are outlined graphics, missing from extracted cells."
+    },
+    {
+      "book": "Reading Letters",
+      "book_sha256": "a409e35397916ef65e868e7c482fbeb9d99362bbd6eb4c20940696d69149e59f",
+      "document": "page:19",
+      "table_index": 0,
+      "bbox": [
+        42.6447,
+        449.57339999999994,
+        357.6072,
+        574.2977999999999
+      ],
+      "metrics_sha256": "696e759a036473cde6387d1edc72f18a63b306e782ed5e63e4c3216ead16a860",
+      "decision": "accept",
+      "reason": "Rendered page inspected: rectangular text table, boundaries and populated cells agree."
+    },
+    {
+      "book": "Reading Letters",
+      "book_sha256": "a409e35397916ef65e868e7c482fbeb9d99362bbd6eb4c20940696d69149e59f",
+      "document": "page:43",
+      "table_index": 0,
+      "bbox": [
+        681.8572,
+        254.5575999999999,
+        1172.2501,
+        605.0891
+      ],
+      "metrics_sha256": "3c61fd4aac896a8a9e38de8ccfc98008ed4d911ef62453aabf23e2cd5972b0fe",
+      "decision": "accept",
+      "reason": "Rendered page inspected: rectangular text table, boundaries and populated cells agree."
+    },
+    {
+      "book": "Webfont Handbook",
+      "book_sha256": "0206aa4ac3ff6bfd58b8b231a08967c9d358718f5cbf6725c29900b9c8146939",
+      "document": "page:23",
+      "table_index": 0,
+      "bbox": [
+        54.25,
+        48.25,
+        347.25,
+        108.7319
+      ],
+      "metrics_sha256": "95b10be6f0f560a9ff694edc1606c06dc4f678220603a2fffa2e333823b2ed92",
+      "decision": "accept",
+      "reason": "Rendered page inspected: rectangular text table, boundaries and populated cells agree."
+    },
+    {
+      "book": "Webfont Handbook",
+      "book_sha256": "0206aa4ac3ff6bfd58b8b231a08967c9d358718f5cbf6725c29900b9c8146939",
+      "document": "page:35",
+      "table_index": 0,
+      "bbox": [
+        54.2379,
+        48.23789999999997,
+        347.7621,
+        91.99469999999997
+      ],
+      "metrics_sha256": "4f10ac66c6901f68a2a13f7654103566e0df77db22d229731dee2825e50f567b",
+      "decision": "accept",
+      "reason": "Rendered page inspected: rectangular text table, boundaries and populated cells agree."
+    },
+    {
+      "book": "Webfont Handbook",
+      "book_sha256": "0206aa4ac3ff6bfd58b8b231a08967c9d358718f5cbf6725c29900b9c8146939",
+      "document": "page:37",
+      "table_index": 0,
+      "bbox": [
+        54.25,
+        48.25,
+        347.90000000000003,
+        228.6674
+      ],
+      "metrics_sha256": "3a5c189c4707d37c257a5626d898c43360164c23247471385d2583dea6cc02dc",
+      "decision": "accept",
+      "reason": "Rendered page inspected: rectangular text table, boundaries and populated cells agree."
+    }
+  ]
+}

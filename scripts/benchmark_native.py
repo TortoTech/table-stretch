@@ -78,15 +78,15 @@ class Worker:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--inputs', type=Path, default=ROOT/'docs/benchmark-unified-inputs.json')
+    parser.add_argument('--inputs', type=Path, default=ROOT/'docs/benchmark-library-inputs.json')
     parser.add_argument('--output', type=Path, default=ROOT/'docs/benchmark-native.jsonl')
     parser.add_argument('--repeats', type=int, default=3)
     parser.add_argument('--timeout-ms', type=int, default=1000)
-    parser.add_argument('--cases', type=int, default=64)
+    parser.add_argument('--cases', type=int, default=0, help='0 means all cases')
     args = parser.parse_args()
-    assert args.repeats > 0 and args.timeout_ms > 0 and args.cases > 0
+    assert args.repeats > 0 and args.timeout_ms > 0 and args.cases >= 0
     subprocess.run(['cargo', 'build', '--locked', '--release', '--example', 'native_worker'], cwd=ROOT, check=True)
-    inputs = json.loads(args.inputs.read_text())[:args.cases]
+    inputs = json.loads(args.inputs.read_text())[:args.cases or None]
     for item in inputs:
         assert hashlib.sha256(canonical(item['table'])).hexdigest() == item['input_sha256']
     paths = [ROOT/'Cargo.toml', ROOT/'Cargo.lock', *sorted((ROOT/'src').glob('*.rs')),
@@ -95,7 +95,7 @@ def main():
                 platform=platform.platform(), machine=subprocess.check_output(['sysctl', '-n', 'machdep.cpu.brand_string'], text=True).strip(),
                 memory_bytes=int(subprocess.check_output(['sysctl', '-n', 'hw.memsize'], text=True)),
                 rustc=subprocess.check_output(['rustc', '-Vv'], text=True),
-                input_manifest_sha256=sha(args.inputs), worker_sha256=sha(ROOT/'target/release/examples/native_worker'),
+                input_manifest=str(args.inputs.resolve().relative_to(ROOT)), input_manifest_sha256=sha(args.inputs), worker_sha256=sha(ROOT/'target/release/examples/native_worker'),
                 source_sha256={str(p.relative_to(ROOT)):sha(p) for p in paths},
                 methods=METHODS, repeats=args.repeats, warmups=1, timeout_ms=args.timeout_ms, seed=1, threads=1,
                 selection=[[i['sample_index'], i['width']] for i in inputs],

@@ -4,7 +4,7 @@ Exact minimum-height table layout in Rust. Given a container width and cell size
 
 - Pareto dynamic programming with bound pruning and direct final-column completion.
 - Rust library and JSON CLI, with A*, CP, LCG, and MIP implementations for comparison.
-- Mathematical proofs, a Lean-checked abstract optimality proof, and tests from 317 real ebook tables.
+- Mathematical proofs, a Lean-checked abstract optimality proof, and tests from 468 real table samples across 31 books.
 
 ## Quick start
 
@@ -37,23 +37,23 @@ fn main() -> Result<(), table_stretch::Error> {
 ## Benchmark
 
 <!-- benchmark:start -->
-Latest run: **2026-10-31**, Apple M6, 16 GiB RAM. **64 real ebook cases**, single thread, 3 measurements per case, 1-second limit.
+Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **1383 real ebook cases**, single thread, 3 measurements per case, 1-second limit.
 
 All methods run as **Rust library calls in one process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
 | Method | Completed | P50 (ms) | P95 (ms) |
 | --- | ---: | ---: | ---: |
-| Pareto DP | 64/64 | 0.009 | 0.040 |
-| A* | 64/64 | 0.012 | 0.074 |
-| HTML heuristic | 64/64 | 0.001 | 0.002 |
-| CP (Pumpkin) | 58/64 | 0.559 | 1000.000 |
-| LCG (Pumpkin) | 64/64 | 0.416 | 8.344 |
-| MIP (microlp) | 64/64 | 0.591 | 22.387 |
+| Pareto DP | 1383/1383 | 0.002 | 0.011 |
+| A* | 1383/1383 | 0.003 | 0.017 |
+| HTML heuristic | 1383/1383 | <0.001 | <0.001 |
+| CP (Pumpkin) | 1367/1383 | 0.081 | 2.079 |
+| LCG (Pumpkin) | 1383/1383 | 0.061 | 0.514 |
+| MIP (microlp) | 1383/1383 | 0.063 | 1.155 |
 
-Fastest variant per family, ranked by completion rate then P95. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 30/64 cases.
+Fastest variant per family, ranked by completion rate then P95. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 733/1383 cases.
 <!-- benchmark:end -->
 
-[Benchmark report and all variants](docs/benchmark-native.md) · [External solver reference](docs/benchmark-unified.md)
+[Library coverage](docs/library-coverage.md) · [Benchmark report and all variants](docs/benchmark-native.md) · [External solver reference](docs/benchmark-unified.md)
 
 ## Input and guarantees
 

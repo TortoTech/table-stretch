@@ -27,7 +27,7 @@ def main():
     rows = [json.loads(s) for s in (ROOT/'docs/benchmark-native.jsonl').read_text().splitlines()]
     env, records = rows[0], rows[1:]
     assert env['methods'] == METHODS
-    path = ROOT/'docs/benchmark-unified-inputs.json'
+    path = ROOT/env.get('input_manifest', 'docs/benchmark-unified-inputs.json')
     assert sha(path) == env['input_manifest_sha256']
     inputs = {(i['sample_index'], i['width']):i for i in json.loads(path.read_text())}
     expected = set(map(tuple, env['selection']))
@@ -71,11 +71,14 @@ def main():
     date = datetime.fromisoformat(env['utc']).astimezone(ZoneInfo('US/Pacific')).date()
     intro = f'Latest run: **{date}**, {env["machine"]}, {env["memory_bytes"]//2**30} GiB RAM. **{n} real ebook cases**, single thread, {repeats} measurements per case, {env["timeout_ms"]/1000:g}-second limit.\n\n'
     intro += 'All methods run as **Rust library calls in one process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.\n\n'
+    def fmt_ms(value):
+        return '<0.001' if 0 < value < 0.001 else f'{value:.3f}'
+
     def table(featured):
         text = '| Method | Completed | P50 (ms) | P95 (ms) |\n| --- | ---: | ---: | ---: |\n'
         for name,m in featured:
             s = summary[m]
-            text += f'| {name} | {s["completed"]}/{n} | {s["p50_ms"]:.3f} | {s["p95_ms"]:.3f} |\n'
+            text += f'| {name} | {s["completed"]}/{n} | {fmt_ms(s["p50_ms"])} | {fmt_ms(s["p95_ms"])} |\n'
         return text
     featured = intro + table(selected.items())
     featured += f'\nFastest variant per family, ranked by completion rate then P95. Unfinished runs count as {env["timeout_ms"]/1000:g} second in these percentiles. HTML matched the optimum in {summary["html"]["matched"]}/{n} cases.\n'
@@ -84,6 +87,7 @@ def main():
     a,b = readme.index(begin)+len(begin),readme.index(end)
     readme_path.write_text(readme[:a]+'\n'+featured+readme[b:])
     report = '# Native Rust benchmark\n\n'+featured
+    report += '\n[Dataset coverage and extraction](library-coverage.md). The expanded dataset includes complete EPUB tables, rectangular bodies, and visually reviewed PDF tables.\n'
     report += '\n## All variants\n\n'+table((NAMES[m],m) for m in METHODS)
     report += '\nEach percentile uses one median per case. Failures and timeouts are censored at the common limit, including in selection. A case completes only when every measured repetition completes. All returned layouts are checked against the original profiles and the fixed reference optimum.\n'
     report += '\n## Phase medians\n\nMedians over completed cases only; each case uses the median of its repetitions. These component medians need not sum to the total median. Solver teardown is included in search.\n\n| Method | Prepare (ms) | Model (ms) | Search (ms) | Finalize (ms) |\n| --- | ---: | ---: | ---: | ---: |\n'
@@ -92,7 +96,7 @@ def main():
         report += '| '+NAMES[m]+' | '+' | '.join(f'{values[k]:.4f}' if k in values else '—' for k in ['prepare_ns','model_ns','search_ns','finalize_ns'])+' |\n'
     report += '\n## Reproduce\n\n```sh\npython3 scripts/benchmark_native.py\npython3 scripts/report_native.py\n```\n\n'
     report += 'One warmup per method/case precedes the measured repetitions. Method order is shuffled with seed 1. Every call creates a fresh solver; there is no reused model or cross-method incumbent. All methods share the full-call wall limit; a watchdog kills and restarts the worker if cooperative termination overruns by two seconds. Raw records preserve errors, actual elapsed times and worker generations. Count limits are disabled for this benchmark.\n\n'
-    report += '[Raw measurements](benchmark-native.jsonl) · [Summary](benchmark-native-summary.json) · [Inputs](benchmark-unified-inputs.json) · [Model mappings](native-models.md)\n\n'
+    report += f'[Raw measurements](benchmark-native.jsonl) · [Summary](benchmark-native-summary.json) · [Inputs]({path.name}) · [Model mappings](native-models.md)\n\n'
     report += 'The [external-solver benchmark](benchmark-unified.md) remains a separate process-level reference. Its timings include startup and MiniZinc compilation and must not be mixed with this table.\n'
     (ROOT/'docs/benchmark-native.md').write_text(report)
     (ROOT/'docs/benchmark-native-summary.json').write_text(json.dumps({'environment':env,'selected':selected,'methods':summary},indent=2)+'\n')
