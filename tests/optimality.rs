@@ -177,7 +177,27 @@ fn proportional_widths_can_be_suboptimal() {
 
 #[test]
 fn limits_never_claim_optimality() {
-    let t: Table = serde_json::from_str(include_str!("../examples/table.json")).unwrap();
+    // A nontrivial four-column tradeoff requires an intermediate frontier;
+    // two-column inputs now use direct terminal completion instead.
+    let t = Table {
+        width: 8,
+        reserved_width: 0,
+        columns: (0..4)
+            .map(|j| Column {
+                min_width: 1,
+                max_width: 3,
+                cells: (0..4)
+                    .map(|r| {
+                        if r == j {
+                            profile(&[(1, 5), (2, 4), (3, 0)])
+                        } else {
+                            profile(&[(1, 0)])
+                        }
+                    })
+                    .collect(),
+            })
+            .collect(),
+    };
     for limits in [
         Limits {
             max_generated: 1,
@@ -193,6 +213,122 @@ fn limits_never_claim_optimality() {
         },
     ] {
         assert!(matches!(solve(&t, limits), Err(Error::Limit(_))));
+    }
+}
+
+#[test]
+fn terminal_completion_and_bounds_match_integer_oracle() {
+    let mut table: Table = serde_json::from_str(include_str!("../examples/table.json")).unwrap();
+    let layout = solve(&table, Limits::default()).unwrap();
+    assert!(layout.stats.terminal_evaluations > 0);
+    assert_eq!(layout.stats.comparisons, 0); // no two-column Pareto frontier
+    // A capped final column forces remaining stretch into earlier columns.
+    table.columns.push(Column {
+        min_width: 1,
+        max_width: 1,
+        cells: vec![profile(&[(1, 0)]); 2],
+    });
+    let max: u32 = table.columns.iter().map(|c| c.max_width).sum();
+    for width in 0..=max + table.reserved_width + 1 {
+        table.width = width;
+        check(&table);
+    }
+    // Zero lower/upper bound may certify optimality without any expansion.
+    table.width = max + table.reserved_width;
+    for col in &mut table.columns {
+        col.cells = vec![profile(&[(1, 0)]); 2];
+    }
+    let result = solve(
+        &table,
+        Limits {
+            max_generated: 1,
+            max_comparisons: 1,
+            max_frontier: 1,
+        },
+    )
+    .unwrap();
+    assert!(result.optimal);
+    assert_eq!(result.total_height, 0);
+    assert_eq!(result.stats.generated, 0);
+}
+
+#[test]
+fn adversarial_frontiers_and_path_reconstruction_match_oracle() {
+    // Independent row costs create incomparable intermediate labels. The
+    // optimal allocation is deliberately different from the HTML incumbent.
+    for n in 3..=6 {
+        let mut table = Table {
+            width: 0,
+            reserved_width: 3,
+            columns: (0..n)
+                .map(|j| Column {
+                    min_width: 1,
+                    max_width: 3,
+                    cells: (0..n)
+                        .map(|r| {
+                            if r == j {
+                                profile(&[(1, 5), (2, 4), (3, 0)])
+                            } else {
+                                profile(&[(1, 0)])
+                            }
+                        })
+                        .collect(),
+                })
+                .collect(),
+        };
+        for budget in n..=3 * n {
+            table.width = budget as u32 + table.reserved_width;
+            check(&table);
+            // Permuting columns changes predecessor paths and processing order,
+            // but cannot change the optimal height of the same table.
+            let original = solve(&table, Limits::default()).unwrap();
+            table.columns.reverse();
+            let reversed = solve(&table, Limits::default()).unwrap();
+            assert_eq!(original.total_height, reversed.total_height);
+            table.columns.reverse();
+        }
+    }
+}
+
+#[test]
+fn feasible_deep_random_tables_match_oracle() {
+    let mut seed = 0xf45e6182u64;
+    let mut draw = |n: u32| {
+        seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1);
+        ((seed >> 32) as u32) % n
+    };
+    for _ in 0..160 {
+        let n = 3 + draw(4);
+        let rows = 1 + draw(5);
+        let columns: Vec<_> = (0..n)
+            .map(|_| {
+                let max_width = 2 + draw(3);
+                Column {
+                    min_width: 1,
+                    max_width,
+                    cells: (0..rows)
+                        .map(|_| {
+                            let mut height = 2 + draw(20);
+                            Profile {
+                                steps: (1..=max_width + 1)
+                                    .map(|width| {
+                                        height = height.saturating_sub(draw(7));
+                                        Step { width, height }
+                                    })
+                                    .collect(),
+                            }
+                        })
+                        .collect(),
+                }
+            })
+            .collect();
+        let max: u32 = columns.iter().map(|c| c.max_width).sum();
+        let budget = n + draw(max - n + 1);
+        check(&Table {
+            width: budget + 2,
+            reserved_width: 2,
+            columns,
+        });
     }
 }
 

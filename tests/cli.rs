@@ -39,7 +39,10 @@ fn solves_json_from_stdin() {
     assert!(result.status.success());
     let json: serde_json::Value = serde_json::from_slice(&result.stdout).unwrap();
     assert_eq!(json["total_height"], 3);
-    assert_eq!(json["column_widths"], serde_json::json!([7, 3]));
+    // Equal-height layouts need not retain the previous tie-breaking choice.
+    let widths = json["column_widths"].as_array().unwrap();
+    assert_eq!(widths.len(), 2);
+    assert_eq!(widths.iter().map(|w| w.as_u64().unwrap()).sum::<u64>(), 10);
     assert_eq!(json["optimal"], true);
 }
 

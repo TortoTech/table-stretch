@@ -187,4 +187,96 @@ theorem stretch_preserves_optimum (rows : Nat) (feasible : State → Prop)
 
 #print axioms global_optimality
 #print axioms stretch_preserves_optimum
+
+/- Optimized-search lemmas. These verify the abstract transformations, not a
+   line-by-line refinement of the Rust arena or the arithmetic lower bounds. -/
+theorem height_cost_mono {a b : State}
+    (h : ∀ r, a.height r ≤ b.height r) (rows : Nat) : cost a rows ≤ cost b rows := by
+  induction rows with
+  | zero => exact Nat.le_refl _
+  | succ n ih => exact Nat.add_le_add ih (h n)
+
+theorem terminal_column_optimal (baseState : State) (profile : Nat → Nat → Nat)
+    (cap budget w rows : Nat) (hw : w ≤ cap) (fits : baseState.width + w ≤ budget)
+    (anti : ∀ x y, x ≤ y → ∀ r, profile y r ≤ profile x r) :
+    cost (extend baseState ⟨min cap (budget - baseState.width),
+      profile (min cap (budget - baseState.width))⟩) rows ≤
+    cost (extend baseState ⟨w, profile w⟩) rows := by
+  have hmax : w ≤ min cap (budget - baseState.width) := by omega
+  apply height_cost_mono
+  intro r
+  exact Nat.max_le_of_le_of_le (Nat.le_max_left _ _)
+    (Nat.le_trans (anti _ _ hmax r) (Nat.le_max_right _ _))
+
+theorem lower_bound_pruning_safe (lower upper : Nat) (rows : Nat)
+    (completion : State) (valid : lower ≤ cost completion rows)
+    (cut : upper ≤ lower) : upper ≤ cost completion rows :=
+  Nat.le_trans cut valid
+
+/- Generic finite branch-and-bound minimum: each job represents a subtree
+   with exact optimum `value` and a certified lower bound. The seed is a
+   retained feasible incumbent. Equal-bound pruning preserves one optimum. -/
+def boundedMinimum {α : Type} (lower value : α → Nat) : List α → Nat → Nat
+  | [], upper => upper
+  | x :: xs, upper =>
+    if upper ≤ lower x then boundedMinimum lower value xs upper
+    else boundedMinimum lower value xs (min upper (value x))
+
+theorem bounded_minimum_correct {α : Type} (lower value : α → Nat)
+    (valid : ∀ x, lower x ≤ value x) (jobs : List α) (upper : Nat) :
+    (boundedMinimum lower value jobs upper = upper ∨
+      ∃ x ∈ jobs, boundedMinimum lower value jobs upper = value x) ∧
+    boundedMinimum lower value jobs upper ≤ upper ∧
+    ∀ x ∈ jobs, boundedMinimum lower value jobs upper ≤ value x := by
+  induction jobs generalizing upper with
+  | nil => simp [boundedMinimum]
+  | cons x xs ih =>
+    simp only [boundedMinimum]
+    split
+    · rename_i cut
+      obtain ⟨feasible, hu, hall⟩ := ih upper
+      refine ⟨?_, hu, ?_⟩
+      · rcases feasible with h | ⟨y, hy, heq⟩
+        · exact Or.inl h
+        · exact Or.inr ⟨y, List.mem_cons_of_mem _ hy, heq⟩
+      · intro y hy
+        rcases List.mem_cons.mp hy with heq | hy
+        · subst y
+          exact Nat.le_trans hu (Nat.le_trans cut (valid x))
+        · exact hall y hy
+    · obtain ⟨feasible, hu, hall⟩ := ih (min upper (value x))
+      refine ⟨?_, Nat.le_trans hu (Nat.min_le_left _ _), ?_⟩
+      · rcases feasible with h | ⟨y, hy, heq⟩
+        · by_cases hux : upper ≤ value x
+          · exact Or.inl (h.trans (Nat.min_eq_left hux))
+          · exact Or.inr ⟨x, List.mem_cons_self,
+              h.trans (Nat.min_eq_right (Nat.le_of_lt (Nat.lt_of_not_ge hux)))⟩
+        · exact Or.inr ⟨y, List.mem_cons_of_mem _ hy, heq⟩
+      · intro y hy
+        rcases List.mem_cons.mp hy with heq | hy
+        · subst y
+          exact Nat.le_trans hu (Nat.min_le_right _ _)
+        · exact hall y hy
+
+/- Global invariant after combining Pareto coverage with bound pruning:
+   every full layout is either covered by a retained completion or cannot
+   beat the feasible incumbent. The returned minimum is globally optimal. -/
+theorem bounded_global_optimality (rows : Nat) (feasible : State → Prop)
+    (frontier : List State) (incumbent best : State)
+    (valid : feasible best)
+    (cover : ∀ s, feasible s → cost incumbent rows ≤ cost s rows ∨
+      ∃ f ∈ frontier, cost f rows ≤ cost s rows)
+    (seed : cost best rows ≤ cost incumbent rows)
+    (minimal : ∀ f ∈ frontier, cost best rows ≤ cost f rows) :
+    feasible best ∧ ∀ s, feasible s → cost best rows ≤ cost s rows := by
+  refine ⟨valid, ?_⟩
+  intro s hs
+  rcases cover s hs with h | ⟨f, hf, hfs⟩
+  · exact Nat.le_trans seed h
+  · exact Nat.le_trans (minimal f hf) hfs
+
+#print axioms terminal_column_optimal
+#print axioms lower_bound_pruning_safe
+#print axioms bounded_minimum_correct
+#print axioms bounded_global_optimality
 end TableStretch

@@ -175,6 +175,8 @@ def main():
     ap.add_argument('--cases', type=int, default=64)
     ap.add_argument('--repeats', type=int, default=3)
     ap.add_argument('--timeout-ms', type=int, default=1000)
+    ap.add_argument('--baseline-worker', type=Path, help='Optional pre-optimization worker, measured in the same rounds')
+    ap.add_argument('--baseline-commit', default='104c545b439f3bbe18b8436f5de029a8bc13b73f')
     args = ap.parse_args()
     assert args.cases > 0 and args.repeats > 0 and args.timeout_ms > 0
     os.chdir(ROOT)
@@ -185,6 +187,11 @@ def main():
     mini = (args.minizinc or Path(Path('.tools/minizinc-path.txt').read_text().strip())).resolve()
     subprocess.run(['cargo', 'build', '--locked', '--release', '--example', 'unified_worker'], check=True)
     worker = (ROOT/'target/release/examples/unified_worker').resolve()
+    methods = list(METHODS)
+    baseline = args.baseline_worker.resolve() if args.baseline_worker else None
+    if baseline:
+        assert baseline.is_file()
+        methods.insert(0, 'pareto_baseline')
     env = {**os.environ, 'OMP_NUM_THREADS': '1', 'OPENBLAS_NUM_THREADS': '1',
            'MKL_NUM_THREADS': '1', 'VECLIB_MAXIMUM_THREADS': '1'}
     source_paths = [Path('Cargo.lock'), Path('Cargo.toml'), *Path('src').glob('*.rs'),
@@ -196,11 +203,12 @@ def main():
             'minizinc': subprocess.check_output([str(mini),'--version'], text=True).strip(),
             'solvers': json.loads(subprocess.check_output([str(mini),'--solvers-json'], text=True)),
             'selection': [[r['sample_index'], r['width']] for r in inputs],
-            'methods': METHODS, 'repeats': args.repeats, 'warmups': 1,
+            'methods': methods, 'repeats': args.repeats, 'warmups': 1,
+            'baseline': {'commit': args.baseline_commit, 'worker_sha256': sha(baseline)} if baseline else None,
             'timeout_ms': args.timeout_ms, 'threads': 1, 'seed': 1, 'compiler_optimization': 0,
             'native_count_limits': 'disabled', 'deadline_scope': 'before common worker spawn through exit and stdout/stderr drain',
             'profile_construction': 'excluded for every method; identical canonical curve JSON input',
-            'fallback': 'common HTML feasible fallback, charged to every run; no search warm start',
+            'fallback': 'common HTML fallback charged to every run, not passed to search; optimized Pareto separately computes its own incumbent within timed preparation',
             'cache': 'fresh processes; one warmup; OS filesystem caches not flushed',
             'input_manifest_sha256': sha(args.inputs), 'worker_sha256': sha(worker),
             'source_sha256': {str(p.relative_to(ROOT) if p.is_absolute() else p): sha(p) for p in source_paths}}
@@ -213,19 +221,21 @@ def main():
             payload = canonical(instance['table'])
             assert hashlib.sha256(payload).hexdigest() == instance['input_sha256']
             input_path.write_bytes(payload)
-            runs = {method: [] for method in METHODS}
+            runs = {method: [] for method in methods}
             warmups = {}
             orders = []
             for repeat in range(args.repeats + 1):
-                order = list(METHODS); rng.shuffle(order); orders.append(order)
+                order = list(methods); rng.shuffle(order); orders.append(order)
                 for method in order:
-                    cmd = [str(worker), method, str(input_path), str(mini), str(ROOT/'models'), str(scratch)]
+                    executable = baseline if method == 'pareto_baseline' else worker
+                    worker_method = 'pareto' if method == 'pareto_baseline' else method
+                    cmd = [str(executable), worker_method, str(input_path), str(mini), str(ROOT/'models'), str(scratch)]
                     result = interpret(run_process(cmd, args.timeout_ms, env), instance, method)
                     if repeat:
                         runs[method].append(result)
                     else:
                         warmups[method] = result
-            for method in METHODS:
+            for method in methods:
                 record = {'kind': 'case', 'sample_index': instance['sample_index'], 'width': instance['width'],
                           'algorithm': method, 'input_sha256': instance['input_sha256'],
                           'reference_height': instance['reference_height'], 'runs': runs[method],
@@ -235,7 +245,7 @@ def main():
                           'wall_median_ns': statistics.median(r['wall_ns'] for r in runs[method])}
                 out.write(json.dumps(record, ensure_ascii=False)+'\n')
             out.flush()
-            statuses = {m: [r['status'] for r in runs[m]] for m in METHODS if any(r['status']=='timeout' for r in runs[m])}
+            statuses = {m: [r['status'] for r in runs[m]] for m in methods if any(r['status']=='timeout' for r in runs[m])}
             print(f"{pos+1}/{len(inputs)} table={instance['sample_index']} width={instance['width']} timeouts={statuses}", flush=True)
 
 

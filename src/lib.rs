@@ -198,6 +198,11 @@ pub struct Stats {
     pub pruned: u64,
     pub peak_frontier: usize,
     pub candidates_per_column: Vec<usize>,
+    /// States/candidates discarded by a valid objective lower bound.
+    pub bound_pruned: u64,
+    /// Prefixes completed by maximizing the final column width.
+    pub terminal_evaluations: u64,
+    pub incumbent_updates: u64,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -235,10 +240,6 @@ struct State {
     used: u32,
     heights: Vec<u32>,
     widths: Vec<u32>,
-}
-
-fn dominates(a: &State, b: &State) -> bool {
-    a.used <= b.used && a.heights.iter().zip(&b.heights).all(|(x, y)| x <= y)
 }
 
 fn total_height(heights: &[u32]) -> Result<u64, Error> {
@@ -345,104 +346,9 @@ pub fn solve(table: &Table, limits: Limits) -> Result<Layout, Error> {
 fn solve_impl(
     table: &Table,
     limits: Limits,
-    mut clock: Option<&mut PhaseClock>,
+    clock: Option<&mut PhaseClock>,
 ) -> Result<Layout, Error> {
-    if limits.max_generated == 0 || limits.max_comparisons == 0 || limits.max_frontier == 0 {
-        return Err(Error::Invalid("search limits must be positive"));
-    }
-    let Prepared {
-        budget,
-        rows,
-        candidates,
-        suffix,
-    } = prepare(table, true)?;
-    if let Some(clock) = clock.as_deref_mut() {
-        clock.prepared();
-    }
-    let mut stats = Stats {
-        candidates_per_column: candidates.iter().map(Vec::len).collect(),
-        peak_frontier: 1,
-        ..Stats::default()
-    };
-    let mut frontier = vec![State {
-        used: 0,
-        heights: vec![0; rows],
-        widths: vec![],
-    }];
-    for (j, options) in candidates.iter().enumerate() {
-        let mut next: Vec<State> = Vec::new();
-        for state in &frontier {
-            for (width, heights) in options {
-                if stats.generated >= limits.max_generated {
-                    return Err(Error::Limit("generated states"));
-                }
-                stats.generated += 1;
-                let used = state.used as u64 + *width as u64;
-                if used + suffix[j + 1] > budget as u64 {
-                    continue;
-                }
-                let mut widths = state.widths.clone();
-                widths.push(*width);
-                let candidate = State {
-                    used: used as u32,
-                    heights: state
-                        .heights
-                        .iter()
-                        .zip(heights)
-                        .map(|(&a, &b)| a.max(b))
-                        .collect(),
-                    widths,
-                };
-                let mut rejected = false;
-                for old in &next {
-                    if stats.comparisons >= limits.max_comparisons {
-                        return Err(Error::Limit("dominance comparisons"));
-                    }
-                    stats.comparisons += 1;
-                    if dominates(old, &candidate) {
-                        rejected = true;
-                        break;
-                    }
-                }
-                if rejected {
-                    stats.pruned += 1;
-                    continue;
-                }
-                // Two passes ensure no earlier state is lost if candidate is rejected.
-                let mut keep = Vec::with_capacity(next.len());
-                for old in next {
-                    if stats.comparisons >= limits.max_comparisons {
-                        return Err(Error::Limit("dominance comparisons"));
-                    }
-                    stats.comparisons += 1;
-                    if dominates(&candidate, &old) {
-                        stats.pruned += 1;
-                    } else {
-                        keep.push(old);
-                    }
-                }
-                if keep.len() >= limits.max_frontier {
-                    return Err(Error::Limit("frontier size"));
-                }
-                keep.push(candidate);
-                stats.peak_frontier = stats.peak_frontier.max(keep.len());
-                next = keep;
-            }
-        }
-        frontier = next;
-    }
-    let mut best: Option<(u64, State)> = None;
-    for state in frontier {
-        let height = total_height(&state.heights)?;
-        if best
-            .as_ref()
-            .is_none_or(|(h, s)| (height, state.used) < (*h, s.used))
-        {
-            best = Some((height, state));
-        }
-    }
-    let (_, best) = best.ok_or(Error::Infeasible("no layout"))?;
-    finish_measured(table, budget, best.widths, stats, true, clock)
+    pareto::solve_impl(table, limits, clock)
 }
 
 fn finish_measured(
@@ -506,6 +412,7 @@ fn finish(
 }
 
 mod algorithms;
+mod pareto;
 pub use algorithms::{solve_astar, solve_html};
 mod model_data;
 pub use model_data::minizinc_data;
