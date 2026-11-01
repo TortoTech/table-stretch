@@ -142,6 +142,9 @@ pub(super) fn astar_impl(
         ..Stats::default()
     };
     while let Some(node) = heap.pop() {
+        if let Some(clock) = clock.as_deref() {
+            clock.check()?;
+        }
         let j = node.state.widths.len();
         if j == n {
             return finish_measured(table, budget, node.state.widths, stats, true, clock);

@@ -7,11 +7,11 @@ All exact methods minimize total row height under a shared width budget and colu
 | Pareto DP | Rust | Column-wise Pareto frontiers, lower/upper bounds, direct final-column completion. |
 | A* | Rust | Best-first search with a remaining-area lower bound and column-minimality pruning. |
 | HTML | Rust | Proportional width allocation; a fast heuristic. |
-| CP | Gecode | Cell configuration indices and element constraints. |
-| CP/SAT (LCG) | Chuffed | Cell-height sequential search with lazy clause generation. |
-| MIP | HiGHS | Cell-free model with shared unary row/column selectors and RCSV domains. |
+| CP | Rust / Pumpkin | Cell configuration indices and element constraints, learning disabled. |
+| CP/SAT (LCG) | Rust / Pumpkin | Configuration and cell-free models with lazy clause generation. |
+| MIP | Rust / microlp | Unary, one-hot, and shared cell-free encodings; LP and branch-and-bound. |
 
-The [benchmark](benchmark-unified.md) features the fastest fully solved variant in each family from the latest run. Additional variants remain in `models/` and the [complete results](benchmark-unified-details.md).
+The [native benchmark](benchmark-native.md) compares all methods as Rust library calls and features one variant per family, ranked by completion rate then P95. See [native model mappings and correctness](native-models.md). External MiniZinc implementations remain in `models/` and the separate [process-level reference](benchmark-unified.md).
 
 ## Research
 
@@ -23,7 +23,9 @@ These are adaptations for this project's input model and current solvers. The [r
 
 ```sh
 cargo run --release -- --algorithm astar2011 examples/table.json
-cargo run --release -- --algorithm html examples/table.json
+cargo run --release -- --algorithm lcg2015 examples/table.json
+python3 scripts/benchmark_native.py
+python3 scripts/report_native.py
 python3 scripts/check_models.py
 python3 scripts/benchmark_unified.py --minizinc /path/to/minizinc
 python3 scripts/report_unified.py

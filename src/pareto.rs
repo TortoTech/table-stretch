@@ -183,6 +183,9 @@ pub(super) fn solve_impl(
     for j in 0..n - 1 {
         let mut next: Vec<Label> = Vec::new();
         for state in &frontier {
+            if let Some(clock) = clock.as_deref() {
+                clock.check()?;
+            }
             if bounds.cannot_improve(&state.heights, j, budget - state.used, best.height)? {
                 stats.bound_pruned += 1;
                 continue;

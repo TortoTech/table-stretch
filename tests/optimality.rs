@@ -51,12 +51,24 @@ fn brute(table: &Table) -> Option<u64> {
 
 fn check(t: &Table) {
     let expected = brute(t);
+    let research = [
+        NativeAlgorithm::Cp2011,
+        NativeAlgorithm::Lcg2011,
+        NativeAlgorithm::Lcg2015,
+        NativeAlgorithm::Mip2015Unary,
+        NativeAlgorithm::Mip2015Onehot,
+        NativeAlgorithm::Mip2015Cellfree,
+    ]
+    .map(|algorithm| solve_measured(t, Limits::default(), algorithm).map(|(layout, _)| layout));
     for actual in [
         solve(t, Limits::default()),
         solve_astar(t, Limits::default()),
         solve_measured(t, Limits::default(), NativeAlgorithm::Pareto).map(|(layout, _)| layout),
         solve_measured(t, Limits::default(), NativeAlgorithm::Astar2011).map(|(layout, _)| layout),
-    ] {
+    ]
+    .into_iter()
+    .chain(research)
+    {
         match (expected, actual) {
             (None, Err(Error::Infeasible(_))) => (),
             (Some(height), Ok(actual)) => {
@@ -459,5 +471,27 @@ fn token_breakpoints_match_all_line_partitions() {
                 }
             }
         }
+    }
+}
+
+#[test]
+fn zero_wall_budget_never_claims_optimality() {
+    use table_stretch::solve_measured_with_timeout;
+    let t: Table = serde_json::from_str(include_str!("../examples/table.json")).unwrap();
+    for a in [
+        NativeAlgorithm::Pareto,
+        NativeAlgorithm::Astar2011,
+        NativeAlgorithm::Html,
+        NativeAlgorithm::Cp2011,
+        NativeAlgorithm::Lcg2011,
+        NativeAlgorithm::Lcg2015,
+        NativeAlgorithm::Mip2015Unary,
+        NativeAlgorithm::Mip2015Onehot,
+        NativeAlgorithm::Mip2015Cellfree,
+    ] {
+        assert!(matches!(
+            solve_measured_with_timeout(&t, Limits::default(), a, Some(std::time::Duration::ZERO)),
+            Err(Error::Limit(_))
+        ));
     }
 }

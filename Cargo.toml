@@ -6,6 +6,10 @@ description = "Exact minimum-height table layout with Pareto dynamic programming
 license = "MIT"
 
 [dependencies]
+microlp = "=0.7.0"
+pumpkin-conflict-resolvers = "=0.5.0"
+pumpkin-constraints = "=0.5.0"
+pumpkin-core = "=0.5.0"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 

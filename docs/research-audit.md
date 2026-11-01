@@ -1,5 +1,7 @@
 # 研究实现对齐审计
 
+The current primary comparison uses [native Rust models](native-models.md) and an [in-process benchmark](benchmark-native.md). This audit describes the earlier external-solver implementations.
+
 审计日期：2026-10-31。审计前版本：[`11fed39`](https://github.com/TortoTech/table-stretch/tree/11fed39582c15e0dc94f5d003fb829854cfed97b)。
 
 **旧实现不能称为论文实验的完整复现。** 相同目标、正确的最优高度，以及相同端到端计时范围，并不保证模型传播、搜索策略和原论文一致。旧版主表的方法名省略了这些差异，容易让人把适配版本的耗时当成论文方法的表现；本次已更正，并保留旧适配作为对照。

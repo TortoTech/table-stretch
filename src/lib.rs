@@ -4,28 +4,48 @@
 
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 /// Instrumentation for the native benchmark only; ordinary solve calls do not
 /// read clocks. Search includes search-state initialization, not final stretch.
 #[derive(Default, Debug, Serialize)]
 pub struct PhaseTimes {
     pub prepare_ns: u128,
+    pub model_ns: u128,
     pub search_ns: u128,
     pub finalize_ns: u128,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum NativeAlgorithm {
     Pareto,
     Astar2011,
     Html,
+    Cp2011,
+    Lcg2011,
+    Lcg2015,
+    Mip2015Unary,
+    Mip2015Onehot,
+    Mip2015Cellfree,
 }
 
 struct PhaseClock {
     start: Instant,
     times: PhaseTimes,
+    deadline: Option<Instant>,
 }
 impl PhaseClock {
+    fn check(&self) -> Result<(), Error> {
+        if self.deadline.is_some_and(|d| Instant::now() >= d) {
+            return Err(Error::Limit("wall time"));
+        }
+        Ok(())
+    }
+    fn modeled(&mut self) {
+        self.times.model_ns = self.start.elapsed().as_nanos();
+        self.start = Instant::now();
+    }
     fn prepared(&mut self) {
         self.times.prepare_ns = self.start.elapsed().as_nanos();
         self.start = Instant::now();
@@ -41,15 +61,34 @@ pub fn solve_measured(
     limits: Limits,
     algorithm: NativeAlgorithm,
 ) -> Result<(Layout, PhaseTimes), Error> {
+    solve_measured_with_timeout(table, limits, algorithm, None)
+}
+
+/// Measures a fresh in-process solve. The optional wall budget includes all
+/// preparation and model construction. Expired calls never return an optimum.
+/// Cancellation is cooperative; use a process watchdog for a hard deadline.
+pub fn solve_measured_with_timeout(
+    table: &Table,
+    limits: Limits,
+    algorithm: NativeAlgorithm,
+    timeout: Option<Duration>,
+) -> Result<(Layout, PhaseTimes), Error> {
+    let start = Instant::now();
     let mut clock = PhaseClock {
-        start: Instant::now(),
+        start,
         times: PhaseTimes::default(),
+        deadline: timeout
+            .map(|t| start.checked_add(t).ok_or(Error::Overflow))
+            .transpose()?,
     };
+    clock.check()?;
     let layout = match algorithm {
         NativeAlgorithm::Pareto => solve_impl(table, limits, Some(&mut clock)),
         NativeAlgorithm::Astar2011 => algorithms::astar_impl(table, limits, Some(&mut clock)),
         NativeAlgorithm::Html => algorithms::html_impl(table, Some(&mut clock)),
+        other => research::solve_impl(table, other, &mut clock),
     }?;
+    clock.check()?;
     Ok((layout, clock.times))
 }
 
@@ -221,6 +260,7 @@ pub enum Error {
     Infeasible(&'static str),
     Limit(&'static str),
     Overflow,
+    Solver(String),
 }
 
 impl fmt::Display for Error {
@@ -230,6 +270,7 @@ impl fmt::Display for Error {
             Self::Infeasible(s) => write!(f, "infeasible: {s}"),
             Self::Limit(s) => write!(f, "search limit reached ({s}); optimality not established"),
             Self::Overflow => write!(f, "layout arithmetic exceeds supported integer range"),
+            Self::Solver(s) => write!(f, "solver failed: {s}"),
         }
     }
 }
@@ -413,6 +454,7 @@ fn finish(
 
 mod algorithms;
 mod pareto;
+mod research;
 pub use algorithms::{solve_astar, solve_html};
 mod model_data;
 pub use model_data::minizinc_data;

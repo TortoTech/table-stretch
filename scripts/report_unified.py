@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the primary unified benchmark report and README table."""
+"""Generate the archived process-level benchmark reports."""
 import json
 import math
 import statistics
@@ -152,15 +152,9 @@ One variant per family, selected by completion rate, then lowest P95. Times cove
     for m in selected.values():
         stats = data[m]
         featured += f"| {FEATURED_NAMES[m]} | {stats['completed_cases']}/{n} | {fmt(stats['capped_wall_ms']['median'])} | {fmt(stats['capped_wall_ms']['p95'])} |\n"
-    featured += f"\nExact methods certify the minimum height. The HTML heuristic matched the optimum in {data['html']['equal_reference_cases']}/{n} cases.\n"
+    featured += f"\nExact runs report solver-certified optimality (MIP uses floating-point tolerances). The HTML heuristic matched the optimum in {data['html']['equal_reference_cases']}/{n} cases.\n"
 
-    readme_path = ROOT/'README.md'
-    readme = readme_path.read_text()
-    begin, end = '<!-- benchmark:start -->', '<!-- benchmark:end -->'
-    start, stop = readme.index(begin) + len(begin), readme.index(end)
-    readme_path.write_text(readme[:start] + '\n' + featured + readme[stop:])
-
-    overview = '# Benchmark\n\n' + featured + """
+    overview = '# External solver reference\n\nThe primary comparison is now the [native Rust benchmark](benchmark-native.md). The archived results below include process startup and MiniZinc compilation.\n\n' + featured + """
 The cases are drawn from 317 tables in 25 ebooks. Quantiles use each case's median runtime. All methods receive identical inputs and share the same end-to-end deadline.
 
 ## Reproduce

@@ -3,7 +3,7 @@ use std::{
     io::{self, Read},
     process::ExitCode,
 };
-use table_stretch::{Limits, Table, solve, solve_astar, solve_html};
+use table_stretch::{Limits, NativeAlgorithm, Table, solve_measured};
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut args: Vec<_> = env::args().skip(1).collect();
@@ -14,7 +14,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
     if args.len() != 1 || args[0] == "--help" || args[0] == "-h" {
         println!(
-            "Usage: table-stretch [--algorithm pareto|astar2011|html] <table.json | ->\nReads JSON and writes JSON. HTML is a heuristic (optimal=false).\nUse '-' for stdin. Search limits use library defaults."
+            "Usage: table-stretch [--algorithm pareto|astar2011|html|cp2011|lcg2011|lcg2015|mip2015_unary|mip2015_onehot|mip2015_cellfree] <table.json | ->\nReads JSON and writes JSON. HTML is a heuristic (optimal=false).\nUse '-' for stdin. Search limits use library defaults."
         );
         if args.len() == 1 {
             return Ok(());
@@ -29,12 +29,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         fs::read_to_string(&args[0])?
     };
     let table: Table = serde_json::from_str(&input)?;
-    let layout = match algorithm.as_str() {
-        "pareto" => solve(&table, Limits::default())?,
-        "astar2011" => solve_astar(&table, Limits::default())?,
-        "html" => solve_html(&table)?,
-        _ => return Err(format!("unknown algorithm: {algorithm}").into()),
-    };
+    let algorithm: NativeAlgorithm = serde_json::from_value(serde_json::Value::String(algorithm))?;
+    let (layout, _) = solve_measured(&table, Limits::default(), algorithm)?;
     println!("{}", serde_json::to_string_pretty(&layout)?);
     Ok(())
 }

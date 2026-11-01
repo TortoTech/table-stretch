@@ -5,7 +5,16 @@ use std::{
 
 #[test]
 fn selectable_research_algorithms_report_their_guarantee() {
-    for (method, expected, optimal) in [("astar2011", 3, true), ("html", 7, false)] {
+    for (method, expected, optimal) in [
+        ("astar2011", 3, true),
+        ("html", 7, false),
+        ("cp2011", 3, true),
+        ("lcg2011", 3, true),
+        ("lcg2015", 3, true),
+        ("mip2015_unary", 3, true),
+        ("mip2015_onehot", 3, true),
+        ("mip2015_cellfree", 3, true),
+    ] {
         let output = Command::new(env!("CARGO_BIN_EXE_table-stretch"))
             .args([
                 "--algorithm",

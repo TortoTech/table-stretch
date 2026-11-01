@@ -12,7 +12,7 @@ Exact minimum-height table layout in Rust. Given a container width and cell size
 cargo run --release -- examples/table.json
 ```
 
-The CLI reads a JSON file or `-` for standard input and returns column widths, row heights, and total height. Pareto DP is the default; select `--algorithm astar2011` or `--algorithm html` for alternatives.
+The CLI reads a JSON file or `-` for standard input and returns column widths, row heights, and total height. Pareto DP is the default; select `--algorithm astar2011`, `html`, `cp2011`, `lcg2011`, `lcg2015`, `mip2015_unary`, `mip2015_onehot`, or `mip2015_cellfree` for alternatives. All run in Rust, without MiniZinc or external solver processes.
 
 ```rust
 use table_stretch::{Column, Limits, Profile, Table, solve};
@@ -39,27 +39,27 @@ fn main() -> Result<(), table_stretch::Error> {
 <!-- benchmark:start -->
 Latest run: **2026-10-31**, Apple M6, 16 GiB RAM. **64 real ebook cases**, single thread, 3 measurements per case, 1-second limit.
 
-One variant per family, selected by completion rate, then lowest P95. Times cover the full process from precomputed size curves to layout, including startup and model compilation.
+All methods run as **Rust library calls in one process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
 | Method | Completed | P50 (ms) | P95 (ms) |
 | --- | ---: | ---: | ---: |
-| Pareto DP (Rust) | 64/64 | 2.185 | 2.492 |
-| A* (Rust) | 64/64 | 2.244 | 2.487 |
-| HTML heuristic (Rust) | 64/64 | 2.161 | 2.431 |
-| CP (Gecode) | 64/64 | 77.644 | 94.889 |
-| LCG (Chuffed) | 64/64 | 68.555 | 84.008 |
-| MIP (HiGHS) | 64/64 | 77.744 | 154.393 |
+| Pareto DP | 64/64 | 0.009 | 0.051 |
+| A* | 64/64 | 0.014 | 0.078 |
+| HTML heuristic | 64/64 | 0.001 | 0.002 |
+| CP (Pumpkin) | 58/64 | 0.568 | 1000.000 |
+| LCG (Pumpkin) | 64/64 | 0.415 | 8.427 |
+| MIP (microlp) | 64/64 | 0.607 | 22.635 |
 
-Exact methods certify the minimum height. The HTML heuristic matched the optimum in 30/64 cases.
+Fastest variant per family, ranked by completion rate then P95. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 30/64 cases.
 <!-- benchmark:end -->
 
-[Benchmark report](docs/benchmark-unified.md) · [All variants and measurements](docs/benchmark-unified-details.md)
+[Benchmark report and all variants](docs/benchmark-native.md) · [External solver reference](docs/benchmark-unified.md)
 
 ## Input and guarantees
 
 Tables are column-major, with integer layout units and complete, non-increasing cell height curves. Supply measured curves directly or build them with `Profile::from_tokens`. `reserved_width` accounts for borders and gaps.
 
-Exact solvers minimize total height within the supplied curves and column limits. Row/column spans are not supported. Search limits return an error rather than an unproven optimum.
+Exact methods minimize total height within the supplied curves and column limits. MIP uses floating-point solver tolerances; the Lean proof covers the abstract Pareto algorithm. Row/column spans are not supported. Search limits return an error rather than an unproven optimum.
 
 ## Development
 

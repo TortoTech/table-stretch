@@ -1,4 +1,6 @@
-# Benchmark
+# External solver reference
+
+The primary comparison is now the [native Rust benchmark](benchmark-native.md). The archived results below include process startup and MiniZinc compilation.
 
 Latest run: **2026-10-31**, Apple M6, 16 GiB RAM. **64 real ebook cases**, single thread, 3 measurements per case, 1-second limit.
 
@@ -13,7 +15,7 @@ One variant per family, selected by completion rate, then lowest P95. Times cove
 | LCG (Chuffed) | 64/64 | 68.555 | 84.008 |
 | MIP (HiGHS) | 64/64 | 77.744 | 154.393 |
 
-Exact methods certify the minimum height. The HTML heuristic matched the optimum in 30/64 cases.
+Exact runs report solver-certified optimality (MIP uses floating-point tolerances). The HTML heuristic matched the optimum in 30/64 cases.
 
 The cases are drawn from 317 tables in 25 ebooks. Quantiles use each case's median runtime. All methods receive identical inputs and share the same end-to-end deadline.
 
