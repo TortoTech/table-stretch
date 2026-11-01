@@ -47,7 +47,7 @@ def main():
             times, case_phases = [], []
             for run in case['runs']:
                 status = run['status']; statuses[status] += 1
-                assert status in ('optimal','heuristic','timeout','error')
+                assert status in ('optimal','heuristic','timeout','resource_limit','error')
                 if status in ('optimal','heuristic'):
                     assert 0 <= run['wall_ns'] <= cap
                     assert (status == 'heuristic') == (method == 'html')

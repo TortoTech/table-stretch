@@ -1,0 +1,540 @@
+{
+  "utc": "2026-11-01T06:25:07.007451+00:00",
+  "timeout_ms": 5000,
+  "purpose": "Single-run diagnostic, not a replacement for the 1-second benchmark",
+  "input_manifest_sha256": "051e46f1a362481e993296f11caf3852bdf6965639968a7e3e5a36cc8fbb9a44",
+  "worker_sha256": "2ac025f410df941b0e384cb13ec07739298003097c97137bc5419da9ffc9fc85",
+  "source_sha256": "3c5af14cdcb851909492efa9cd6764246553962fe7b8e6f6bc3d5b79a3ced0b8",
+  "results": [
+    {
+      "case": 0,
+      "sample_index": 134,
+      "width": 280,
+      "algorithm": "cp2011",
+      "reference_height": 44,
+      "input_sha256": "15d8148f229f3ef04b7353186e9276e75a6ff29fc248cbc69f8cea10b6a0e218",
+      "result": {
+        "error": "search limit reached (wall time); optimality not established",
+        "layout": null,
+        "phases": null,
+        "status": "timeout",
+        "wall_ns": 5000328208,
+        "worker_generation": 1
+      }
+    },
+    {
+      "case": 0,
+      "sample_index": 134,
+      "width": 280,
+      "algorithm": "lcg2011",
+      "reference_height": 44,
+      "input_sha256": "15d8148f229f3ef04b7353186e9276e75a6ff29fc248cbc69f8cea10b6a0e218",
+      "result": {
+        "layout": {
+          "column_widths": [
+            47,
+            130,
+            103
+          ],
+          "optimal": true,
+          "row_heights": [
+            1,
+            4,
+            1,
+            2,
+            4,
+            3,
+            2,
+            2,
+            4,
+            3,
+            4,
+            4,
+            3,
+            2,
+            2,
+            3
+          ],
+          "stats": {
+            "bound_pruned": 0,
+            "candidates_per_column": [],
+            "comparisons": 0,
+            "generated": 0,
+            "incumbent_updates": 0,
+            "peak_frontier": 0,
+            "pruned": 0,
+            "terminal_evaluations": 0
+          },
+          "total_height": 44
+        },
+        "phases": {
+          "finalize_ns": 958,
+          "model_ns": 386000,
+          "prepare_ns": 25125,
+          "search_ns": 11255167
+        },
+        "status": "optimal",
+        "wall_ns": 11668583,
+        "worker_generation": 1
+      }
+    },
+    {
+      "case": 23,
+      "sample_index": 226,
+      "width": 141,
+      "algorithm": "cp2011",
+      "reference_height": 105,
+      "input_sha256": "d88396dfede6a999458274f0cd1d04d388fe0eee633031726189b0ccf7ce92f2",
+      "result": {
+        "error": "search limit reached (wall time); optimality not established",
+        "layout": null,
+        "phases": null,
+        "status": "timeout",
+        "wall_ns": 5000321250,
+        "worker_generation": 1
+      }
+    },
+    {
+      "case": 23,
+      "sample_index": 226,
+      "width": 141,
+      "algorithm": "lcg2011",
+      "reference_height": 105,
+      "input_sha256": "d88396dfede6a999458274f0cd1d04d388fe0eee633031726189b0ccf7ce92f2",
+      "result": {
+        "layout": {
+          "column_widths": [
+            75,
+            66
+          ],
+          "optimal": true,
+          "row_heights": [
+            5,
+            0,
+            4,
+            0,
+            3,
+            0,
+            5,
+            0,
+            7,
+            0,
+            3,
+            0,
+            5,
+            0,
+            8,
+            0,
+            3,
+            0,
+            4,
+            0,
+            4,
+            0,
+            6,
+            0,
+            5,
+            0,
+            7,
+            0,
+            8,
+            0,
+            13,
+            0,
+            7,
+            0,
+            8
+          ],
+          "stats": {
+            "bound_pruned": 0,
+            "candidates_per_column": [],
+            "comparisons": 0,
+            "generated": 0,
+            "incumbent_updates": 0,
+            "peak_frontier": 0,
+            "pruned": 0,
+            "terminal_evaluations": 0
+          },
+          "total_height": 105
+        },
+        "phases": {
+          "finalize_ns": 1083,
+          "model_ns": 404584,
+          "prepare_ns": 29375,
+          "search_ns": 10339042
+        },
+        "status": "optimal",
+        "wall_ns": 10775417,
+        "worker_generation": 1
+      }
+    },
+    {
+      "case": 28,
+      "sample_index": 105,
+      "width": 126,
+      "algorithm": "cp2011",
+      "reference_height": 108,
+      "input_sha256": "0d78be2986dc6aec1cbf67a23d48240293964a10dfe55fd7b6dfda3c51b76626",
+      "result": {
+        "layout": {
+          "column_widths": [
+            26,
+            78,
+            22
+          ],
+          "optimal": true,
+          "row_heights": [
+            1,
+            2,
+            4,
+            4,
+            4,
+            5,
+            3,
+            5,
+            3,
+            4,
+            5,
+            4,
+            1,
+            5,
+            6,
+            5,
+            4,
+            2,
+            4,
+            4,
+            4,
+            5,
+            5,
+            7,
+            3,
+            4,
+            5
+          ],
+          "stats": {
+            "bound_pruned": 0,
+            "candidates_per_column": [],
+            "comparisons": 0,
+            "generated": 0,
+            "incumbent_updates": 0,
+            "peak_frontier": 0,
+            "pruned": 0,
+            "terminal_evaluations": 0
+          },
+          "total_height": 108
+        },
+        "phases": {
+          "finalize_ns": 2208,
+          "model_ns": 195000,
+          "prepare_ns": 17292,
+          "search_ns": 1354990209
+        },
+        "status": "optimal",
+        "wall_ns": 1355207375,
+        "worker_generation": 1
+      }
+    },
+    {
+      "case": 28,
+      "sample_index": 105,
+      "width": 126,
+      "algorithm": "lcg2011",
+      "reference_height": 108,
+      "input_sha256": "0d78be2986dc6aec1cbf67a23d48240293964a10dfe55fd7b6dfda3c51b76626",
+      "result": {
+        "layout": {
+          "column_widths": [
+            26,
+            78,
+            22
+          ],
+          "optimal": true,
+          "row_heights": [
+            1,
+            2,
+            4,
+            4,
+            4,
+            5,
+            3,
+            5,
+            3,
+            4,
+            5,
+            4,
+            1,
+            5,
+            6,
+            5,
+            4,
+            2,
+            4,
+            4,
+            4,
+            5,
+            5,
+            7,
+            3,
+            4,
+            5
+          ],
+          "stats": {
+            "bound_pruned": 0,
+            "candidates_per_column": [],
+            "comparisons": 0,
+            "generated": 0,
+            "incumbent_updates": 0,
+            "peak_frontier": 0,
+            "pruned": 0,
+            "terminal_evaluations": 0
+          },
+          "total_height": 108
+        },
+        "phases": {
+          "finalize_ns": 1250,
+          "model_ns": 222584,
+          "prepare_ns": 17209,
+          "search_ns": 9622667
+        },
+        "status": "optimal",
+        "wall_ns": 9865334,
+        "worker_generation": 1
+      }
+    },
+    {
+      "case": 29,
+      "sample_index": 134,
+      "width": 140,
+      "algorithm": "cp2011",
+      "reference_height": 82,
+      "input_sha256": "f16e19043fc10ae6b694c1ee8e53435b1adde163e6e865e2db7385f67b227290",
+      "result": {
+        "error": "search limit reached (wall time); optimality not established",
+        "layout": null,
+        "phases": null,
+        "status": "timeout",
+        "wall_ns": 5000181334,
+        "worker_generation": 1
+      }
+    },
+    {
+      "case": 29,
+      "sample_index": 134,
+      "width": 140,
+      "algorithm": "lcg2011",
+      "reference_height": 82,
+      "input_sha256": "f16e19043fc10ae6b694c1ee8e53435b1adde163e6e865e2db7385f67b227290",
+      "result": {
+        "layout": {
+          "column_widths": [
+            24,
+            80,
+            36
+          ],
+          "optimal": true,
+          "row_heights": [
+            1,
+            6,
+            3,
+            6,
+            7,
+            6,
+            4,
+            3,
+            8,
+            5,
+            6,
+            9,
+            7,
+            3,
+            3,
+            5
+          ],
+          "stats": {
+            "bound_pruned": 0,
+            "candidates_per_column": [],
+            "comparisons": 0,
+            "generated": 0,
+            "incumbent_updates": 0,
+            "peak_frontier": 0,
+            "pruned": 0,
+            "terminal_evaluations": 0
+          },
+          "total_height": 82
+        },
+        "phases": {
+          "finalize_ns": 1125,
+          "model_ns": 214208,
+          "prepare_ns": 18375,
+          "search_ns": 19580500
+        },
+        "status": "optimal",
+        "wall_ns": 19815458,
+        "worker_generation": 1
+      }
+    },
+    {
+      "case": 37,
+      "sample_index": 134,
+      "width": 111,
+      "algorithm": "cp2011",
+      "reference_height": 105,
+      "input_sha256": "a6cf2f8bff574fe8447a9d04498244dca94bd618265c0aa70e608a62ff2881bd",
+      "result": {
+        "error": "search limit reached (wall time); optimality not established",
+        "layout": null,
+        "phases": null,
+        "status": "timeout",
+        "wall_ns": 5000158958,
+        "worker_generation": 1
+      }
+    },
+    {
+      "case": 37,
+      "sample_index": 134,
+      "width": 111,
+      "algorithm": "lcg2011",
+      "reference_height": 105,
+      "input_sha256": "a6cf2f8bff574fe8447a9d04498244dca94bd618265c0aa70e608a62ff2881bd",
+      "result": {
+        "layout": {
+          "column_widths": [
+            22,
+            58,
+            31
+          ],
+          "optimal": true,
+          "row_heights": [
+            1,
+            9,
+            4,
+            7,
+            10,
+            7,
+            4,
+            4,
+            9,
+            6,
+            9,
+            11,
+            8,
+            5,
+            4,
+            7
+          ],
+          "stats": {
+            "bound_pruned": 0,
+            "candidates_per_column": [],
+            "comparisons": 0,
+            "generated": 0,
+            "incumbent_updates": 0,
+            "peak_frontier": 0,
+            "pruned": 0,
+            "terminal_evaluations": 0
+          },
+          "total_height": 105
+        },
+        "phases": {
+          "finalize_ns": 1042,
+          "model_ns": 196125,
+          "prepare_ns": 26333,
+          "search_ns": 16015750
+        },
+        "status": "optimal",
+        "wall_ns": 16240500,
+        "worker_generation": 1
+      }
+    },
+    {
+      "case": 40,
+      "sample_index": 226,
+      "width": 68,
+      "algorithm": "cp2011",
+      "reference_height": 213,
+      "input_sha256": "cbf8de631a3fc07a625a9e10812f3c4b2a924b9ba8faaa8ac49163f73894b6ae",
+      "result": {
+        "error": "search limit reached (wall time); optimality not established",
+        "layout": null,
+        "phases": null,
+        "status": "timeout",
+        "wall_ns": 5000298209,
+        "worker_generation": 1
+      }
+    },
+    {
+      "case": 40,
+      "sample_index": 226,
+      "width": 68,
+      "algorithm": "lcg2011",
+      "reference_height": 213,
+      "input_sha256": "cbf8de631a3fc07a625a9e10812f3c4b2a924b9ba8faaa8ac49163f73894b6ae",
+      "result": {
+        "layout": {
+          "column_widths": [
+            38,
+            30
+          ],
+          "optimal": true,
+          "row_heights": [
+            10,
+            0,
+            8,
+            0,
+            5,
+            0,
+            9,
+            0,
+            13,
+            0,
+            6,
+            0,
+            10,
+            0,
+            15,
+            0,
+            6,
+            0,
+            7,
+            0,
+            8,
+            0,
+            12,
+            0,
+            10,
+            0,
+            15,
+            0,
+            17,
+            0,
+            29,
+            0,
+            15,
+            0,
+            18
+          ],
+          "stats": {
+            "bound_pruned": 0,
+            "candidates_per_column": [],
+            "comparisons": 0,
+            "generated": 0,
+            "incumbent_updates": 0,
+            "peak_frontier": 0,
+            "pruned": 0,
+            "terminal_evaluations": 0
+          },
+          "total_height": 213
+        },
+        "phases": {
+          "finalize_ns": 1209,
+          "model_ns": 380208,
+          "prepare_ns": 26375,
+          "search_ns": 14845958
+        },
+        "status": "optimal",
+        "wall_ns": 15255125,
+        "worker_generation": 1
+      }
+    }
+  ]
+}

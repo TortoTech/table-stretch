@@ -495,3 +495,88 @@ fn zero_wall_budget_never_claims_optimality() {
         ));
     }
 }
+
+#[test]
+fn cp_large_fixed_units_do_not_consume_a_sparse_domain_budget() {
+    // Fixed bounds allocate one value, regardless of its absolute magnitude.
+    let t = Table {
+        width: 1,
+        reserved_width: 0,
+        columns: vec![Column {
+            min_width: 1,
+            max_width: 1,
+            cells: vec![profile(&[(1, 6_000_000)])],
+        }],
+    };
+    for a in [
+        NativeAlgorithm::Cp2011,
+        NativeAlgorithm::Lcg2011,
+        NativeAlgorithm::Lcg2015,
+    ] {
+        let (layout, _) = solve_measured(&t, Limits::default(), a).unwrap();
+        assert_eq!(layout.total_height, 6_000_000);
+        assert!(layout.optimal);
+    }
+}
+
+#[test]
+fn cp_sparse_gap_limit_is_checked_before_constructing_domains() {
+    let t = Table {
+        width: 2,
+        reserved_width: 0,
+        columns: vec![Column {
+            min_width: 1,
+            max_width: 2,
+            cells: vec![profile(&[(1, 2_000_000), (2, 0)])],
+        }],
+    };
+    for a in [
+        NativeAlgorithm::Cp2011,
+        NativeAlgorithm::Lcg2011,
+        NativeAlgorithm::Lcg2015,
+    ] {
+        assert_eq!(
+            solve_measured(&t, Limits::default(), a).unwrap_err(),
+            Error::Limit("CP model construction")
+        );
+    }
+}
+
+#[test]
+fn cp_gapped_configurations_and_interior_backtracking_match_oracle() {
+    // Deliberately discontinuous height domains: rejecting one choice must
+    // advance to a supported configuration, not lose a feasible alternative.
+    for width in 3..=15 {
+        let t = Table {
+            width,
+            reserved_width: 0,
+            columns: vec![
+                Column {
+                    min_width: 1,
+                    max_width: 5,
+                    cells: vec![
+                        profile(&[(1, 103), (2, 43), (3, 17), (5, 0)]),
+                        profile(&[(1, 4), (4, 0)]),
+                    ],
+                },
+                Column {
+                    min_width: 1,
+                    max_width: 5,
+                    cells: vec![
+                        profile(&[(1, 101), (3, 41), (4, 13), (5, 0)]),
+                        profile(&[(1, 7), (2, 0)]),
+                    ],
+                },
+                Column {
+                    min_width: 1,
+                    max_width: 5,
+                    cells: vec![
+                        profile(&[(1, 107), (2, 47), (4, 11), (5, 0)]),
+                        profile(&[(1, 5), (3, 0)]),
+                    ],
+                },
+            ],
+        };
+        check(&t);
+    }
+}

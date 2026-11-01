@@ -1,13 +1,13 @@
 {
   "environment": {
     "kind": "environment",
-    "utc": "2026-11-01T06:16:51.829910+00:00",
+    "utc": "2026-11-01T06:25:07.225114+00:00",
     "platform": "macOS-27.0-arm64-arm-64bit",
     "machine": "Apple M6",
     "memory_bytes": 17179869184,
     "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)\nbinary: rustc\ncommit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67\ncommit-date: 2026-10-13\nhost: aarch64-apple-darwin\nrelease: 1.99.1\nLLVM version: 23.1.1\n",
     "input_manifest_sha256": "051e46f1a362481e993296f11caf3852bdf6965639968a7e3e5a36cc8fbb9a44",
-    "worker_sha256": "43e11c990f8289b95e6558e70cf417414121f18d1077f6b936eeea86376cc5d2",
+    "worker_sha256": "2ac025f410df941b0e384cb13ec07739298003097c97137bc5419da9ffc9fc85",
     "source_sha256": {
       "Cargo.toml": "8090fe9d5ad1196f6d6a0a7c30877898fc29706eb93a312daf5f1850228eb077",
       "Cargo.lock": "e63e4fd55801e46cca3b1041c6059f3f46bdc04205aa309574b8314ca21aa7ef",
@@ -16,9 +16,9 @@
       "src/main.rs": "9a13838aeaf59c5f7979f986d7aaceb92217df1d9478e4ced3333c8d72d850b0",
       "src/model_data.rs": "78d8d7c793aa54d2592611c7efe845c547d2a0de61e00eaa504823f8ba8d32a1",
       "src/pareto.rs": "ddfbe65bce007debcb2a9f22bdb52a64fcff3c2f9ee9648f263980b79d53912c",
-      "src/research.rs": "66cfa38924e3729f41d03f89ce2836453156abc95f2d6a0cc007ef0db196b34a",
-      "examples/native_worker.rs": "532127819c60af66a639ce187ea26819d121df940e1da84c90b579287c128db3",
-      "scripts/benchmark_native.py": "b8678c7c425d65dd7bfe58ec6601f9c084b6b4083e10e209ea435d473f05b6d1",
+      "src/research.rs": "3c5af14cdcb851909492efa9cd6764246553962fe7b8e6f6bc3d5b79a3ced0b8",
+      "examples/native_worker.rs": "74a0c87e646449966d3009ea2caaa2697201f69a795ac56c9a5bd5eb418a294e",
+      "scripts/benchmark_native.py": "e342d8b005b4375a89e1417c97c9fc90f4854744a2765ccc54824269269b3997",
       "scripts/benchmark_unified.py": "090eb5a7b57bf27e43b400a9e993f7933dbda75a1c0323b1a6e78c3b867abde6"
     },
     "methods": [
@@ -298,7 +298,7 @@
     "timing": "library call: validation, preparation, model, search, validation/stretch, solver teardown; excludes IPC, parsing and text measurement",
     "deadline": "same full-call wall budget, cooperative checks plus hard watchdog with 2-second grace; late results discarded",
     "state": "one serial persistent process; fresh model/solver for each call; no cross-call incumbent or solver reuse",
-    "native_count_limits": "disabled; CP domain-allocation safety limit retained",
+    "native_count_limits": "disabled; CP model-construction safety limit retained",
     "backends": {
       "CP": "Pumpkin 0.5.0, NoLearningResolver",
       "LCG": "Pumpkin 0.5.0, ResolutionResolver (1-UIP)",
@@ -318,47 +318,47 @@
       "completed": 64,
       "optimal": 64,
       "matched": 64,
-      "p50_ms": 0.009,
-      "p95_ms": 0.051458,
+      "p50_ms": 0.008583,
+      "p95_ms": 0.039625,
       "statuses": {
         "optimal": 192
       },
       "phases_ms": {
         "finalize_ns": 0.000125,
         "model_ns": 0.0,
-        "prepare_ns": 0.006604,
-        "search_ns": 0.0008335
+        "prepare_ns": 0.0064165,
+        "search_ns": 0.0009795
       }
     },
     "astar2011": {
       "completed": 64,
       "optimal": 64,
       "matched": 64,
-      "p50_ms": 0.0136875,
-      "p95_ms": 0.078375,
+      "p50_ms": 0.01225,
+      "p95_ms": 0.073625,
       "statuses": {
         "optimal": 192
       },
       "phases_ms": {
         "finalize_ns": 0.000125,
         "model_ns": 0.0,
-        "prepare_ns": 0.00575,
-        "search_ns": 0.0064795
+        "prepare_ns": 0.0053335,
+        "search_ns": 0.006
       }
     },
     "html": {
       "completed": 64,
       "optimal": 0,
       "matched": 30,
-      "p50_ms": 0.0006875,
-      "p95_ms": 0.002,
+      "p50_ms": 0.00075,
+      "p95_ms": 0.002125,
       "statuses": {
         "heuristic": 192
       },
       "phases_ms": {
         "finalize_ns": 0.0001455,
         "model_ns": 0.0,
-        "prepare_ns": 0.0004165,
+        "prepare_ns": 0.000458,
         "search_ns": 0.0
       }
     },
@@ -366,98 +366,98 @@
       "completed": 58,
       "optimal": 58,
       "matched": 58,
-      "p50_ms": 0.567521,
+      "p50_ms": 0.5591455,
       "p95_ms": 1000.0,
       "statuses": {
         "timeout": 18,
         "optimal": 174
       },
       "phases_ms": {
-        "finalize_ns": 0.00025,
-        "model_ns": 0.0919585,
-        "prepare_ns": 0.0050415,
-        "search_ns": 0.2642915
+        "finalize_ns": 0.0002085,
+        "model_ns": 0.087708,
+        "prepare_ns": 0.0049585,
+        "search_ns": 0.2605
       }
     },
     "lcg2011": {
       "completed": 64,
       "optimal": 64,
       "matched": 64,
-      "p50_ms": 0.535521,
-      "p95_ms": 11.535208,
+      "p50_ms": 0.526687,
+      "p95_ms": 11.543166,
       "statuses": {
         "optimal": 192
       },
       "phases_ms": {
-        "finalize_ns": 0.000291,
-        "model_ns": 0.102771,
-        "prepare_ns": 0.0055205,
-        "search_ns": 0.3630625
+        "finalize_ns": 0.0002705,
+        "model_ns": 0.100688,
+        "prepare_ns": 0.005521,
+        "search_ns": 0.3610415
       }
     },
     "lcg2015": {
       "completed": 64,
       "optimal": 64,
       "matched": 64,
-      "p50_ms": 0.4151665,
-      "p95_ms": 8.427334,
+      "p50_ms": 0.415625,
+      "p95_ms": 8.343542,
       "statuses": {
         "optimal": 192
       },
       "phases_ms": {
-        "finalize_ns": 0.00025,
-        "model_ns": 0.0909165,
-        "prepare_ns": 0.0053125,
-        "search_ns": 0.310854
+        "finalize_ns": 0.0002705,
+        "model_ns": 0.0911875,
+        "prepare_ns": 0.0056045,
+        "search_ns": 0.303375
       }
     },
     "mip2015_unary": {
       "completed": 64,
       "optimal": 64,
       "matched": 64,
-      "p50_ms": 0.5576665,
-      "p95_ms": 36.471958,
+      "p50_ms": 0.5449165,
+      "p95_ms": 36.463625,
       "statuses": {
         "optimal": 192
       },
       "phases_ms": {
-        "finalize_ns": 0.000291,
-        "model_ns": 0.0141045,
-        "prepare_ns": 0.0054165,
-        "search_ns": 0.5383955
+        "finalize_ns": 0.0002705,
+        "model_ns": 0.014313,
+        "prepare_ns": 0.005438,
+        "search_ns": 0.5257285
       }
     },
     "mip2015_onehot": {
       "completed": 62,
       "optimal": 62,
       "matched": 62,
-      "p50_ms": 0.7876245,
-      "p95_ms": 277.103333,
+      "p50_ms": 0.8016665,
+      "p95_ms": 276.98975,
       "statuses": {
         "optimal": 186,
         "timeout": 6
       },
       "phases_ms": {
         "finalize_ns": 0.00025,
-        "model_ns": 0.0194585,
-        "prepare_ns": 0.005146,
-        "search_ns": 0.7182505
+        "model_ns": 0.0195625,
+        "prepare_ns": 0.0051045,
+        "search_ns": 0.714313
       }
     },
     "mip2015_cellfree": {
       "completed": 64,
       "optimal": 64,
       "matched": 64,
-      "p50_ms": 0.607,
-      "p95_ms": 22.635292,
+      "p50_ms": 0.590687,
+      "p95_ms": 22.386708,
       "statuses": {
         "optimal": 192
       },
       "phases_ms": {
-        "finalize_ns": 0.0002915,
-        "model_ns": 0.0177915,
-        "prepare_ns": 0.005396,
-        "search_ns": 0.545271
+        "finalize_ns": 0.00025,
+        "model_ns": 0.0179375,
+        "prepare_ns": 0.0051875,
+        "search_ns": 0.5417085
       }
     }
   }

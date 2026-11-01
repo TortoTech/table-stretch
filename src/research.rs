@@ -143,22 +143,45 @@ fn cp(
 ) -> Result<(Vec<u32>, u64), Error> {
     let no_learning = matches!(algorithm, NativeAlgorithm::Cp2011);
     let cellfree = matches!(algorithm, NativeAlgorithm::Lcg2015);
-    // Pumpkin stores domains as bitsets over the entire interval. Bound their
-    // total size explicitly before allocation, including the objective domain.
+    // Bounded integer domains are compact; their absolute values do not
+    // determine allocation. In 0.5.0, new_sparse_integer scans its complete
+    // interval and records every missing value in the trail and hole set.
+    // Bound that construction work plus model entries before allocating.
     let sum_h: u64 = d.heights.iter().map(|v| *v.last().unwrap() as u64).sum();
     let sum_w: u64 = d.hi.iter().map(|&v| v as u64).sum();
-    let domain_units = sum_h
-        + sum_w
-        + d.cells
-            .iter()
-            .flatten()
-            .map(|c| c[0].height as u64 + c.last().unwrap().width as u64 + c.len() as u64)
-            .sum::<u64>();
     if sum_h >= i32::MAX as u64 / 2 || sum_w >= i32::MAX as u64 / 2 {
         return Err(Error::Overflow);
     }
-    if domain_units > 10_000_000 {
-        return Err(Error::Limit("CP domain allocation"));
+    let span = |lo: u32, hi: u32| u64::from(hi) - u64::from(lo) + 1;
+    let mut construction_work = (d.lo.len() + d.heights.len() + 1) as u64;
+    if cellfree {
+        construction_work += d
+            .widths
+            .iter()
+            .chain(&d.heights)
+            .map(|v| span(v[0], *v.last().unwrap()))
+            .sum::<u64>();
+        construction_work += d
+            .cells
+            .iter()
+            .flatten()
+            .map(|c| c.len() as u64)
+            .sum::<u64>();
+    } else {
+        construction_work += d
+            .cells
+            .iter()
+            .flatten()
+            .map(|c| {
+                span(c.last().unwrap().height, c[0].height)
+                    + span(c[0].width, c.last().unwrap().width)
+                    + 3
+                    + 4 * c.len() as u64
+            })
+            .sum::<u64>();
+    }
+    if construction_work > 1_000_000 {
+        return Err(Error::Limit("CP model construction"));
     }
     let mut solver = Solver::with_options(SolverOptions {
         analysis_mode: if no_learning {

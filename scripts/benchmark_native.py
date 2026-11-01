@@ -8,6 +8,7 @@ import platform
 import random
 import select
 import subprocess
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -42,21 +43,30 @@ class Worker:
             self.generation += 1
         self.request_id += 1
         request = dict(id=self.request_id, case=case, algorithm=algorithm, timeout_ms=self.timeout_ms)
-        self.proc.stdin.write(json.dumps(request).encode()+b'\n')
-        self.proc.stdin.flush()
-        # Cooperative library limit is authoritative. This larger watchdog is
-        # only a backstop for backend bugs / non-interruptible construction.
-        ready, _, _ = select.select([self.proc.stdout], [], [], self.timeout_ms/1000 + 2)
-        if not ready:
-            self.close()
-            return dict(status='timeout', wall_ns=None, layout=None, phases=None,
-                        error='hard watchdog', worker_generation=self.generation)
-        line = self.proc.stdout.readline()
-        if not line:
-            code = self.proc.wait()
+        try:
+            self.proc.stdin.write(json.dumps(request).encode()+b'\n')
+            self.proc.stdin.flush()
+        except BrokenPipeError:
             self.close()
             return dict(status='error', wall_ns=None, layout=None, phases=None,
-                        error=f'worker exited {code}', worker_generation=self.generation)
+                        error='worker closed request pipe', worker_generation=self.generation)
+        # Deadline covers the entire response, including a partial JSON line.
+        # A readable pipe does not guarantee that readline() would terminate.
+        deadline = time.monotonic() + self.timeout_ms/1000 + 2
+        line = bytearray()
+        while not line.endswith(b'\n'):
+            remaining = deadline - time.monotonic()
+            ready = select.select([self.proc.stdout], [], [], remaining)[0] if remaining > 0 else []
+            if not ready:
+                self.close()
+                return dict(status='timeout', wall_ns=None, layout=None, phases=None,
+                            error='hard watchdog', worker_generation=self.generation)
+            chunk = os.read(self.proc.stdout.fileno(), 65536)
+            if not chunk:
+                self.close()
+                return dict(status='error', wall_ns=None, layout=None, phases=None,
+                            error='worker closed response pipe', worker_generation=self.generation)
+            line.extend(chunk)
         result = json.loads(line)
         assert result.pop('id') == self.request_id
         result['worker_generation'] = self.generation
@@ -92,7 +102,7 @@ def main():
                 timing='library call: validation, preparation, model, search, validation/stretch, solver teardown; excludes IPC, parsing and text measurement',
                 deadline='same full-call wall budget, cooperative checks plus hard watchdog with 2-second grace; late results discarded',
                 state='one serial persistent process; fresh model/solver for each call; no cross-call incumbent or solver reuse',
-                native_count_limits='disabled; CP domain-allocation safety limit retained',
+                native_count_limits='disabled; CP model-construction safety limit retained',
                 backends={'CP':'Pumpkin 0.5.0, NoLearningResolver', 'LCG':'Pumpkin 0.5.0, ResolutionResolver (1-UIP)',
                           'MIP':'microlp 0.7.0, pure Rust LP + branch-and-bound, zero MIP gap'})
     worker = Worker(args.inputs, args.timeout_ms)

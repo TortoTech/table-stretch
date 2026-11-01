@@ -43,12 +43,12 @@ All methods run as **Rust library calls in one process**. Times include preparat
 
 | Method | Completed | P50 (ms) | P95 (ms) |
 | --- | ---: | ---: | ---: |
-| Pareto DP | 64/64 | 0.009 | 0.051 |
-| A* | 64/64 | 0.014 | 0.078 |
+| Pareto DP | 64/64 | 0.009 | 0.040 |
+| A* | 64/64 | 0.012 | 0.074 |
 | HTML heuristic | 64/64 | 0.001 | 0.002 |
-| CP (Pumpkin) | 58/64 | 0.568 | 1000.000 |
-| LCG (Pumpkin) | 64/64 | 0.415 | 8.427 |
-| MIP (microlp) | 64/64 | 0.607 | 22.635 |
+| CP (Pumpkin) | 58/64 | 0.559 | 1000.000 |
+| LCG (Pumpkin) | 64/64 | 0.416 | 8.344 |
+| MIP (microlp) | 64/64 | 0.591 | 22.387 |
 
 Fastest variant per family, ranked by completion rate then P95. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 30/64 cases.
 <!-- benchmark:end -->

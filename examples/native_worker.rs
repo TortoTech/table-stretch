@@ -19,6 +19,14 @@ struct Request {
     algorithm: NativeAlgorithm,
     timeout_ms: u64,
 }
+fn error_status(e: &table_stretch::Error) -> &'static str {
+    match e {
+        table_stretch::Error::Limit("wall time") => "timeout",
+        table_stretch::Error::Limit(_) => "resource_limit",
+        _ => "error",
+    }
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let path = std::env::args().nth(1).ok_or("expected input manifest")?;
     let cases: Vec<Case> = serde_json::from_str(&fs::read_to_string(path)?)?;
@@ -44,7 +52,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok((layout, phases)) => json!({"id":request.id,"wall_ns":wall_ns,
                 "status":if layout.optimal {"optimal"} else {"heuristic"},"layout":layout,"phases":phases}),
             Err(e) => json!({"id":request.id,"wall_ns":wall_ns,
-                "status":if matches!(e,table_stretch::Error::Limit(_)) {"timeout"} else {"error"},
+                "status":error_status(&e),
                 "error":e.to_string(),"layout":null,"phases":null}),
         };
         serde_json::to_writer(&mut stdout, &output)?;
@@ -52,4 +60,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         stdout.flush()?;
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn construction_limits_are_not_timeouts() {
+        assert_eq!(
+            error_status(&table_stretch::Error::Limit("CP model construction")),
+            "resource_limit"
+        );
+        assert_eq!(
+            error_status(&table_stretch::Error::Limit("wall time")),
+            "timeout"
+        );
+    }
 }

@@ -13,6 +13,13 @@ FAKE = '''
 import json, sys, time
 for line in sys.stdin:
     r = json.loads(line)
+    if r['algorithm'] == 'partial':
+        print('{', end='', flush=True)
+        time.sleep(60)
+    if r['algorithm'] == 'closed':
+        import os
+        os.close(1)
+        time.sleep(60)
     if r['algorithm'] == 'hang':
         time.sleep(60)
     print(json.dumps(dict(id=r['id'], wall_ns=20_000_000 if r['algorithm']=='late' else 1,
@@ -47,6 +54,17 @@ class WorkerTests(unittest.TestCase):
         self.assertIsNone(result['layout'])
         self.assertIsNone(result['phases'])
         self.assertEqual(result['wall_ns'], 20_000_000)
+
+    def test_partial_response_still_has_a_deadline(self):
+        result = self.worker.run(0, 'partial')
+        self.assertEqual(result['status'], 'timeout')
+        self.assertEqual(result['error'], 'hard watchdog')
+        self.assertIsNone(self.worker.proc)
+
+    def test_closed_output_does_not_wait_forever_for_process_exit(self):
+        result = self.worker.run(0, 'closed')
+        self.assertEqual(result['status'], 'error')
+        self.assertIsNone(self.worker.proc)
 
     def test_hung_worker_is_reaped_and_restarted(self):
         result = self.worker.run(0, 'hang')

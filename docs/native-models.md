@@ -4,7 +4,7 @@
 
 | CLI / `NativeAlgorithm` | Formulation | Search engine |
 | --- | --- | --- |
-| `cp2011` / `Cp2011` | Per-cell configuration index, width/height element constraints | Pumpkin 0.5.0, `NoLearningResolver`, no-learning propagation mode |
+| `cp2011` / `Cp2011` | Per-cell configuration index, width/height element constraints | Pumpkin 0.5.0, `NoLearningResolver`, `analysis_mode = NoLearning` |
 | `lcg2011` / `Lcg2011` | Same configuration model and branching as CP | Pumpkin 0.5.0, `ResolutionResolver`, 1-UIP learning |
 | `lcg2015` / `Lcg2015` | Cell-free adjacent-threshold clauses, restricted row/column value domains | Pumpkin 0.5.0, default activity-based brancher and 1-UIP learning |
 | `mip2015_unary` / `Mip2015Unary` | Per-cell prefix binary configuration encoding | microlp 0.7.0, LP relaxation and integer branch-and-bound |
@@ -13,9 +13,11 @@
 
 The models adapt [Gange et al. (2011)](https://doi.org/10.1145/2034691.2034697) and [Bilauca et al. (2015)](https://doi.org/10.1287/ijoc.2014.0637) to this project's rectangular, integer-width input with hard column bounds. They are not reproductions of historical Chuffed or CPLEX engine performance. The earlier [research audit](research-audit.md) records which paper sections and search details were verified.
 
-[Pumpkin](https://github.com/ConSol-Lab/Pumpkin) supplies actual propagation explanations, conflict analysis, learned nogoods, and non-chronological backtracking. The CP control explicitly disables learning in both the engine options and conflict resolver. Configuration CP/LCG both select the unfixed cell with the smallest minimum height, try that minimum first, and break ties in column-major order. Remaining variables are assigned after cell heights. The cell-free variant uses Pumpkin's default brancher. Engine defaults and propagators differ from the original papers.
+[Pumpkin](https://github.com/ConSol-Lab/Pumpkin) supplies actual propagation explanations, conflict analysis, learned nogoods, and non-chronological backtracking. The CP control sets `analysis_mode = NoLearning` and uses the chronological `NoLearningResolver`; initial clauses still propagate normally. Configuration CP/LCG both select the unfixed cell with the smallest minimum height, try that minimum first, and break ties in column-major order. Remaining variables are assigned after cell heights. The cell-free variant uses Pumpkin's default brancher. Engine defaults and propagators differ from the original papers.
 
 [microlp](https://docs.rs/microlp/0.7.0/microlp/) supplies a pure Rust LP/MIP solver; its optional HiGHS backend is not enabled. All MIP encodings use a zero optimality gap. Integer widths and objective consistency are checked against the original curves before accepting a result. MIP optimality is still subject to floating-point solver tolerances; this validation is not a rational optimality certificate.
+
+See the [implementation audit](cp-implementation-audit.md) for resource-boundary regressions and the investigation of CP timeouts.
 
 ## Model equivalence
 
@@ -53,4 +55,4 @@ fn compare(table: &Table) -> Result<(), table_stretch::Error> {
 
 `solve_measured` is the same API without a wall limit. The CLI supports all names above. `Limits` count limits apply to Pareto/A*; the optional wall limit applies to every method and includes validation and construction. Cancellation is cooperative, and a late completion returns an error. The benchmark adds a process watchdog. Timeout results never claim optimality.
 
-The CP backend checks its signed-integer arithmetic bounds and limits estimated domain allocation to ten million units before constructing bitset domains. MIP dimensions must fit signed 32-bit integer bounds. These backend limits can reject inputs the original Pareto API supports. Phase fields are `prepare_ns`, `model_ns`, `search_ns`, and `finalize_ns`; model time is zero for algorithms without a solver model. The overall benchmark timer also includes teardown and small call overhead.
+The CP backend checks its signed-integer arithmetic bounds and limits estimated construction work to one million entries. Bounded domains are compact; sparse domains in Pumpkin 0.5.0 scan the full numeric interval and record every hole. The estimate counts sparse spans and model entries, not absolute fixed values. This is a construction-work guard, not a byte-level memory cap. Resource-limit failures are reported separately from wall-clock timeouts. MIP dimensions must fit signed 32-bit integer bounds. These backend limits can reject inputs the original Pareto API supports. Phase fields are `prepare_ns`, `model_ns`, `search_ns`, and `finalize_ns`; model time is zero for algorithms without a solver model. The overall benchmark timer also includes teardown and small call overhead.
