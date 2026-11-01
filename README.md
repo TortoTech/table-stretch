@@ -55,6 +55,29 @@ One variant per family, selected by completion rate then P95. Rows are sorted by
 
 [Library coverage](docs/library-coverage.md) · [Benchmark report and all variants](docs/benchmark-native.md) · [External solver reference](docs/benchmark-unified.md)
 
+### MiniZinc public benchmark
+
+[MiniZinc table-layout](https://github.com/MiniZinc/minizinc-benchmarks/tree/26bcd0a78433025f7b6896a6fa8caf128795760b/table-layout): all 26 public instances, at their original container widths.
+
+<!-- benchmark-minizinc:start -->
+Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **26 MiniZinc public cases**, single thread, 3 measurements per case, 1-second limit.
+
+All methods run as **Rust library calls in one process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
+
+| Method | Completed | P50 (ms) | P95 (ms) |
+| --- | ---: | ---: | ---: |
+| HTML heuristic | 26/26 | 0.003 | 0.007 |
+| A* | 26/26 | 0.260 | 0.875 |
+| **Pareto DP** | 26/26 | 0.159 | 1.991 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.293 | 26.629 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 14.525 | 37.895 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 |
+
+One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 0/26 cases.
+<!-- benchmark-minizinc:end -->
+
+[Benchmark report and all variants](docs/benchmark-minizinc.md) · [Source and validation](docs/minizinc-corpus.md)
+
 ## Input and guarantees
 
 Tables are column-major, with integer layout units and complete, non-increasing cell height curves. Supply measured curves directly or build them with `Profile::from_tokens`. `reserved_width` accounts for borders and gaps.

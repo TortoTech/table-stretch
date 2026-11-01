@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Generate the primary all-Rust benchmark and the concise README table."""
+import argparse
 import json
 import math
 import statistics
@@ -43,7 +44,12 @@ def p95(values):
 
 
 def main():
-    rows = [json.loads(s) for s in (ROOT/'docs/benchmark-native.jsonl').read_text().splitlines()]
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--suite', choices=['ebooks', 'minizinc'], default='ebooks')
+    args = parser.parse_args()
+    mini = args.suite == 'minizinc'
+    stem = 'benchmark-minizinc' if mini else 'benchmark-native'
+    rows = [json.loads(s) for s in (ROOT/f'docs/{stem}.jsonl').read_text().splitlines()]
     env, records = rows[0], rows[1:]
     assert env['methods'] == METHODS
     path = ROOT/env.get('input_manifest', 'docs/benchmark-unified-inputs.json')
@@ -88,7 +94,8 @@ def main():
                                statuses=dict(statuses), phases_ms={k:statistics.median(p[k] for p in phases)/1e6 for k in phases[0]} if phases else {})
     selected = {family:min(methods, key=lambda m:(-summary[m]['completed'],summary[m]['p95_ms'],summary[m]['p50_ms'])) for family,methods in FAMILIES.items()}
     date = datetime.fromisoformat(env['utc']).astimezone(ZoneInfo('US/Pacific')).date()
-    intro = f'Latest run: **{date}**, {env["machine"]}, {env["memory_bytes"]//2**30} GiB RAM. **{n} real ebook cases**, single thread, {repeats} measurements per case, {env["timeout_ms"]/1000:g}-second limit.\n\n'
+    dataset = 'MiniZinc public cases' if mini else 'real ebook cases'
+    intro = f'Latest run: **{date}**, {env["machine"]}, {env["memory_bytes"]//2**30} GiB RAM. **{n} {dataset}**, single thread, {repeats} measurements per case, {env["timeout_ms"]/1000:g}-second limit.\n\n'
     intro += 'All methods run as **Rust library calls in one process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.\n\n'
     def fmt_ms(value):
         return '<0.001' if 0 < value < 0.001 else f'{value:.3f}'
@@ -102,23 +109,31 @@ def main():
     featured = intro + table(selected.items())
     featured += f'\nOne variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as {env["timeout_ms"]/1000:g} second in these percentiles. HTML matched the optimum in {summary["html"]["matched"]}/{n} cases.\n'
     readme_path = ROOT/'README.md'; readme = readme_path.read_text()
-    begin, end = '<!-- benchmark:start -->', '<!-- benchmark:end -->'
+    marker = 'benchmark-minizinc' if mini else 'benchmark'
+    begin, end = f'<!-- {marker}:start -->', f'<!-- {marker}:end -->'
     a,b = readme.index(begin)+len(begin),readme.index(end)
     readme_path.write_text(readme[:a]+'\n'+featured+readme[b:])
-    report = '# Native Rust benchmark\n\n'+featured
-    report += '\n[Dataset coverage and extraction](library-coverage.md). The expanded dataset includes complete EPUB tables, rectangular bodies, and visually reviewed PDF tables.\n'
+    report = ('# MiniZinc public benchmark\n\n' if mini else '# Native Rust benchmark\n\n')+featured
+    if mini:
+        report += '\n[Source, conversion, and validation](minizinc-corpus.md). All 26 upstream table-layout instances are included at their original widths.\n'
+    else:
+        report += '\n[Dataset coverage and extraction](library-coverage.md). The expanded dataset includes complete EPUB tables, rectangular bodies, and visually reviewed PDF tables.\n'
     report += '\n## All variants\n\n'+table((NAMES[m],m) for m in METHODS)
     report += '\nEach percentile uses one median per case. Failures and timeouts are censored at the common limit, including in selection. A case completes only when every measured repetition completes. All returned layouts are checked against the original profiles and the fixed reference optimum.\n'
     report += '\n## Phase medians\n\nMedians over completed cases only; each case uses the median of its repetitions. These component medians need not sum to the total median. Solver teardown is included in search.\n\n| Method | Prepare (ms) | Model (ms) | Search (ms) | Finalize (ms) |\n| --- | ---: | ---: | ---: | ---: |\n'
     for m in sorted(METHODS, key=lambda m: (summary[m]['p95_ms'], summary[m]['p50_ms'])):
         values = summary[m]['phases_ms']
         report += '| '+paper_name(NAMES[m], m)+' | '+' | '.join(f'{values[k]:.4f}' if k in values else '—' for k in ['prepare_ns','model_ns','search_ns','finalize_ns'])+' |\n'
-    report += '\n## Reproduce\n\n```sh\npython3 scripts/benchmark_native.py\npython3 scripts/report_native.py\n```\n\n'
+    commands = ('python3 scripts/build_minizinc_inputs.py\n'
+                'python3 scripts/benchmark_native.py --inputs docs/benchmark-minizinc-inputs.json --output docs/benchmark-minizinc.jsonl\n'
+                'python3 scripts/report_native.py --suite minizinc' if mini else
+                'python3 scripts/benchmark_native.py\npython3 scripts/report_native.py')
+    report += '\n## Reproduce\n\n```sh\n'+commands+'\n```\n\n'
     report += 'One warmup per method/case precedes the measured repetitions. Method order is shuffled with seed 1. Every call creates a fresh solver; there is no reused model or cross-method incumbent. All methods share the full-call wall limit; a watchdog kills and restarts the worker if cooperative termination overruns by two seconds. Raw records preserve errors, actual elapsed times and worker generations. Count limits are disabled for this benchmark.\n\n'
-    report += f'[Raw measurements](benchmark-native.jsonl) · [Summary](benchmark-native-summary.json) · [Inputs]({path.name}) · [Model mappings](native-models.md)\n\n'
+    report += f'[Raw measurements]({stem}.jsonl) · [Summary]({stem}-summary.json) · [Inputs]({path.name}) · [Model mappings](native-models.md)\n\n'
     report += 'The [external-solver benchmark](benchmark-unified.md) remains a separate process-level reference. Its timings include startup and MiniZinc compilation and must not be mixed with this table.\n'
-    (ROOT/'docs/benchmark-native.md').write_text(report)
-    (ROOT/'docs/benchmark-native-summary.json').write_text(json.dumps({'environment':env,'selected':selected,'methods':summary},indent=2)+'\n')
+    (ROOT/f'docs/{stem}.md').write_text(report)
+    (ROOT/f'docs/{stem}-summary.json').write_text(json.dumps({'environment':env,'selected':selected,'methods':summary},indent=2)+'\n')
     print(table(selected.items()))
 
 

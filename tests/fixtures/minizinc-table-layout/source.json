@@ -1,0 +1,118 @@
+{
+  "repository": "https://github.com/MiniZinc/minizinc-benchmarks",
+  "revision": "26bcd0a78433025f7b6896a6fa8caf128795760b",
+  "files": {
+    "en-1000-1274-line521.dzn": {
+      "path": "table-layout/en-1000-1274-line521.dzn",
+      "sha256": "cd171ec2d8a0d40b5aef4d6e6b906b2726c3f10252b5d22c3cc2b9632755d6c2"
+    },
+    "en-1000-1286-line764.dzn": {
+      "path": "table-layout/en-1000-1286-line764.dzn",
+      "sha256": "83236e326ca7ffc0b22b4b051e01861e3c5ae1d903e9cc1e8b95ce9bf7277f9a"
+    },
+    "en-1000-1303-line1078.dzn": {
+      "path": "table-layout/en-1000-1303-line1078.dzn",
+      "sha256": "e39fae88284919a9fcf4f580c810c2772bbc49a33f21467b8984f09d1f5a303c"
+    },
+    "en-1000-1303-line283.dzn": {
+      "path": "table-layout/en-1000-1303-line283.dzn",
+      "sha256": "5008d3da8d7f608054fa2892686528b139e5a6af73b1df4366619ea7c146fcc7"
+    },
+    "en-1000-1407-line1350.dzn": {
+      "path": "table-layout/en-1000-1407-line1350.dzn",
+      "sha256": "dca3f830660c55f913f0f420267abe74297cb1ec8b153adc75a4babd9750d608"
+    },
+    "en-1000-1407-line1986.dzn": {
+      "path": "table-layout/en-1000-1407-line1986.dzn",
+      "sha256": "2dc085a72ef0cdf1c8d0d08f09f2b4256fc2822ea786b1966e3534c383861b08"
+    },
+    "en-1000-1407-line976.dzn": {
+      "path": "table-layout/en-1000-1407-line976.dzn",
+      "sha256": "ad64bbea4b4db88f105a516d74a5f043bb8a4e02ea5dc46832118b1b79d4caa0"
+    },
+    "en-1000-1439-line292.dzn": {
+      "path": "table-layout/en-1000-1439-line292.dzn",
+      "sha256": "f93eee7bd29ab35ce10478d74af96bbc0922c360f20cf38554d8fc12332c1722"
+    },
+    "en-1000-1479-line1099.dzn": {
+      "path": "table-layout/en-1000-1479-line1099.dzn",
+      "sha256": "ae55ffae4c32ccac69257d847a0b79468f28678708542645366fa75fd4709caf"
+    },
+    "en-1000-1479-line419.dzn": {
+      "path": "table-layout/en-1000-1479-line419.dzn",
+      "sha256": "f91d010b383642fba4bd006745ab19d4f91b6183fec44ef841871005c868ae42"
+    },
+    "en-1000-1615-line479.dzn": {
+      "path": "table-layout/en-1000-1615-line479.dzn",
+      "sha256": "b1eb488b48485afefecf19d602efead283d8fa0572d87580bb8d1012ee8afcb5"
+    },
+    "en-1000-251-line273.dzn": {
+      "path": "table-layout/en-1000-251-line273.dzn",
+      "sha256": "6c4d9fbbafe07026e181a31604806e68b6cb7b110f0567cd51a46603c57d316f"
+    },
+    "en-1000-274-line403.dzn": {
+      "path": "table-layout/en-1000-274-line403.dzn",
+      "sha256": "5b52130c2719d0f0a28fcb78a1fd2d5df7be7a06bb0701a5337154edff402f5a"
+    },
+    "en-1250-1074-line298.dzn": {
+      "path": "table-layout/en-1250-1074-line298.dzn",
+      "sha256": "1e5567e13431449b076d38eabe0112da02c8e79ce657792317ccbac9bf60c4c8"
+    },
+    "en-1250-1261-line126.dzn": {
+      "path": "table-layout/en-1250-1261-line126.dzn",
+      "sha256": "9d67cc6f608fce904438dd72f534afe595256e2b8d25a17de8755fba4988e633"
+    },
+    "en-1250-1283-line119.dzn": {
+      "path": "table-layout/en-1250-1283-line119.dzn",
+      "sha256": "71ecbf65be57faf1be37b3eb087d42ee73e0590514311a5aa63d1aa6cb326529"
+    },
+    "en-1250-1303-line283.dzn": {
+      "path": "table-layout/en-1250-1303-line283.dzn",
+      "sha256": "1462efe87f024e006971e60fb5f71abb293ad22ca644d46450842a1372df4c5c"
+    },
+    "en-1250-1305-line158.dzn": {
+      "path": "table-layout/en-1250-1305-line158.dzn",
+      "sha256": "6dae689a899f42b6df5144be1786867a14cad6425951179f418f17d400d0adf6"
+    },
+    "en-1250-1407-line1350.dzn": {
+      "path": "table-layout/en-1250-1407-line1350.dzn",
+      "sha256": "ecf3ff0130123aaf6f81e5994bf39fcc9f518bbb831576675a95476203d2aade"
+    },
+    "en-1250-1407-line1986.dzn": {
+      "path": "table-layout/en-1250-1407-line1986.dzn",
+      "sha256": "d6506f91ef7c3e837d00d22cbdb18a5cb23fb933cb5c70794eae5663caad6793"
+    },
+    "en-1250-1407-line976.dzn": {
+      "path": "table-layout/en-1250-1407-line976.dzn",
+      "sha256": "00d486e62f351a4f604de20ac440f2ad545726749ab2977a9c8a02a50c9b6704"
+    },
+    "en-1250-1479-line1099.dzn": {
+      "path": "table-layout/en-1250-1479-line1099.dzn",
+      "sha256": "5a5f2ce6dea0551b758f8e7c807deb70b11bb2498f1affa2b698a06ea1bb2ba6"
+    },
+    "en-1250-1479-line1633.dzn": {
+      "path": "table-layout/en-1250-1479-line1633.dzn",
+      "sha256": "170c24a59f24d707a91de32de9965cfa244ebea75b9861edfa841a68833e32e1"
+    },
+    "en-1250-1479-line419.dzn": {
+      "path": "table-layout/en-1250-1479-line419.dzn",
+      "sha256": "fe48c0782f4e36f7409239f10c05f91b26d4aa6244301b8223f7ba01e697bbf8"
+    },
+    "en-1250-158-line1950.dzn": {
+      "path": "table-layout/en-1250-158-line1950.dzn",
+      "sha256": "0f47d9ced3cdeb3f6d017e4d2f769fc9550bce06844acb124623ef755a58fd4a"
+    },
+    "en-760-310-line795.dzn": {
+      "path": "table-layout/en-760-310-line795.dzn",
+      "sha256": "96119108daf3f9bb07d210cd4ed3df052db32055ad999fcaf3ce6923395bdd08"
+    },
+    "TableLayout.mzn": {
+      "path": "table-layout/TableLayout.mzn",
+      "sha256": "45fa4f687b1bc2d1dfb8f65d1544b7767f197fa4af7a3154bbd085b209578475"
+    },
+    "LICENSE": {
+      "path": "LICENSE",
+      "sha256": "682e731b25055903120b0e67dfb1cc981dda8981e85a1837e3c266d44732282b"
+    }
+  }
+}
