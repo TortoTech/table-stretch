@@ -1,0 +1,239 @@
+{
+  "environment": {
+    "kind": "environment",
+    "suite": "minizinc",
+    "utc": "2026-11-01T08:04:27.900888+00:00",
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "machine": "Apple M6",
+    "memory_bytes": 17179869184,
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)\nbinary: rustc\ncommit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67\ncommit-date: 2026-10-13\nhost: aarch64-apple-darwin\nrelease: 1.99.1\nLLVM version: 23.1.1\n",
+    "input_manifest": "docs/benchmark-minizinc-inputs.json",
+    "input_manifest_sha256": "2c0a28a25858877f03233369fa0f22418f1aaec9452fcc2e066702c1272ac98b",
+    "timing_summary": "docs/benchmark-minizinc-summary.json",
+    "timing_summary_sha256": "eb42c53116b17088e0e478502ed3a5060e1fcf101a8f8eff24ff0a4deac95c56",
+    "selected": {
+      "Pareto DP": "pareto",
+      "A*": "astar2011",
+      "HTML heuristic": "html",
+      "CP (Pumpkin)": "cp2011",
+      "LCG (Pumpkin)": "lcg2011",
+      "MIP (microlp)": "mip2015_cellfree"
+    },
+    "methods": [
+      "pareto",
+      "astar2011",
+      "html",
+      "cp2011",
+      "lcg2011",
+      "mip2015_cellfree"
+    ],
+    "repeats": 3,
+    "warmups": 0,
+    "seed": 1,
+    "threads": 1,
+    "timeout_ms": 1000,
+    "worker_sha256": "01ef15eb3b186e06a36a8ac5b2af36f933946af627003a4aa11a02192651f15b",
+    "source_sha256": {
+      "Cargo.toml": "8090fe9d5ad1196f6d6a0a7c30877898fc29706eb93a312daf5f1850228eb077",
+      "Cargo.lock": "e63e4fd55801e46cca3b1041c6059f3f46bdc04205aa309574b8314ca21aa7ef",
+      "src/algorithms.rs": "179f6382d391b40b432f6c646506880f5ef397ab5509a112fcc675a74244eed3",
+      "src/lib.rs": "9d200420c0cfec2fc595bddad7f965a33f5540210640b11ca62a718c3fa7b7f0",
+      "src/main.rs": "9a13838aeaf59c5f7979f986d7aaceb92217df1d9478e4ced3333c8d72d850b0",
+      "src/model_data.rs": "78d8d7c793aa54d2592611c7efe845c547d2a0de61e00eaa504823f8ba8d32a1",
+      "src/pareto.rs": "ddfbe65bce007debcb2a9f22bdb52a64fcff3c2f9ee9648f263980b79d53912c",
+      "src/research.rs": "3c5af14cdcb851909492efa9cd6764246553962fe7b8e6f6bc3d5b79a3ced0b8",
+      "examples/memory_worker.rs": "d31dfe6884962751c378ccc12ceba9653d344ffdd1fdafed6d91f1f286c80667",
+      "scripts/benchmark_memory.py": "27f08f3618f906914a7a1b5f6eaed1d075034d34a3768367286a3031ceb3812f",
+      "scripts/benchmark_unified.py": "090eb5a7b57bf27e43b400a9e993f7933dbda75a1c0323b1a6e78c3b867abde6"
+    },
+    "heap": "peak live requested Rust heap bytes during the library call minus live bytes immediately before it; excludes loaded input, JSON, stack, allocator metadata/caches and realloc internal transient buffers",
+    "rss": "macOS /usr/bin/time -l maximum resident set size, bytes; whole fresh child process including startup, one input, solver, stack, allocator caches, libraries and output",
+    "state": "one new process per case/method/repetition; no warmups or cross-call allocator reuse",
+    "deadline": "same solve wall limit as timing pass, plus two-second process watchdog grace; unfinished runs retain observed memory, not a bound for completed solves",
+    "timing": "instrumented elapsed times are diagnostic only; existing uninstrumented timing results are preserved"
+  },
+  "raw_sha256": "d9faced8ad202034c94a2f25bbef46856a10148bc3d2f0e8fb89e1c0c822b170",
+  "methods": {
+    "pareto": {
+      "completed": 26,
+      "measured": 26,
+      "cases": 26,
+      "statuses": {
+        "optimal": 78
+      },
+      "metrics": {
+        "heap_extra_peak_bytes": {
+          "p50": 67506.0,
+          "p95": 270760,
+          "maximum": 375844
+        },
+        "heap_baseline_bytes": {
+          "p50": 19524.0,
+          "p95": 49988,
+          "maximum": 94660
+        },
+        "heap_peak_bytes": {
+          "p50": 86234.0,
+          "p95": 365420,
+          "maximum": 408392
+        },
+        "rss_peak_bytes": {
+          "p50": 2433024.0,
+          "p95": 2867200,
+          "maximum": 2899968
+        }
+      }
+    },
+    "astar2011": {
+      "completed": 26,
+      "measured": 26,
+      "cases": 26,
+      "statuses": {
+        "optimal": 78
+      },
+      "metrics": {
+        "heap_extra_peak_bytes": {
+          "p50": 234416.0,
+          "p95": 656012,
+          "maximum": 938064
+        },
+        "heap_baseline_bytes": {
+          "p50": 19524.0,
+          "p95": 49988,
+          "maximum": 94660
+        },
+        "heap_peak_bytes": {
+          "p50": 255020.0,
+          "p95": 668112,
+          "maximum": 958868
+        },
+        "rss_peak_bytes": {
+          "p50": 2711552.0,
+          "p95": 2965504,
+          "maximum": 3375104
+        }
+      }
+    },
+    "html": {
+      "completed": 26,
+      "measured": 26,
+      "cases": 26,
+      "statuses": {
+        "heuristic": 78
+      },
+      "metrics": {
+        "heap_extra_peak_bytes": {
+          "p50": 272.0,
+          "p95": 584,
+          "maximum": 832
+        },
+        "heap_baseline_bytes": {
+          "p50": 19524.0,
+          "p95": 49988,
+          "maximum": 94660
+        },
+        "heap_peak_bytes": {
+          "p50": 19808.0,
+          "p95": 50428,
+          "maximum": 95492
+        },
+        "rss_peak_bytes": {
+          "p50": 2277376.0,
+          "p95": 2359296,
+          "maximum": 2457600
+        }
+      }
+    },
+    "cp2011": {
+      "completed": 5,
+      "measured": 26,
+      "cases": 26,
+      "statuses": {
+        "timeout": 63,
+        "optimal": 15
+      },
+      "metrics": {
+        "heap_extra_peak_bytes": {
+          "p50": 5129872.0,
+          "p95": 9438416,
+          "maximum": 11785120
+        },
+        "heap_baseline_bytes": {
+          "p50": 19524.0,
+          "p95": 49988,
+          "maximum": 94660
+        },
+        "heap_peak_bytes": {
+          "p50": 5144708.0,
+          "p95": 9453300,
+          "maximum": 11879780
+        },
+        "rss_peak_bytes": {
+          "p50": 9109504.0,
+          "p95": 15171584,
+          "maximum": 16990208
+        }
+      }
+    },
+    "lcg2011": {
+      "completed": 26,
+      "measured": 26,
+      "cases": 26,
+      "statuses": {
+        "optimal": 78
+      },
+      "metrics": {
+        "heap_extra_peak_bytes": {
+          "p50": 7104414.0,
+          "p95": 13253772,
+          "maximum": 13829428
+        },
+        "heap_baseline_bytes": {
+          "p50": 19524.0,
+          "p95": 49988,
+          "maximum": 94660
+        },
+        "heap_peak_bytes": {
+          "p50": 7120930.0,
+          "p95": 13280976,
+          "maximum": 13924088
+        },
+        "rss_peak_bytes": {
+          "p50": 10584064.0,
+          "p95": 16957440,
+          "maximum": 17891328
+        }
+      }
+    },
+    "mip2015_cellfree": {
+      "completed": 26,
+      "measured": 26,
+      "cases": 26,
+      "statuses": {
+        "optimal": 78
+      },
+      "metrics": {
+        "heap_extra_peak_bytes": {
+          "p50": 533385.0,
+          "p95": 811196,
+          "maximum": 844008
+        },
+        "heap_baseline_bytes": {
+          "p50": 19524.0,
+          "p95": 49988,
+          "maximum": 94660
+        },
+        "heap_peak_bytes": {
+          "p50": 553549.0,
+          "p95": 838400,
+          "maximum": 858892
+        },
+        "rss_peak_bytes": {
+          "p50": 3948544.0,
+          "p95": 4472832,
+          "maximum": 4472832
+        }
+      }
+    }
+  }
+}

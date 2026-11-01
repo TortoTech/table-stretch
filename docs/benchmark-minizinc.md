@@ -2,18 +2,22 @@
 
 Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **26 MiniZinc public cases**, single thread, 3 measurements per case, 1-second limit.
 
-All methods run as **Rust library calls in one process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
+Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-| Method | Completed | P50 (ms) | P95 (ms) |
-| --- | ---: | ---: | ---: |
-| HTML heuristic | 26/26 | 0.003 | 0.007 |
-| A* | 26/26 | 0.260 | 0.875 |
-| **Pareto DP** | 26/26 | 0.159 | 1.991 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.293 | 26.629 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 14.525 | 37.895 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 |
+| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (MiB) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| HTML heuristic | 26/26 | 0.003 | 0.007 | 0.570 | 2.250 |
+| A* | 26/26 | 0.260 | 0.875 | 640.637 | 2.828 |
+| **Pareto DP** | 26/26 | 0.159 | 1.991 | 264.414 | 2.734 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.293 | 26.629 | 792.184 | 4.266 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 14.525 | 37.895 | 12943.137 | 16.172 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 | 9217.203 | 14.469 |
 
-One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 0/26 cases.
+One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in timing percentiles. HTML matched the optimum in 0/26 cases.
+
+Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
+
+[Memory measurement details and completion counts](benchmark-minizinc-memory.md).
 
 [Source, conversion, and validation](minizinc-corpus.md). All 26 upstream table-layout instances are included at their original widths.
 

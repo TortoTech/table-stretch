@@ -93,27 +93,46 @@ def main():
                                p50_ms=statistics.median(medians)/1e6, p95_ms=p95(medians)/1e6,
                                statuses=dict(statuses), phases_ms={k:statistics.median(p[k] for p in phases)/1e6 for k in phases[0]} if phases else {})
     selected = {family:min(methods, key=lambda m:(-summary[m]['completed'],summary[m]['p95_ms'],summary[m]['p50_ms'])) for family,methods in FAMILIES.items()}
+    memory_path = ROOT/f'docs/{stem}-memory-summary.json'
+    memory = json.loads(memory_path.read_text()) if memory_path.exists() else None
+    if memory:
+        assert memory['environment']['selected'] == selected
+        assert memory['environment']['input_manifest_sha256'] == env['input_manifest_sha256']
+        assert memory['raw_sha256'] == sha(ROOT/f'docs/{stem}-memory.jsonl')
+        assert memory['environment']['timing_summary_sha256'] == sha(ROOT/f'docs/{stem}-summary.json')
     date = datetime.fromisoformat(env['utc']).astimezone(ZoneInfo('US/Pacific')).date()
     dataset = 'MiniZinc public cases' if mini else 'real ebook cases'
     intro = f'Latest run: **{date}**, {env["machine"]}, {env["memory_bytes"]//2**30} GiB RAM. **{n} {dataset}**, single thread, {repeats} measurements per case, {env["timeout_ms"]/1000:g}-second limit.\n\n'
-    intro += 'All methods run as **Rust library calls in one process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.\n\n'
+    intro += 'Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.\n\n'
     def fmt_ms(value):
         return '<0.001' if 0 < value < 0.001 else f'{value:.3f}'
 
-    def table(featured):
+    def table(featured, with_memory=False):
         text = '| Method | Completed | P50 (ms) | P95 (ms) |\n| --- | ---: | ---: | ---: |\n'
+        if with_memory:
+            text = '| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (MiB) |\n| --- | ---: | ---: | ---: | ---: | ---: |\n'
         for name,m in sorted(featured, key=lambda item: (summary[item[1]]['p95_ms'], summary[item[1]]['p50_ms'])):
             s = summary[m]
-            text += f'| {paper_name(name, m)} | {s["completed"]}/{n} | {fmt_ms(s["p50_ms"])} | {fmt_ms(s["p95_ms"])} |\n'
+            text += f'| {paper_name(name, m)} | {s["completed"]}/{n} | {fmt_ms(s["p50_ms"])} | {fmt_ms(s["p95_ms"])} |'
+            if with_memory:
+                metrics = memory['methods'][m]['metrics']
+                for key, divisor in [('heap_extra_peak_bytes',1024),('rss_peak_bytes',1024**2)]:
+                    metric = metrics[key]
+                    text += f' {metric["p95"]/divisor:.3f} |' if metric is not None else ' — |'
+            text += '\n'
         return text
-    featured = intro + table(selected.items())
-    featured += f'\nOne variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as {env["timeout_ms"]/1000:g} second in these percentiles. HTML matched the optimum in {summary["html"]["matched"]}/{n} cases.\n'
+    featured = intro + table(selected.items(), with_memory=bool(memory))
+    featured += f'\nOne variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as {env["timeout_ms"]/1000:g} second in timing percentiles. HTML matched the optimum in {summary["html"]["matched"]}/{n} cases.\n'
+    if memory:
+        featured += '\nMemory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.\n'
     readme_path = ROOT/'README.md'; readme = readme_path.read_text()
     marker = 'benchmark-minizinc' if mini else 'benchmark'
     begin, end = f'<!-- {marker}:start -->', f'<!-- {marker}:end -->'
     a,b = readme.index(begin)+len(begin),readme.index(end)
     readme_path.write_text(readme[:a]+'\n'+featured+readme[b:])
     report = ('# MiniZinc public benchmark\n\n' if mini else '# Native Rust benchmark\n\n')+featured
+    if memory:
+        report += f'\n[Memory measurement details and completion counts]({stem}-memory.md).\n'
     if mini:
         report += '\n[Source, conversion, and validation](minizinc-corpus.md). All 26 upstream table-layout instances are included at their original widths.\n'
     else:
@@ -134,7 +153,7 @@ def main():
     report += 'The [external-solver benchmark](benchmark-unified.md) remains a separate process-level reference. Its timings include startup and MiniZinc compilation and must not be mixed with this table.\n'
     (ROOT/f'docs/{stem}.md').write_text(report)
     (ROOT/f'docs/{stem}-summary.json').write_text(json.dumps({'environment':env,'selected':selected,'methods':summary},indent=2)+'\n')
-    print(table(selected.items()))
+    print(table(selected.items(), with_memory=bool(memory)))
 
 
 if __name__ == '__main__':

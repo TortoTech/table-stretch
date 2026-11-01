@@ -39,21 +39,23 @@ fn main() -> Result<(), table_stretch::Error> {
 <!-- benchmark:start -->
 Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **1383 real ebook cases**, single thread, 3 measurements per case, 1-second limit.
 
-All methods run as **Rust library calls in one process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
+Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-| Method | Completed | P50 (ms) | P95 (ms) |
-| --- | ---: | ---: | ---: |
-| HTML heuristic | 1383/1383 | <0.001 | <0.001 |
-| **Pareto DP** | 1383/1383 | 0.002 | 0.011 |
-| A* | 1383/1383 | 0.003 | 0.017 |
-| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 0.061 | 0.514 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 0.063 | 1.155 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1367/1383 | 0.081 | 2.079 |
+| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (MiB) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| HTML heuristic | 1383/1383 | <0.001 | <0.001 | 0.176 | 2.141 |
+| **Pareto DP** | 1383/1383 | 0.002 | 0.011 | 9.395 | 2.203 |
+| A* | 1383/1383 | 0.003 | 0.017 | 17.512 | 2.219 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 0.061 | 0.514 | 1360.227 | 3.531 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 0.063 | 1.155 | 271.570 | 3.344 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1367/1383 | 0.081 | 2.079 | 1336.410 | 4.422 |
 
-One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 733/1383 cases.
+One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in timing percentiles. HTML matched the optimum in 733/1383 cases.
+
+Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
 <!-- benchmark:end -->
 
-[Library coverage](docs/library-coverage.md) · [Benchmark report and all variants](docs/benchmark-native.md) · [External solver reference](docs/benchmark-unified.md)
+[Library coverage](docs/library-coverage.md) · [Benchmark report and all variants](docs/benchmark-native.md) · [Memory report](docs/benchmark-native-memory.md) · [External solver reference](docs/benchmark-unified.md)
 
 ### MiniZinc public benchmark
 
@@ -62,21 +64,23 @@ One variant per family, selected by completion rate then P95. Rows are sorted by
 <!-- benchmark-minizinc:start -->
 Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **26 MiniZinc public cases**, single thread, 3 measurements per case, 1-second limit.
 
-All methods run as **Rust library calls in one process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
+Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-| Method | Completed | P50 (ms) | P95 (ms) |
-| --- | ---: | ---: | ---: |
-| HTML heuristic | 26/26 | 0.003 | 0.007 |
-| A* | 26/26 | 0.260 | 0.875 |
-| **Pareto DP** | 26/26 | 0.159 | 1.991 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.293 | 26.629 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 14.525 | 37.895 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 |
+| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (MiB) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| HTML heuristic | 26/26 | 0.003 | 0.007 | 0.570 | 2.250 |
+| A* | 26/26 | 0.260 | 0.875 | 640.637 | 2.828 |
+| **Pareto DP** | 26/26 | 0.159 | 1.991 | 264.414 | 2.734 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.293 | 26.629 | 792.184 | 4.266 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 14.525 | 37.895 | 12943.137 | 16.172 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 | 9217.203 | 14.469 |
 
-One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 0/26 cases.
+One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in timing percentiles. HTML matched the optimum in 0/26 cases.
+
+Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
 <!-- benchmark-minizinc:end -->
 
-[Benchmark report and all variants](docs/benchmark-minizinc.md) · [Source and validation](docs/minizinc-corpus.md)
+[Benchmark report and all variants](docs/benchmark-minizinc.md) · [Memory report](docs/benchmark-minizinc-memory.md) · [Source and validation](docs/minizinc-corpus.md)
 
 ## Input and guarantees
 
