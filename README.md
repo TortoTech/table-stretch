@@ -37,62 +37,58 @@ fn main() -> Result<(), table_stretch::Error> {
 ## Benchmark
 
 <!-- benchmark:start -->
-Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **1383 real ebook cases**, single thread, 3 measurements per case, 1-second limit.
+Latest controlled run: **2026-11-01**, Apple M6, 16 GiB RAM. **1102 cases from 21 evaluation books**, single thread, 3 measurements, 1-second limit.
 
-Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
+Algorithms are fixed using 10 validation books. This is a **retrospective grouped evaluation**: both corpora were used in earlier development. Timing includes preparation, model/search and final layout; excludes text measurement, JSON and startup.
 
-![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](docs/assets/benchmark-native.svg?v=3dfa7254d786)
+![Benchmark results; Pareto DP outlined in blue, minima in green.](docs/assets/ablation-ebooks.svg?v=d7f449464353)
 
 <details>
 <summary>Table data and paper links</summary>
 
 | Metric | **Pareto DP** | A* | [LCG](https://doi.org/10.1287/ijoc.2014.0637) | [MIP](https://doi.org/10.1287/ijoc.2014.0637) | [CP](https://doi.org/10.1145/2034691.2034697) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| P50 (ms) | $\color{green}{0.002}$ | 0.002 | 0.018 | 0.016 | 0.028 |
-| P95 (ms) | $\color{green}{0.010}$ | 0.011 | 0.140 | 0.362 | 0.909 |
-| Extra heap P95 (KiB) | 9.39 | $\color{green}{9.32}$ | 204.22 | 218.88 | 513.26 |
-| RSS P95 (KiB) | $\color{green}{2224.00}$ | $\color{green}{2224.00}$ | 3168.00 | 3184.00 | 3600.00 |
-| Completed | 1383/1383 | 1383/1383 | 1383/1383 | 1383/1383 | 1375/1383 |
+| P50 (ms) | $\color{green}{0.002}$ | 0.002 | 0.018 | 0.016 | 0.030 |
+| P95 (ms) | $\color{green}{0.010}$ | 0.011 | 0.141 | 0.407 | 1.074 |
+| Extra heap P95 (KiB) | $\color{green}{10.67}$ | 10.99 | 213.60 | 227.77 | 566.94 |
+| RSS P95 (KiB) | $\color{green}{2288.00}$ | $\color{green}{2288.00}$ | 3232.00 | 3248.00 | 3728.00 |
+| Completed | 1102/1102 | 1102/1102 | 1102/1102 | 1102/1102 | 1095/1102 |
 
 </details>
 
-One variant per exact-method family, selected by completion rate then P95. Timing percentiles reaching the timeout limit are shown as **> 1000.00 ms**.
-
-Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
+Memory is measured separately in fresh processes, including observed timeout peaks. Timeout percentiles are shown as **> 1000.00 ms**. [Protocol, all ablations and performance profiles](docs/ablation-report.md).
 <!-- benchmark:end -->
 
-[Library coverage](docs/library-coverage.md) · [Benchmark report and all variants](docs/benchmark-native.md) · [Memory report](docs/benchmark-native-memory.md) · [External solver reference](docs/benchmark-unified.md)
+[Library coverage](docs/library-coverage.md) · [Controlled evaluation and ablations](docs/ablation-report.md) · [Earlier full-corpus comparison](docs/benchmark-native.md) · [External solver reference](docs/benchmark-unified.md)
 
 ### MiniZinc public benchmark
 
 [MiniZinc table-layout](https://github.com/MiniZinc/minizinc-benchmarks/tree/26bcd0a78433025f7b6896a6fa8caf128795760b/table-layout): all 26 public instances, at their original container widths.
 
 <!-- benchmark-minizinc:start -->
-Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **26 MiniZinc public cases**, single thread, 3 measurements per case, 1-second limit.
+Latest controlled run: **2026-11-01**, Apple M6, 16 GiB RAM. **26 MiniZinc public cases**, single thread, 3 measurements, 1-second limit.
 
-Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
+Algorithms are fixed using 10 validation books. This is a **retrospective grouped evaluation**: both corpora were used in earlier development. Timing includes preparation, model/search and final layout; excludes text measurement, JSON and startup.
 
-![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](docs/assets/benchmark-minizinc.svg?v=d95fc6de7555)
+![Benchmark results; Pareto DP outlined in blue, minima in green.](docs/assets/ablation-minizinc.svg?v=2ef594d5eeaa)
 
 <details>
 <summary>Table data and paper links</summary>
 
-| Metric | **Pareto DP** | A* | [LCG](https://doi.org/10.1145/2034691.2034697) | [MIP](https://doi.org/10.1287/ijoc.2014.0637) | [CP](https://doi.org/10.1145/2034691.2034697) |
+| Metric | **Pareto DP** | A* | [LCG](https://doi.org/10.1287/ijoc.2014.0637) | [MIP](https://doi.org/10.1287/ijoc.2014.0637) | [CP](https://doi.org/10.1145/2034691.2034697) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| P50 (ms) | $\color{green}{0.160}$ | 0.162 | 3.884 | 1.960 | > 1000.00 |
-| P95 (ms) | 1.987 | $\color{green}{0.770}$ | 10.744 | 24.733 | > 1000.00 |
-| Extra heap P95 (KiB) | 264.41 | $\color{green}{162.27}$ | 2375.33 | 707.65 | 2120.96 |
-| RSS P95 (KiB) | 2752.00 | $\color{green}{2512.00}$ | 6016.00 | 4256.00 | 5664.00 |
-| Completed | 26/26 | 26/26 | 26/26 | 26/26 | 5/26 |
+| P50 (ms) | 0.162 | $\color{green}{0.159}$ | 1.137 | 1.920 | > 1000.00 |
+| P95 (ms) | 2.000 | $\color{green}{0.780}$ | 2.765 | 24.529 | > 1000.00 |
+| Extra heap P95 (KiB) | 263.73 | $\color{green}{162.06}$ | 754.02 | 707.65 | 2120.96 |
+| RSS P95 (KiB) | 2848.00 | $\color{green}{2560.00}$ | 4240.00 | 4256.00 | 5680.00 |
+| Completed | 26/26 | 26/26 | 25/26 | 26/26 | 5/26 |
 
 </details>
 
-One variant per exact-method family, selected by completion rate then P95. Timing percentiles reaching the timeout limit are shown as **> 1000.00 ms**.
-
-Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
+Memory is measured separately in fresh processes, including observed timeout peaks. Timeout percentiles are shown as **> 1000.00 ms**. [Protocol, all ablations and performance profiles](docs/ablation-report.md).
 <!-- benchmark-minizinc:end -->
 
-[Benchmark report and all variants](docs/benchmark-minizinc.md) · [Memory report](docs/benchmark-minizinc-memory.md) · [Source and validation](docs/minizinc-corpus.md)
+[Controlled evaluation and ablations](docs/ablation-report.md) · [Earlier comparison](docs/benchmark-minizinc.md) · [Source and validation](docs/minizinc-corpus.md)
 
 ## Input and guarantees
 

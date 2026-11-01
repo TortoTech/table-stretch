@@ -11,7 +11,7 @@ All exact methods minimize total row height under a shared width budget and colu
 | CP/SAT (LCG) | Rust / Pumpkin | Configuration and cell-free models with lazy clause generation. |
 | MIP | Rust / microlp | Unary, one-hot, and shared cell-free encodings; LP and branch-and-bound. |
 
-The [native benchmark](benchmark-native.md) compares all methods as Rust library calls and features one variant per family, ranked by completion rate then P95. See [native model mappings and correctness](native-models.md). External MiniZinc implementations remain in `models/` and the separate [process-level reference](benchmark-unified.md).
+The [controlled evaluation](ablation-report.md) selects one full implementation per family on validation books, then measures that fixed choice and its ablations on separate books and MiniZinc. Both corpora were used in earlier development, so this is retrospective evaluation. The earlier [full-corpus benchmark](benchmark-native.md) is retained as an engineering snapshot. See [native model mappings and correctness](native-models.md). External MiniZinc implementations remain in `models/` and the separate [process-level reference](benchmark-unified.md).
 
 ## Bounds shared with other exact methods
 
@@ -32,6 +32,10 @@ A* and configuration CP follow [Gange et al. (2011)](https://doi.org/10.1145/203
 These are adaptations for this project's input model and current solvers. The [research audit](research-audit.md) records the model and search choices. The [mathematical proof](proof.md) and [Lean development](../proof/Optimality.lean) cover the abstract Pareto algorithm.
 
 ## Run and validate
+
+Use `solve_ablation_with_timeout` and `AblationOptions` to control the enhancements in the same solver code. Defaults enable all enhancements and match the normal API. These experimental switches preserve exactness; they can substantially increase runtime or memory. The [frozen protocol](ablation-protocol.json) specifies which flags are applicable, which baseline mechanisms remain enabled, and how configurations are selected. Follow the [controlled experiment instructions](ablation-report.md#reproduce) to reproduce the primary README tables.
+
+The commands below run the separate legacy comparison and external model checks:
 
 ```sh
 cargo run --release -- --algorithm astar2011 examples/table.json

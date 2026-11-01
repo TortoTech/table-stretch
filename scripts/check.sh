@@ -10,6 +10,7 @@ python3 scripts/test_extract_library_tables.py
 python3 scripts/test_minizinc_inputs.py
 python3 scripts/test_benchmark_memory.py
 python3 scripts/test_ablation_protocol.py
+python3 scripts/test_report_ablation.py
 if [[ -z "${LEAN_BIN:-}" ]]; then
   if [[ -x .tools/lean-4.19.0-darwin_aarch64/bin/lean ]]; then
     LEAN_BIN="$PWD/.tools/lean-4.19.0-darwin_aarch64/bin/lean"

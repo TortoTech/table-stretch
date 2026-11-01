@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="764" height="260" viewBox="0 0 764 260" role="img" aria-labelledby="title description">
+<title id="title">Book-grouped evaluation</title>
+<desc id="description">P50 (ms): Pareto DP 0.002, A* 0.002, LCG 0.018, MIP 0.016, CP 0.030; P95 (ms): Pareto DP 0.010, A* 0.011, LCG 0.141, MIP 0.407, CP 1.074; Extra heap P95 (KiB): Pareto DP 10.67, A* 10.99, LCG 213.60, MIP 227.77, CP 566.94; RSS P95 (KiB): Pareto DP 2288.00, A* 2288.00, LCG 3232.00, MIP 3248.00, CP 3728.00; Completed: Pareto DP 1102/1102, A* 1102/1102, LCG 1102/1102, MIP 1102/1102, CP 1095/1102</desc>
+<style>
+text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 14px; fill: #1f2328; font-variant-numeric: tabular-nums; }
+.background { fill: #ffffff; }
+.heading { fill: #f6f8fa; }
+.grid { fill: none; stroke: #d1d9e0; stroke-width: 1; }
+.best { fill: #1a7f37; }
+.focus { fill: none; stroke: #0969da; stroke-width: 2; }
+@media (prefers-color-scheme: dark) {
+  text { fill: #f0f6fc; }
+  .background { fill: #0d1117; }
+  .heading { fill: #161b22; }
+  .grid { stroke: #3d444d; }
+  .best { fill: #3fb950; }
+  .focus { stroke: #58a6ff; }
+}
+</style>
+<rect class="background" x="2" y="2" width="760" height="256"/>
+<rect class="heading" x="2" y="2" width="760" height="46"/>
+<rect class="grid" x="2" y="2" width="760" height="256"/>
+<path class="grid" d="M212 2 V258"/>
+<path class="grid" d="M322 2 V258"/>
+<path class="grid" d="M432 2 V258"/>
+<path class="grid" d="M542 2 V258"/>
+<path class="grid" d="M652 2 V258"/>
+<path class="grid" d="M2 48 H762"/>
+<path class="grid" d="M2 90 H762"/>
+<path class="grid" d="M2 132 H762"/>
+<path class="grid" d="M2 174 H762"/>
+<path class="grid" d="M2 216 H762"/>
+<text x="18" y="30" text-anchor="start" font-weight="600">Metric</text>
+<text x="267" y="30" text-anchor="middle" font-weight="700">Pareto DP</text>
+<text x="377" y="30" text-anchor="middle" font-weight="600">A*</text>
+<text x="487" y="30" text-anchor="middle" font-weight="600">LCG</text>
+<text x="597" y="30" text-anchor="middle" font-weight="600">MIP</text>
+<text x="707" y="30" text-anchor="middle" font-weight="600">CP</text>
+<text x="18" y="74" text-anchor="start">P50 (ms)</text>
+<text x="306" y="74" text-anchor="end" class="best">0.002</text>
+<text x="416" y="74" text-anchor="end">0.002</text>
+<text x="526" y="74" text-anchor="end">0.018</text>
+<text x="636" y="74" text-anchor="end">0.016</text>
+<text x="746" y="74" text-anchor="end">0.030</text>
+<text x="18" y="116" text-anchor="start">P95 (ms)</text>
+<text x="306" y="116" text-anchor="end" class="best">0.010</text>
+<text x="416" y="116" text-anchor="end">0.011</text>
+<text x="526" y="116" text-anchor="end">0.141</text>
+<text x="636" y="116" text-anchor="end">0.407</text>
+<text x="746" y="116" text-anchor="end">1.074</text>
+<text x="18" y="158" text-anchor="start">Extra heap P95 (KiB)</text>
+<text x="306" y="158" text-anchor="end" class="best">10.67</text>
+<text x="416" y="158" text-anchor="end">10.99</text>
+<text x="526" y="158" text-anchor="end">213.60</text>
+<text x="636" y="158" text-anchor="end">227.77</text>
+<text x="746" y="158" text-anchor="end">566.94</text>
+<text x="18" y="200" text-anchor="start">RSS P95 (KiB)</text>
+<text x="306" y="200" text-anchor="end" class="best">2288.00</text>
+<text x="416" y="200" text-anchor="end" class="best">2288.00</text>
+<text x="526" y="200" text-anchor="end">3232.00</text>
+<text x="636" y="200" text-anchor="end">3248.00</text>
+<text x="746" y="200" text-anchor="end">3728.00</text>
+<text x="18" y="242" text-anchor="start">Completed</text>
+<text x="306" y="242" text-anchor="end">1102/1102</text>
+<text x="416" y="242" text-anchor="end">1102/1102</text>
+<text x="526" y="242" text-anchor="end">1102/1102</text>
+<text x="636" y="242" text-anchor="end">1102/1102</text>
+<text x="746" y="242" text-anchor="end">1095/1102</text>
+<rect class="focus" x="212" y="2" width="110" height="256"/>
+</svg>

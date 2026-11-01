@@ -1,0 +1,88 @@
+{
+  "protocol_sha256": "b95daea33708aeaa37de4445491e3e36cc9cda8f024f74bf1dd7bcab9db4c797",
+  "source_sha256": {
+    "Cargo.toml": "8090fe9d5ad1196f6d6a0a7c30877898fc29706eb93a312daf5f1850228eb077",
+    "Cargo.lock": "e63e4fd55801e46cca3b1041c6059f3f46bdc04205aa309574b8314ca21aa7ef",
+    "src/algorithms.rs": "89bc0798588e87fa0e6d7bbc4a0d92f331c27e07585273bb744953393b58f138",
+    "src/lib.rs": "218e0978a90ec38389cbbba3707acda649b4e6c3e0d70ce4825b315b2ecea4ba",
+    "src/main.rs": "9a13838aeaf59c5f7979f986d7aaceb92217df1d9478e4ced3333c8d72d850b0",
+    "src/model_data.rs": "78d8d7c793aa54d2592611c7efe845c547d2a0de61e00eaa504823f8ba8d32a1",
+    "src/pareto.rs": "7d3db4bcd14d5fc1e15d2aab726565266e19b34f9cf634cb8792f6182c5b3dc8",
+    "src/research.rs": "fd816849b75093d765b106c4a2f6f344a965bd5cf444a1fbd589efb289a63f06",
+    "examples/native_worker.rs": "76bc86033aba33de17d07b1b5859ab65fee6765773da0bbf8d3b1fd05bd0c48f",
+    "examples/memory_worker.rs": "bd2108d807a8e5ebcb4c8d244a516f59597b54c38232aec18fde424bdf7afba3",
+    "scripts/benchmark_ablation.py": "cb3be8de6d30f4a4b9c46a47ee3c18abf0a6fe1a545fb15b7b54f8a2707c8ef2",
+    "scripts/ablation_protocol.py": "a1ab32f53d9375a4b1298316db7ea3243d60679f1a14b5e97955f483cf1857f6",
+    "scripts/benchmark_native.py": "68fcf4a4f47ca6b759a1cedbfc944e6938389496bc787955479daf167d938313",
+    "scripts/benchmark_memory.py": "1ba3b1aaf73c8f504aa8dc18f03e6ba548b3843c1a438465bd8fa8c8593bb17f",
+    "scripts/benchmark_unified.py": "090eb5a7b57bf27e43b400a9e993f7933dbda75a1c0323b1a6e78c3b867abde6"
+  },
+  "validation_raw_sha256": {
+    "docs/ablation/validation-pareto-timing.jsonl": "7ab7cdb41edfa5434ca0a0828111a2fa7d42c57799efe8b25f63c231497b4810",
+    "docs/ablation/validation-astar2011-timing.jsonl": "ea1d35017ffb67ddd5d2b9068a8c96de008b79d654fcb93dc0c5199592433622",
+    "docs/ablation/validation-cp2011-timing.jsonl": "3f38a8dcc2e9946c3823d1571eaa8f7a281f6cdbbbef360e65ea9500c615d8a7",
+    "docs/ablation/validation-lcg2011-timing.jsonl": "c0e8d3a8f34d012c787d6bba26f03f131399d13be1dc3b6c3566e33edf2ece42",
+    "docs/ablation/validation-lcg2015-timing.jsonl": "9451a952f867d5fbf76f0ee5885fa11cb9196eef0137e7f0ce2a5f19e03ca044",
+    "docs/ablation/validation-mip2015_unary-timing.jsonl": "2267ad71735c1275cd07c8f0d883c019ee0dc2a000a03a8e626a03a3061bbdd2",
+    "docs/ablation/validation-mip2015_onehot-timing.jsonl": "4eaa218d96f4ee9b542638b2bcfe345dfa8b2231c16950c297bedc2b1c24c8c3",
+    "docs/ablation/validation-mip2015_cellfree-timing.jsonl": "8fb9eff86694317593b4abaec28e98cc0ecb6ac10f76e89c68acfe3f7ed99831"
+  },
+  "selected": {
+    "Pareto DP": "pareto",
+    "A*": "astar2011",
+    "CP": "cp2011",
+    "LCG": "lcg2015",
+    "MIP": "mip2015_cellfree"
+  },
+  "metrics": {
+    "pareto": {
+      "completed": 281,
+      "cases": 281,
+      "p50_ms": 0.002,
+      "p95_ms": 0.0085
+    },
+    "astar2011": {
+      "completed": 281,
+      "cases": 281,
+      "p50_ms": 0.002,
+      "p95_ms": 0.008417
+    },
+    "cp2011": {
+      "completed": 280,
+      "cases": 281,
+      "p50_ms": 0.020375,
+      "p95_ms": 0.391875
+    },
+    "lcg2011": {
+      "completed": 281,
+      "cases": 281,
+      "p50_ms": 0.021292,
+      "p95_ms": 0.255834
+    },
+    "lcg2015": {
+      "completed": 281,
+      "cases": 281,
+      "p50_ms": 0.013542,
+      "p95_ms": 0.093083
+    },
+    "mip2015_unary": {
+      "completed": 281,
+      "cases": 281,
+      "p50_ms": 0.015958,
+      "p95_ms": 0.485125
+    },
+    "mip2015_onehot": {
+      "completed": 281,
+      "cases": 281,
+      "p50_ms": 0.01875,
+      "p95_ms": 0.649417
+    },
+    "mip2015_cellfree": {
+      "completed": 281,
+      "cases": 281,
+      "p50_ms": 0.01075,
+      "p95_ms": 0.210834
+    }
+  },
+  "utc": "2026-11-01T14:59:00.211975+00:00"
+}
