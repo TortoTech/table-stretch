@@ -1,0 +1,7 @@
+/target/
+/.tools/
+/proof/*.olean
+__pycache__/
+*.pyc
+*.fzn
+*.ozn
