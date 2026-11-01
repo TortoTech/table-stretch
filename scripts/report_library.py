@@ -5,7 +5,7 @@ from collections import Counter
 from pathlib import Path
 from benchmark_native import ROOT, METHODS
 from benchmark_unified import sha
-from report_native import NAMES
+from report_native import NAMES, paper_name
 
 
 def main():
@@ -59,14 +59,15 @@ All nine implementations use the same one-second full-call limit, one warmup and
 '''
     subsets={k:{i for i,x in enumerate(inputs) if x['source_kind']==k} for k in counts}
     subsets['challenge']={i for i,x in enumerate(inputs) if x.get('legacy_challenge')}
-    for method in METHODS:
+    timings=json.loads((ROOT/'docs/benchmark-native-summary.json').read_text())['methods']
+    for method in sorted(METHODS, key=lambda m:(timings[m]['p95_ms'],timings[m]['p50_ms'])):
         records={r['case']:r for r in raw[1:] if r['algorithm']==method}
         values=[]
         for kind in ['whole','rectangular-body','ruled-pdf','challenge']:
             ids=subsets[kind]
             complete=sum(all(x['status'] in ('optimal','heuristic') for x in records[i]['runs']) for i in ids)
             values.append(f'{complete}/{len(ids)}')
-        report+='| '+NAMES[method]+' | '+' | '.join(values)+' |\n'
+        report+='| '+paper_name(NAMES[method],method)+' | '+' | '.join(values)+' |\n'
     report+='''
 [Timing report](benchmark-native.md) · [Reference checks](library-validation.json) · [Numeric corpus](../tests/fixtures/ebooks-library.json) · [Inputs](benchmark-library-inputs.json) · [PDF visual review](pdf-table-review.json)
 

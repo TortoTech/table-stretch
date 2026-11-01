@@ -6,14 +6,14 @@ All methods run as **Rust library calls in one process**. Times include preparat
 
 | Method | Completed | P50 (ms) | P95 (ms) |
 | --- | ---: | ---: | ---: |
+| HTML heuristic | 1383/1383 | <0.001 | <0.001 |
 | Pareto DP | 1383/1383 | 0.002 | 0.011 |
 | A* | 1383/1383 | 0.003 | 0.017 |
-| HTML heuristic | 1383/1383 | <0.001 | <0.001 |
-| CP (Pumpkin) | 1367/1383 | 0.081 | 2.079 |
-| LCG (Pumpkin) | 1383/1383 | 0.061 | 0.514 |
-| MIP (microlp) | 1383/1383 | 0.063 | 1.155 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 0.061 | 0.514 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 0.063 | 1.155 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1367/1383 | 0.081 | 2.079 |
 
-Fastest variant per family, ranked by completion rate then P95. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 733/1383 cases.
+One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 733/1383 cases.
 
 [Dataset coverage and extraction](library-coverage.md). The expanded dataset includes complete EPUB tables, rectangular bodies, and visually reviewed PDF tables.
 
@@ -21,15 +21,15 @@ Fastest variant per family, ranked by completion rate then P95. Unfinished runs 
 
 | Method | Completed | P50 (ms) | P95 (ms) |
 | --- | ---: | ---: | ---: |
+| HTML heuristic | 1383/1383 | <0.001 | <0.001 |
 | Pareto DP | 1383/1383 | 0.002 | 0.011 |
 | A* | 1383/1383 | 0.003 | 0.017 |
-| HTML heuristic | 1383/1383 | <0.001 | <0.001 |
-| CP (2011, Pumpkin) | 1367/1383 | 0.081 | 2.079 |
-| LCG (2011, Pumpkin) | 1383/1383 | 0.088 | 0.831 |
-| LCG (2015 cell-free, Pumpkin) | 1383/1383 | 0.061 | 0.514 |
-| MIP (unary, microlp) | 1383/1383 | 0.063 | 1.155 |
-| MIP (one-hot, microlp) | 1379/1383 | 0.081 | 2.757 |
-| MIP (cell-free, microlp) | 1383/1383 | 0.059 | 1.164 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 1383/1383 | 0.061 | 0.514 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 1383/1383 | 0.088 | 0.831 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 1383/1383 | 0.063 | 1.155 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 1383/1383 | 0.059 | 1.164 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 1367/1383 | 0.081 | 2.079 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | 1379/1383 | 0.081 | 2.757 |
 
 Each percentile uses one median per case. Failures and timeouts are censored at the common limit, including in selection. A case completes only when every measured repetition completes. All returned layouts are checked against the original profiles and the fixed reference optimum.
 
@@ -39,15 +39,15 @@ Medians over completed cases only; each case uses the median of its repetitions.
 
 | Method | Prepare (ms) | Model (ms) | Search (ms) | Finalize (ms) |
 | --- | ---: | ---: | ---: | ---: |
+| HTML heuristic | 0.0002 | 0.0000 | 0.0000 | 0.0000 |
 | Pareto DP | 0.0017 | 0.0000 | 0.0002 | 0.0000 |
 | A* | 0.0013 | 0.0000 | 0.0017 | 0.0001 |
-| HTML heuristic | 0.0002 | 0.0000 | 0.0000 | 0.0000 |
-| CP (2011, Pumpkin) | 0.0016 | 0.0295 | 0.0460 | 0.0001 |
-| LCG (2011, Pumpkin) | 0.0017 | 0.0300 | 0.0549 | 0.0001 |
-| LCG (2015 cell-free, Pumpkin) | 0.0016 | 0.0248 | 0.0333 | 0.0001 |
-| MIP (unary, microlp) | 0.0016 | 0.0044 | 0.0563 | 0.0001 |
-| MIP (one-hot, microlp) | 0.0016 | 0.0057 | 0.0727 | 0.0001 |
-| MIP (cell-free, microlp) | 0.0017 | 0.0050 | 0.0508 | 0.0001 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 0.0016 | 0.0248 | 0.0333 | 0.0001 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0017 | 0.0300 | 0.0549 | 0.0001 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 0.0016 | 0.0044 | 0.0563 | 0.0001 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 0.0017 | 0.0050 | 0.0508 | 0.0001 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0016 | 0.0295 | 0.0460 | 0.0001 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | 0.0016 | 0.0057 | 0.0727 | 0.0001 |
 
 ## Reproduce
 

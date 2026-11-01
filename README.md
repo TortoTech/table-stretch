@@ -43,14 +43,14 @@ All methods run as **Rust library calls in one process**. Times include preparat
 
 | Method | Completed | P50 (ms) | P95 (ms) |
 | --- | ---: | ---: | ---: |
+| HTML heuristic | 1383/1383 | <0.001 | <0.001 |
 | Pareto DP | 1383/1383 | 0.002 | 0.011 |
 | A* | 1383/1383 | 0.003 | 0.017 |
-| HTML heuristic | 1383/1383 | <0.001 | <0.001 |
-| CP (Pumpkin) | 1367/1383 | 0.081 | 2.079 |
-| LCG (Pumpkin) | 1383/1383 | 0.061 | 0.514 |
-| MIP (microlp) | 1383/1383 | 0.063 | 1.155 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 0.061 | 0.514 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 0.063 | 1.155 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1367/1383 | 0.081 | 2.079 |
 
-Fastest variant per family, ranked by completion rate then P95. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 733/1383 cases.
+One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in these percentiles. HTML matched the optimum in 733/1383 cases.
 <!-- benchmark:end -->
 
 [Library coverage](docs/library-coverage.md) · [Benchmark report and all variants](docs/benchmark-native.md) · [External solver reference](docs/benchmark-unified.md)

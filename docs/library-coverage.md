@@ -28,15 +28,15 @@ All nine implementations use the same one-second full-call limit, one warmup and
 
 | Method | Whole EPUB | EPUB bodies | PDF | Retained challenges |
 | --- | ---: | ---: | ---: | ---: |
+| HTML heuristic | 936/936 | 432/432 | 15/15 | 63/63 |
 | Pareto DP | 936/936 | 432/432 | 15/15 | 63/63 |
 | A* | 936/936 | 432/432 | 15/15 | 63/63 |
-| HTML heuristic | 936/936 | 432/432 | 15/15 | 63/63 |
-| CP (2011, Pumpkin) | 925/936 | 427/432 | 15/15 | 57/63 |
-| LCG (2011, Pumpkin) | 936/936 | 432/432 | 15/15 | 63/63 |
-| LCG (2015 cell-free, Pumpkin) | 936/936 | 432/432 | 15/15 | 63/63 |
-| MIP (unary, microlp) | 936/936 | 432/432 | 15/15 | 63/63 |
-| MIP (one-hot, microlp) | 934/936 | 430/432 | 15/15 | 61/63 |
-| MIP (cell-free, microlp) | 936/936 | 432/432 | 15/15 | 63/63 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 936/936 | 432/432 | 15/15 | 63/63 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 936/936 | 432/432 | 15/15 | 63/63 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 936/936 | 432/432 | 15/15 | 63/63 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 936/936 | 432/432 | 15/15 | 63/63 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 925/936 | 427/432 | 15/15 | 57/63 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | 934/936 | 430/432 | 15/15 | 61/63 |
 
 [Timing report](benchmark-native.md) · [Reference checks](library-validation.json) · [Numeric corpus](../tests/fixtures/ebooks-library.json) · [Inputs](benchmark-library-inputs.json) · [PDF visual review](pdf-table-review.json)
 

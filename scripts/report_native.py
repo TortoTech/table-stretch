@@ -19,6 +19,23 @@ FAMILIES = {'Pareto DP':['pareto'], 'A*':['astar2011'], 'HTML heuristic':['html'
             'MIP (microlp)':['mip2015_unary','mip2015_onehot','mip2015_cellfree']}
 
 
+PAPERS = {
+    'cp2011': 'https://doi.org/10.1145/2034691.2034697',
+    'lcg2011': 'https://doi.org/10.1145/2034691.2034697',
+    'lcg2015': 'https://doi.org/10.1287/ijoc.2014.0637',
+    'mip2015_unary': 'https://doi.org/10.1287/ijoc.2014.0637',
+    'mip2015_onehot': 'https://doi.org/10.1287/ijoc.2014.0637',
+    'mip2015_cellfree': 'https://doi.org/10.1287/ijoc.2014.0637',
+}
+
+
+def paper_name(name, method):
+    if method not in PAPERS:
+        return name
+    label, separator, suffix = name.partition(' ')
+    return f'[{label}]({PAPERS[method]}){separator}{suffix}'
+
+
 def p95(values):
     return sorted(values)[math.ceil(len(values)*.95)-1]
 
@@ -76,12 +93,12 @@ def main():
 
     def table(featured):
         text = '| Method | Completed | P50 (ms) | P95 (ms) |\n| --- | ---: | ---: | ---: |\n'
-        for name,m in featured:
+        for name,m in sorted(featured, key=lambda item: (summary[item[1]]['p95_ms'], summary[item[1]]['p50_ms'])):
             s = summary[m]
-            text += f'| {name} | {s["completed"]}/{n} | {fmt_ms(s["p50_ms"])} | {fmt_ms(s["p95_ms"])} |\n'
+            text += f'| {paper_name(name, m)} | {s["completed"]}/{n} | {fmt_ms(s["p50_ms"])} | {fmt_ms(s["p95_ms"])} |\n'
         return text
     featured = intro + table(selected.items())
-    featured += f'\nFastest variant per family, ranked by completion rate then P95. Unfinished runs count as {env["timeout_ms"]/1000:g} second in these percentiles. HTML matched the optimum in {summary["html"]["matched"]}/{n} cases.\n'
+    featured += f'\nOne variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as {env["timeout_ms"]/1000:g} second in these percentiles. HTML matched the optimum in {summary["html"]["matched"]}/{n} cases.\n'
     readme_path = ROOT/'README.md'; readme = readme_path.read_text()
     begin, end = '<!-- benchmark:start -->', '<!-- benchmark:end -->'
     a,b = readme.index(begin)+len(begin),readme.index(end)
@@ -91,9 +108,9 @@ def main():
     report += '\n## All variants\n\n'+table((NAMES[m],m) for m in METHODS)
     report += '\nEach percentile uses one median per case. Failures and timeouts are censored at the common limit, including in selection. A case completes only when every measured repetition completes. All returned layouts are checked against the original profiles and the fixed reference optimum.\n'
     report += '\n## Phase medians\n\nMedians over completed cases only; each case uses the median of its repetitions. These component medians need not sum to the total median. Solver teardown is included in search.\n\n| Method | Prepare (ms) | Model (ms) | Search (ms) | Finalize (ms) |\n| --- | ---: | ---: | ---: | ---: |\n'
-    for m in METHODS:
+    for m in sorted(METHODS, key=lambda m: (summary[m]['p95_ms'], summary[m]['p50_ms'])):
         values = summary[m]['phases_ms']
-        report += '| '+NAMES[m]+' | '+' | '.join(f'{values[k]:.4f}' if k in values else '—' for k in ['prepare_ns','model_ns','search_ns','finalize_ns'])+' |\n'
+        report += '| '+paper_name(NAMES[m], m)+' | '+' | '.join(f'{values[k]:.4f}' if k in values else '—' for k in ['prepare_ns','model_ns','search_ns','finalize_ns'])+' |\n'
     report += '\n## Reproduce\n\n```sh\npython3 scripts/benchmark_native.py\npython3 scripts/report_native.py\n```\n\n'
     report += 'One warmup per method/case precedes the measured repetitions. Method order is shuffled with seed 1. Every call creates a fresh solver; there is no reused model or cross-method incumbent. All methods share the full-call wall limit; a watchdog kills and restarts the worker if cooperative termination overruns by two seconds. Raw records preserve errors, actual elapsed times and worker generations. Count limits are disabled for this benchmark.\n\n'
     report += f'[Raw measurements](benchmark-native.jsonl) · [Summary](benchmark-native-summary.json) · [Inputs]({path.name}) · [Model mappings](native-models.md)\n\n'
