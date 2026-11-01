@@ -5,6 +5,13 @@ use std::{cmp::Ordering, collections::BinaryHeap};
 /// explicit hard column bounds and mandatory full-container stretching.
 /// A heuristic: optimal is always false, even if it happens to hit the optimum.
 pub fn solve_html(table: &Table) -> Result<Layout, Error> {
+    html_impl(table, None)
+}
+
+pub(super) fn html_impl(
+    table: &Table,
+    mut clock: Option<&mut PhaseClock>,
+) -> Result<Layout, Error> {
     let Prepared { budget, suffix, .. } = prepare(table, false)?;
     let mut widths: Vec<_> = suffix.windows(2).map(|s| (s[0] - s[1]) as u32).collect();
     let preferred: Vec<_> = table
@@ -27,10 +34,13 @@ pub fn solve_html(table: &Table) -> Result<Layout, Error> {
         .map(|(&p, &w)| (p - w) as u64)
         .sum();
     let extra = (budget as u64 - suffix[0]).min(capacity);
+    if let Some(clock) = clock.as_deref_mut() {
+        clock.prepared();
+    }
     for (w, &p) in widths.iter_mut().zip(&preferred) {
         *w += (extra * (p - *w) as u64).checked_div(capacity).unwrap_or(0) as u32;
     }
-    finish(table, budget, widths, Stats::default(), false)
+    finish_measured(table, budget, widths, Stats::default(), false, clock)
 }
 
 struct Node {
@@ -81,6 +91,14 @@ fn lower_bound(state: &State, budget: u32, areas: &[Vec<u128>]) -> Result<u64, E
 /// This implementation supports only simple cells and adds integer bounds.
 /// It omits their optional heuristic incumbent and spanning-cell machinery.
 pub fn solve_astar(table: &Table, limits: Limits) -> Result<Layout, Error> {
+    astar_impl(table, limits, None)
+}
+
+pub(super) fn astar_impl(
+    table: &Table,
+    limits: Limits,
+    mut clock: Option<&mut PhaseClock>,
+) -> Result<Layout, Error> {
     if limits.max_generated == 0 || limits.max_comparisons == 0 || limits.max_frontier == 0 {
         return Err(Error::Invalid("search limits must be positive"));
     }
@@ -104,6 +122,9 @@ pub fn solve_astar(table: &Table, limits: Limits) -> Result<Layout, Error> {
                 .ok_or(Error::Overflow)?;
         }
     }
+    if let Some(clock) = clock.as_deref_mut() {
+        clock.prepared();
+    }
     let initial = State {
         used: 0,
         heights: vec![0; rows],
@@ -123,7 +144,7 @@ pub fn solve_astar(table: &Table, limits: Limits) -> Result<Layout, Error> {
     while let Some(node) = heap.pop() {
         let j = node.state.widths.len();
         if j == n {
-            return finish(table, budget, node.state.widths, stats, true);
+            return finish_measured(table, budget, node.state.widths, stats, true, clock);
         }
         for (w, h) in candidates[j].iter().rev() {
             if stats.generated >= limits.max_generated {

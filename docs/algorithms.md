@@ -41,7 +41,8 @@
 cargo run --locked --release -- --algorithm astar2011 examples/table.json
 cargo run --locked --release -- --algorithm html examples/table.json
 python3 scripts/benchmark_corpus.py --output docs/benchmark-rust.jsonl
-python3 scripts/compare_solvers.py --minizinc /path/to/minizinc
+python3 scripts/benchmark_unified.py --minizinc /path/to/minizinc
+python3 scripts/report_unified.py
 python3 scripts/check_models.py
 ```
 
@@ -49,11 +50,13 @@ python3 scripts/check_models.py
 
 ## 计时范围
 
-Rust `solve` 包括验证、候选预处理、搜索和拉伸；不包括文字曲线构造，后者单独测量。
+主比较采用[统一端到端协议](benchmark-unified.md)：同一组 64 个场景、相同曲线 JSON、相同 `unified_worker` 独立进程入口。父进程从启动前计时到退出并收完输出，包含输入读取、验证、公共可行布局兜底、方法自身预处理、外部模型导出和编译、搜索、拉伸和序列化。所有方法共同排除文本尺寸曲线构造；它是主比较的输入生成阶段，不是只为 Rust 预先完成的工作。
 
-外部端到端耗时包括进程启动、MiniZinc 编译、求解及输出进程结束，不包括 JSON 文件准备和布局复核。`solveTime` 是引擎自身报告的搜索时间，与 Rust `solve` 并非完全相同的范围。Chuffed 统计精度为毫秒，显示 0 不代表零耗时。
+每次总墙钟限时 1 秒，超时杀死整个进程组。基准 worker 关闭 Rust 专有计数限制，外部求解器不再另享“编译后 1 秒”；库的生产默认限制未变。统一预热 1 次、测量 3 次，单线程、种子 1、随机化方法顺序，串行运行。主报告计入所有场景与超时，并给出 PAR-2 及相同成功子集。
 
-Rust 默认计数限制与外部 1 秒搜索限制不是相同预算。报告保留成功率、超限及共同成功子集，不仅比较不同成功子集的平均值。实验保留版本、哈希、每次计时和状态。外部求解时间限制不包含模型编译；另设进程级兜底超时。
+阶段耗时另列用于诊断。Rust 的准备/搜索/拉伸由 `Instant` 计时；外部 `flatTime`、`initTime`、`solveTime` 由各引擎报告，边界和精度不同，不作为跨方法主排名。Chuffed 的搜索统计精度为毫秒，显示 0 不代表零耗时。端到端主表的计时边界已经统一，可以比较当前实现从尺寸曲线到完整布局的实际耗时。
+
+`benchmark_corpus.py` 的库函数计时及 `compare_solvers.py` 的旧外部计时保留在[历史报告](benchmark.md)。它们不含相同范围的启动、输入/输出成本，并采用不同资源限制，不能与统一报告混合计算速度倍数。
 
 ## 编译优化回归
 

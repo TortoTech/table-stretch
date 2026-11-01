@@ -1,4 +1,7 @@
-use table_stretch::{Column, Error, Limits, Profile, Step, Table, solve, solve_astar, solve_html};
+use table_stretch::{
+    Column, Error, Limits, NativeAlgorithm, Profile, Step, Table, solve, solve_astar, solve_html,
+    solve_measured,
+};
 
 fn profile(points: &[(u32, u32)]) -> Profile {
     Profile {
@@ -51,6 +54,8 @@ fn check(t: &Table) {
     for actual in [
         solve(t, Limits::default()),
         solve_astar(t, Limits::default()),
+        solve_measured(t, Limits::default(), NativeAlgorithm::Pareto).map(|(layout, _)| layout),
+        solve_measured(t, Limits::default(), NativeAlgorithm::Astar2011).map(|(layout, _)| layout),
     ] {
         match (expected, actual) {
             (None, Err(Error::Infeasible(_))) => (),
@@ -73,6 +78,11 @@ fn check(t: &Table) {
     }
     if let Some(expected) = expected {
         let html = solve_html(t).unwrap();
+        let measured = solve_measured(t, Limits::default(), NativeAlgorithm::Html)
+            .unwrap()
+            .0;
+        assert_eq!(html.column_widths, measured.column_widths);
+        assert_eq!(html.row_heights, measured.row_heights);
         assert!(!html.optimal);
         assert!(html.total_height >= expected);
         assert_eq!(

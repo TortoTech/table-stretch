@@ -4,39 +4,34 @@
 
 采用换行断点离散化 + Pareto 动态规划。提供 Rust 库、JSON 命令行、数学证明、Lean 4 抽象算法证明，以及从 torto 本地 EPUB 书库提取的真实表格回归样本。
 
-现已加入 [已有研究算法](docs/algorithms.md)：Rust A*（2011）与 W3C 比例法，以及实际 Gecode CP、Chuffed CP/SAT＋LCG（2011/2015 两种模型）、HiGHS MIP（2015 unary/one-hot 两种编码）。扩大到 25 本书的 317 个表格，耗时和失败案例见 [最新对比报告](docs/benchmark.md)。
+现已加入 [已有研究算法](docs/algorithms.md)：Rust A*（2011）与 W3C 比例法，以及实际 Gecode CP、Chuffed CP/SAT＋LCG（2011/2015 两种模型）、HiGHS MIP（2015 unary/one-hot 两种编码）。扩大到 25 本书的 317 个表格，统一计时、超时与结果质量见 [最新对比报告](docs/benchmark-unified.md)。
 
 ## 当前 benchmark
 
-实测日期：2026-10-31（US/Pacific）。环境：Apple M6、16 GiB 内存、macOS 27.0、Rust 1.99.1，release 构建、单线程。
+实测日期：2026-10-31（US/Pacific）。Apple M6、16 GiB 内存、macOS-27.0-arm64-arm-64bit、Rust 1.99.1，release 构建、单线程。
 
-从本地书库的 **25 本 EPUB 提取 317 个真实表格**，最多 10 列、150 行，包含中文长文本；测试 **2332 个表格/宽度场景**。以下为每场景预热 1 次、测量 5 次后取中位数，再在成功场景间统计的分位数，单位均为 **ms**。
+**8 种方法现使用统一标准重测**：同一组 64 个复杂/多样场景、同一份曲线 JSON、同一个 Rust 进程入口；每次从启动进程前到进程退出及输出收完计时。输入读取、验证、方法自身预处理、模型编译、搜索、最终拉伸与输出全部计入；每次总墙钟限时 **1 秒**。Rust 搜索次数限制在本次基准中关闭，生产库默认值不变。每场景/方法预热 1 次、测量 3 次，各方法按固定种子打乱顺序，串行运行。
 
-| Rust 方法 | 成功完成 | 搜索超限 | 中位耗时 | P95 | P99 | 最慢成功 |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| **Pareto DP（当前默认）** | 2324/2332 | 8 | 0.005000 | 0.183167 | 1.294375 | 20.387333 |
-| A* 2011（精确） | 2332/2332 | 0 | 0.002625 | 0.010166 | 0.024917 | 0.109667 |
-| W3C 比例法（启发式） | 2332/2332 | 0 | 0.000167 | 0.000375 | 0.000708 | 0.001250 |
+场景沿用此前外部测试的选择，来自 25 本书、317 个真实表格的 2332 个宽度场景，包含此前全部 8 个 Pareto 搜索超限案例。这是复杂场景子集，不是全书库的随机抽样。
 
-两个精确算法在共同成功的场景中最优高度一致。**这批样本中，A* 的耗时和成功率优于当前 Pareto 实现。** Pareto 的 8 个失败场景触发了 2000 万次比较上限，不是不可行，也未返回伪最优结果。比例法仅保证可行，在 **887/2332** 个场景中高度严格高于最优值。
+| 方法 | 完成场景 | 超时运行 | 端到端 P50（ms） | P95（ms） | PAR-2（ms） |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| **Pareto DP（当前默认）** | 64/64 | 0/192 | 2.280 | 119.912 | 19.461 |
+| A* 2011（Rust） | 64/64 | 0/192 | 2.170 | 2.497 | 2.200 |
+| W3C 比例法（启发式） | 64/64 | 0/192 | 2.202 | 2.452 | — |
+| 2011 CP / Gecode | 64/64 | 0/192 | 77.240 | 95.766 | 80.370 |
+| 2011 CP/SAT＋LCG / Chuffed | 62/64 | 6/192 | 72.612 | 755.609 | 191.050 |
+| 2015 cell-free＋LCG / Chuffed | 64/64 | 0/192 | 69.331 | 497.700 | 113.251 |
+| 2015 MIP unary / HiGHS | 64/64 | 0/192 | 76.068 | 375.362 | 115.564 |
+| 2015 MIP one-hot / HiGHS | 64/64 | 0/192 | 77.120 | 301.636 | 102.890 |
 
-Rust 求解耗时包含输入验证、候选预处理、搜索和最终拉伸，**不含文本尺寸曲线构造**。单表曲线构造单独测量：中位数 0.001708 ms，P95 0.039958 ms，最大 1.096625 ms。
+“完成场景”要求 3 次均在时限内完成；精确方法须证明最优，W3C 仅要求返回可行解。P50/P95 在**全部 64 个场景**上统计：先取每场景 3 次耗时的中位数，再取跨场景分位数；超时按 1000 ms 截断。PAR-2 对全部 192 次运行取平均：成功用实际耗时，超时罚为 2000 ms，越小越好；启发式不参与该精确求解评分。不能把截断耗时当作超时任务真正完成所需时间。
 
-另外选取 **同一组 64 个复杂/多样场景**，包含全部 Pareto 超限案例，对比实际外部求解器。预热 1 次、测量 3 次，单线程、搜索限时 1 秒；“最优完成”要求三次都证明最优。
+当前默认 Pareto 完成 **64/64** 个场景，A* 完成 **64/64**；所有已证明最优的结果均与参考最优高度一致。W3C 比例法在 34/64 个场景未达到最优高度。Rust 三种方法的端到端 P50 为 2.170–2.280 ms，其中已计入进程及输入输出成本；搜索差异另见阶段诊断。耗时表示当前实现的部署成本，不能据此推断原论文历史实现的速度。
 
-| 研究模型 / 求解器 | 最优完成 | 成功场景端到端中位耗时（ms） | 引擎 solveTime 中位数（ms） |
-| --- | ---: | ---: | ---: |
-| 2011 CP / Gecode | 64/64 | 85.707 | 0.239 |
-| 2011 CP/SAT＋LCG / Chuffed | 60/64 | 86.555 | 4.000 |
-| 2015 cell-free＋LCG / Chuffed | 64/64 | 87.366 | 4.000 |
-| 2015 MIP unary / HiGHS | 64/64 | 81.977 | 3.750 |
-| 2015 MIP one-hot / HiGHS | 64/64 | 82.231 | 5.750 |
+所有方法都从预先构造的相同尺寸曲线开始，因此共同排除文本曲线构造、字体 shaping、EPUB 解压和绘制。超时保留截止时刻前收到的最佳可行布局，不标记为最优。MiniZinc 统一使用 `-O0`，相关编译器回归见[算法说明](docs/algorithms.md#编译优化回归)。
 
-外部端到端耗时包括进程启动、MiniZinc 编译和求解，**不能直接与 Rust 库函数耗时解释为相同范围的算法速度**。引擎时间也不包含 Rust 求解器承担的全部预处理；Chuffed 统计精度为毫秒。各方法资源限制和成功子集不同，全部精确方法共同成功的 54 个场景另有同子集统计。外部模型统一使用 `-O0`，避开独立穷举发现的 MiniZinc 编译优化回归。
-
-这些是**真实内容、简化词宽/CJK 字符宽模型**下的实测，不包含真实字体 shaping、CSS、EPUB 解压或 torto 绘制；不支持的合并单元格未纳入计时。不能由这批样本推断任意规模表格的实时性能。
-
-详情与复现：[完整报告](docs/benchmark.md) · [汇总数据](docs/benchmark-summary.json) · [Rust 原始计时](docs/benchmark-rust.jsonl) · [外部求解器原始计时](docs/benchmark-external.jsonl) · [算法范围与复现命令](docs/algorithms.md)。
+详情与复现：[统一报告](docs/benchmark-unified.md) · [原始记录](docs/benchmark-unified.jsonl) · [相同输入及哈希](docs/benchmark-unified-inputs.json) · [汇总](docs/benchmark-unified-summary.json)。[旧报告](docs/benchmark.md)保留历史库函数计时，不再作为跨方法的主对比。
 
 ## 运行
 
@@ -93,7 +88,7 @@ let layout = solve(&table, Limits::default())?;
 - [模型与完整数学证明](docs/proof.md)：断点完备性、剪枝安全性、全局最优性、拉伸保持最优。
 - [Lean 4 证明](proof/Optimality.lean)：机器检查抽象 Pareto 搜索的覆盖性、可行性和最优性。
 - [真实 EPUB 测试报告](docs/validation.md) 与 [原始结果](docs/corpus-results.json)。
-- [扩大书库及全部方法耗时对比](docs/benchmark.md)；[实现范围与计时口径](docs/algorithms.md)。
+- [全部方法统一端到端耗时对比](docs/benchmark-unified.md)；[实现范围与计时口径](docs/algorithms.md)。
 
 Lean 证明**不是 Rust 源码的端到端验证**。输入曲线完备性、Rust 与数学模型的对应、断点构造、整数实现及余量分配仍依靠文档论证和差分测试。没有把有限测试当作所有输入上的形式化证明。
 
@@ -122,8 +117,9 @@ python3 scripts/extract_epub_tables.py --tables 0 --per-book 0 \
   --max-columns 64 --max-rows 1000 --max-tokens 5000 \
   --output tests/fixtures/ebooks-expanded.json
 python3 scripts/benchmark_corpus.py --output docs/benchmark-rust.jsonl
-python3 scripts/compare_solvers.py --minizinc /path/to/minizinc
-python3 scripts/report_benchmarks.py
+# 主对比使用已提交的同一组 64 个场景，不需要重新访问书库。
+python3 scripts/benchmark_unified.py --minizinc /path/to/minizinc
+python3 scripts/report_unified.py
 ```
 
-CP/LCG/MIP 由 MiniZinc 及实际外部求解器执行，Rust 负责统一尺寸模型导出，Python 负责实验编排。安装官方 MiniZinc 包后可指定 CLI 路径；本机隔离安装路径记录在 `.tools/minizinc-path.txt`。外部模型独立穷举检查使用 `python3 scripts/check_models.py`。
+CP/LCG/MIP 由 MiniZinc 及实际外部求解器执行，全部方法使用同一个 Rust worker，Python 负责统一计时和进程组超时终止。安装官方 MiniZinc 包后可指定 CLI 路径；本机隔离安装路径记录在 `.tools/minizinc-path.txt`。外部模型独立穷举检查使用 `python3 scripts/check_models.py`。旧脚本 `compare_solvers.py` / `report_benchmarks.py` 仅用于复现历史报告；`benchmark_corpus.py` 保留全语料库函数诊断，不作为跨引擎主对比。

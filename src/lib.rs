@@ -4,6 +4,54 @@
 
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use std::time::Instant;
+
+/// Instrumentation for the native benchmark only; ordinary solve calls do not
+/// read clocks. Search includes search-state initialization, not final stretch.
+#[derive(Default, Debug, Serialize)]
+pub struct PhaseTimes {
+    pub prepare_ns: u128,
+    pub search_ns: u128,
+    pub finalize_ns: u128,
+}
+
+pub enum NativeAlgorithm {
+    Pareto,
+    Astar2011,
+    Html,
+}
+
+struct PhaseClock {
+    start: Instant,
+    times: PhaseTimes,
+}
+impl PhaseClock {
+    fn prepared(&mut self) {
+        self.times.prepare_ns = self.start.elapsed().as_nanos();
+        self.start = Instant::now();
+    }
+    fn searched(&mut self) {
+        self.times.search_ns = self.start.elapsed().as_nanos();
+        self.start = Instant::now();
+    }
+}
+
+pub fn solve_measured(
+    table: &Table,
+    limits: Limits,
+    algorithm: NativeAlgorithm,
+) -> Result<(Layout, PhaseTimes), Error> {
+    let mut clock = PhaseClock {
+        start: Instant::now(),
+        times: PhaseTimes::default(),
+    };
+    let layout = match algorithm {
+        NativeAlgorithm::Pareto => solve_impl(table, limits, Some(&mut clock)),
+        NativeAlgorithm::Astar2011 => algorithms::astar_impl(table, limits, Some(&mut clock)),
+        NativeAlgorithm::Html => algorithms::html_impl(table, Some(&mut clock)),
+    }?;
+    Ok((layout, clock.times))
+}
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
@@ -291,6 +339,14 @@ fn prepare(table: &Table, build_candidates: bool) -> Result<Prepared, Error> {
 /// Solve exactly over the supplied complete staircase profiles, then stretch
 /// to exactly table.width without violating column upper bounds.
 pub fn solve(table: &Table, limits: Limits) -> Result<Layout, Error> {
+    solve_impl(table, limits, None)
+}
+
+fn solve_impl(
+    table: &Table,
+    limits: Limits,
+    mut clock: Option<&mut PhaseClock>,
+) -> Result<Layout, Error> {
     if limits.max_generated == 0 || limits.max_comparisons == 0 || limits.max_frontier == 0 {
         return Err(Error::Invalid("search limits must be positive"));
     }
@@ -300,6 +356,9 @@ pub fn solve(table: &Table, limits: Limits) -> Result<Layout, Error> {
         candidates,
         suffix,
     } = prepare(table, true)?;
+    if let Some(clock) = clock.as_deref_mut() {
+        clock.prepared();
+    }
     let mut stats = Stats {
         candidates_per_column: candidates.iter().map(Vec::len).collect(),
         peak_frontier: 1,
@@ -383,7 +442,25 @@ pub fn solve(table: &Table, limits: Limits) -> Result<Layout, Error> {
         }
     }
     let (_, best) = best.ok_or(Error::Infeasible("no layout"))?;
-    finish(table, budget, best.widths, stats, true)
+    finish_measured(table, budget, best.widths, stats, true, clock)
+}
+
+fn finish_measured(
+    table: &Table,
+    budget: u32,
+    widths: Vec<u32>,
+    stats: Stats,
+    optimal: bool,
+    mut clock: Option<&mut PhaseClock>,
+) -> Result<Layout, Error> {
+    if let Some(clock) = clock.as_deref_mut() {
+        clock.searched();
+    }
+    let layout = finish(table, budget, widths, stats, optimal)?;
+    if let Some(clock) = clock {
+        clock.times.finalize_ns = clock.start.elapsed().as_nanos();
+    }
+    Ok(layout)
 }
 
 fn finish(

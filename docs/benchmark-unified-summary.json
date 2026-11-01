@@ -1,0 +1,541 @@
+{
+  "cases": 64,
+  "repeats": 3,
+  "common_completed_cases": 62,
+  "common_selection": [
+    [
+      3,
+      38
+    ],
+    [
+      5,
+      28
+    ],
+    [
+      6,
+      35
+    ],
+    [
+      7,
+      50
+    ],
+    [
+      8,
+      18
+    ],
+    [
+      9,
+      35
+    ],
+    [
+      10,
+      27
+    ],
+    [
+      12,
+      36
+    ],
+    [
+      13,
+      18
+    ],
+    [
+      14,
+      30
+    ],
+    [
+      15,
+      22
+    ],
+    [
+      17,
+      30
+    ],
+    [
+      18,
+      31
+    ],
+    [
+      19,
+      32
+    ],
+    [
+      21,
+      36
+    ],
+    [
+      23,
+      25
+    ],
+    [
+      40,
+      117
+    ],
+    [
+      60,
+      204
+    ],
+    [
+      65,
+      52
+    ],
+    [
+      75,
+      35
+    ],
+    [
+      76,
+      83
+    ],
+    [
+      77,
+      83
+    ],
+    [
+      85,
+      146
+    ],
+    [
+      85,
+      306
+    ],
+    [
+      95,
+      76
+    ],
+    [
+      103,
+      56
+    ],
+    [
+      105,
+      116
+    ],
+    [
+      105,
+      126
+    ],
+    [
+      105,
+      197
+    ],
+    [
+      105,
+      332
+    ],
+    [
+      105,
+      467
+    ],
+    [
+      105,
+      603
+    ],
+    [
+      119,
+      46
+    ],
+    [
+      134,
+      111
+    ],
+    [
+      134,
+      140
+    ],
+    [
+      134,
+      280
+    ],
+    [
+      134,
+      513
+    ],
+    [
+      134,
+      746
+    ],
+    [
+      134,
+      980
+    ],
+    [
+      155,
+      166
+    ],
+    [
+      155,
+      284
+    ],
+    [
+      155,
+      402
+    ],
+    [
+      155,
+      521
+    ],
+    [
+      165,
+      55
+    ],
+    [
+      165,
+      86
+    ],
+    [
+      165,
+      88
+    ],
+    [
+      165,
+      121
+    ],
+    [
+      165,
+      155
+    ],
+    [
+      169,
+      74
+    ],
+    [
+      179,
+      52
+    ],
+    [
+      181,
+      64
+    ],
+    [
+      192,
+      46
+    ],
+    [
+      199,
+      28
+    ],
+    [
+      226,
+      68
+    ],
+    [
+      226,
+      141
+    ],
+    [
+      226,
+      1031
+    ],
+    [
+      226,
+      1374
+    ],
+    [
+      231,
+      35
+    ],
+    [
+      232,
+      20
+    ],
+    [
+      252,
+      43
+    ],
+    [
+      283,
+      19
+    ],
+    [
+      287,
+      68
+    ]
+  ],
+  "methods": {
+    "pareto": {
+      "completed_cases": 64,
+      "optimal_cases": 64,
+      "timeout_runs": 0,
+      "capped_wall_ms": {
+        "median": 2.2800000000000002,
+        "p95": 119.911667,
+        "max": 222.966958
+      },
+      "successful_wall_ms": {
+        "median": 2.2800000000000002,
+        "p95": 119.911667,
+        "max": 222.966958
+      },
+      "common_wall_ms": {
+        "median": 2.2723335000000002,
+        "p95": 119.911667,
+        "max": 222.966958
+      },
+      "par2_ms": 19.460854088541666,
+      "timeout_gap": null,
+      "timeout_missing_feasible": 0,
+      "equal_reference_cases": 64,
+      "phase_common": {
+        "read_ns": 32479.0,
+        "fallback_ns": 2750.0,
+        "native_prepare_ns": 8208.5,
+        "native_search_ns": 78084.0,
+        "native_finalize_ns": 333.5,
+        "export_ns": null,
+        "flat_seconds": null,
+        "init_seconds": null,
+        "solve_seconds": null
+      }
+    },
+    "astar2011": {
+      "completed_cases": 64,
+      "optimal_cases": 64,
+      "timeout_runs": 0,
+      "capped_wall_ms": {
+        "median": 2.1702500000000002,
+        "p95": 2.497167,
+        "max": 2.7195
+      },
+      "successful_wall_ms": {
+        "median": 2.1702500000000002,
+        "p95": 2.497167,
+        "max": 2.7195
+      },
+      "common_wall_ms": {
+        "median": 2.1702500000000002,
+        "p95": 2.497167,
+        "max": 2.7195
+      },
+      "par2_ms": 2.199541890625,
+      "timeout_gap": null,
+      "timeout_missing_feasible": 0,
+      "equal_reference_cases": 64,
+      "phase_common": {
+        "read_ns": 33396.0,
+        "fallback_ns": 2854.0,
+        "native_prepare_ns": 9166.5,
+        "native_search_ns": 9166.5,
+        "native_finalize_ns": 250.0,
+        "export_ns": null,
+        "flat_seconds": null,
+        "init_seconds": null,
+        "solve_seconds": null
+      }
+    },
+    "html": {
+      "completed_cases": 64,
+      "optimal_cases": 0,
+      "timeout_runs": 0,
+      "capped_wall_ms": {
+        "median": 2.2022085000000002,
+        "p95": 2.452458,
+        "max": 2.612792
+      },
+      "successful_wall_ms": {
+        "median": 2.2022085000000002,
+        "p95": 2.452458,
+        "max": 2.612792
+      },
+      "common_wall_ms": {
+        "median": 2.187583,
+        "p95": 2.393167,
+        "max": 2.612792
+      },
+      "par2_ms": null,
+      "timeout_gap": null,
+      "timeout_missing_feasible": 0,
+      "equal_reference_cases": 30,
+      "phase_common": {
+        "read_ns": 33229.0,
+        "fallback_ns": 2896.0,
+        "native_prepare_ns": 584.0,
+        "native_search_ns": 0.0,
+        "native_finalize_ns": 270.5,
+        "export_ns": null,
+        "flat_seconds": null,
+        "init_seconds": null,
+        "solve_seconds": null
+      }
+    },
+    "cp2011_gecode": {
+      "completed_cases": 64,
+      "optimal_cases": 64,
+      "timeout_runs": 0,
+      "capped_wall_ms": {
+        "median": 77.240021,
+        "p95": 95.765875,
+        "max": 130.564416
+      },
+      "successful_wall_ms": {
+        "median": 77.240021,
+        "p95": 95.765875,
+        "max": 130.564416
+      },
+      "common_wall_ms": {
+        "median": 76.62825,
+        "p95": 95.765875,
+        "max": 130.564416
+      },
+      "par2_ms": 80.36970881770833,
+      "timeout_gap": null,
+      "timeout_missing_feasible": 0,
+      "equal_reference_cases": 64,
+      "phase_common": {
+        "read_ns": 33021.0,
+        "fallback_ns": 2729.5,
+        "native_prepare_ns": null,
+        "native_search_ns": null,
+        "native_finalize_ns": null,
+        "export_ns": 83229.0,
+        "flat_seconds": 0.03993235,
+        "init_seconds": 0.0007348330000000001,
+        "solve_seconds": 0.00016970800000000002
+      }
+    },
+    "lcg2011_chuffed": {
+      "completed_cases": 62,
+      "optimal_cases": 62,
+      "timeout_runs": 6,
+      "capped_wall_ms": {
+        "median": 72.612188,
+        "p95": 755.609166,
+        "max": 1000
+      },
+      "successful_wall_ms": {
+        "median": 70.1796875,
+        "p95": 633.549833,
+        "max": 938.394083
+      },
+      "common_wall_ms": {
+        "median": 70.1796875,
+        "p95": 633.549833,
+        "max": 938.394083
+      },
+      "par2_ms": 191.05034701041666,
+      "timeout_gap": {
+        "median": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "timeout_missing_feasible": 0,
+      "equal_reference_cases": 64,
+      "phase_common": {
+        "read_ns": 32666.5,
+        "fallback_ns": 2750.0,
+        "native_prepare_ns": null,
+        "native_search_ns": null,
+        "native_finalize_ns": null,
+        "export_ns": 82520.5,
+        "flat_seconds": 0.04012765,
+        "init_seconds": 0.001,
+        "solve_seconds": 0.003
+      }
+    },
+    "lcg2015_cellfree": {
+      "completed_cases": 64,
+      "optimal_cases": 64,
+      "timeout_runs": 0,
+      "capped_wall_ms": {
+        "median": 69.331187,
+        "p95": 497.699792,
+        "max": 515.050125
+      },
+      "successful_wall_ms": {
+        "median": 69.331187,
+        "p95": 497.699792,
+        "max": 515.050125
+      },
+      "common_wall_ms": {
+        "median": 68.609229,
+        "p95": 233.377625,
+        "max": 515.050125
+      },
+      "par2_ms": 113.251165796875,
+      "timeout_gap": null,
+      "timeout_missing_feasible": 0,
+      "equal_reference_cases": 64,
+      "phase_common": {
+        "read_ns": 31916.5,
+        "fallback_ns": 2666.5,
+        "native_prepare_ns": null,
+        "native_search_ns": null,
+        "native_finalize_ns": null,
+        "export_ns": 84959.0,
+        "flat_seconds": 0.0395046,
+        "init_seconds": 0.0,
+        "solve_seconds": 0.0025
+      }
+    },
+    "mip2015_unary": {
+      "completed_cases": 64,
+      "optimal_cases": 64,
+      "timeout_runs": 0,
+      "capped_wall_ms": {
+        "median": 76.06845849999999,
+        "p95": 375.361917,
+        "max": 733.17925
+      },
+      "successful_wall_ms": {
+        "median": 76.06845849999999,
+        "p95": 375.361917,
+        "max": 733.17925
+      },
+      "common_wall_ms": {
+        "median": 75.22931249999999,
+        "p95": 375.361917,
+        "max": 733.17925
+      },
+      "par2_ms": 115.56409158333334,
+      "timeout_gap": null,
+      "timeout_missing_feasible": 0,
+      "equal_reference_cases": 64,
+      "phase_common": {
+        "read_ns": 32771.0,
+        "fallback_ns": 2854.0,
+        "native_prepare_ns": null,
+        "native_search_ns": null,
+        "native_finalize_ns": null,
+        "export_ns": 79167.0,
+        "flat_seconds": 0.0441385,
+        "init_seconds": null,
+        "solve_seconds": 0.00295
+      }
+    },
+    "mip2015_onehot": {
+      "completed_cases": 64,
+      "optimal_cases": 64,
+      "timeout_runs": 0,
+      "capped_wall_ms": {
+        "median": 77.1203545,
+        "p95": 301.636208,
+        "max": 502.495334
+      },
+      "successful_wall_ms": {
+        "median": 77.1203545,
+        "p95": 301.636208,
+        "max": 502.495334
+      },
+      "common_wall_ms": {
+        "median": 76.92625000000001,
+        "p95": 301.636208,
+        "max": 502.495334
+      },
+      "par2_ms": 102.89013933333334,
+      "timeout_gap": null,
+      "timeout_missing_feasible": 0,
+      "equal_reference_cases": 64,
+      "phase_common": {
+        "read_ns": 33791.5,
+        "fallback_ns": 2854.5,
+        "native_prepare_ns": null,
+        "native_search_ns": null,
+        "native_finalize_ns": null,
+        "export_ns": 78563.0,
+        "flat_seconds": 0.0440338,
+        "init_seconds": null,
+        "solve_seconds": 0.004750000000000001
+      }
+    }
+  }
+}
