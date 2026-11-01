@@ -11,6 +11,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from zoneinfo import ZoneInfo
 from benchmark_native import ROOT, METHODS
 from benchmark_unified import sha, verify
+from benchmark_table import render_svg
 
 NAMES = {'pareto':'Pareto DP', 'astar2011':'A*', 'html':'HTML heuristic',
          'cp2011':'CP (2011, Pumpkin)', 'lcg2011':'LCG (2011, Pumpkin)',
@@ -116,7 +117,7 @@ def main():
     def fmt_ms(value):
         return '<0.001' if 0 < value < 0.001 else f'{value:.3f}'
 
-    def table(featured, with_memory=False, highlight_min=False, transpose=False):
+    def table(featured, with_memory=False, highlight_min=False, transpose=False, svg_path=None):
         featured = list(featured)
         if not transpose:
             featured.sort(key=lambda item: (summary[item[1]]['p95_ms'], summary[item[1]]['p50_ms']))
@@ -148,11 +149,18 @@ def main():
                            for i in [*range(2, len(headers)), 1]]
             headers = ['Metric'] + [row[0] for row in rows]
             rows = metric_rows
+        if svg_path is not None:
+            svg_path.parent.mkdir(parents=True, exist_ok=True)
+            svg_path.write_text(render_svg(headers, rows, 'MiniZinc benchmark' if mini else 'Ebook benchmark'))
         return ''.join('| ' + ' | '.join(row) + ' |\n'
                        for row in [headers, ['---'] + ['---:'] * (len(headers) - 1), *rows])
-    featured_methods = [(name, selected[name]) for name in
+    featured_methods = [(name.split(' (')[0], selected[name]) for name in
                         ['Pareto DP', 'A*', 'LCG (Pumpkin)', 'MIP (microlp)', 'CP (Pumpkin)']]
-    featured = intro + table(featured_methods, with_memory=bool(memory), highlight_min=True, transpose=True)
+    image_path = f'docs/assets/{stem}.svg'
+    data_table = table(featured_methods, with_memory=bool(memory), highlight_min=True, transpose=True,
+                       svg_path=ROOT/image_path)
+    featured = intro + f'![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.]({image_path})\n\n'
+    featured += '<details>\n<summary>Table data and paper links</summary>\n\n' + data_table + '\n</details>\n'
     featured += f'\nOne variant per exact-method family, selected by completion rate then P95. Unfinished runs count as {env["timeout_ms"]/1000:g} second in timing percentiles.\n'
     if memory:
         featured += '\nMemory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.\n'
@@ -161,7 +169,7 @@ def main():
     begin, end = f'<!-- {marker}:start -->', f'<!-- {marker}:end -->'
     a,b = readme.index(begin)+len(begin),readme.index(end)
     readme_path.write_text(readme[:a]+'\n'+featured+readme[b:])
-    report = ('# MiniZinc public benchmark\n\n' if mini else '# Native Rust benchmark\n\n')+featured
+    report = ('# MiniZinc public benchmark\n\n' if mini else '# Native Rust benchmark\n\n')+featured.replace(f']({image_path})', f'](assets/{stem}.svg)')
     if memory:
         report += f'\n[Memory measurement details and completion counts]({stem}-memory.md).\n'
     if mini:

@@ -41,13 +41,20 @@ Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **1383 real ebook cases**, sin
 
 Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-| Metric | **Pareto DP** | A* | [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) |
+![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](docs/assets/benchmark-native.svg)
+
+<details>
+<summary>Table data and paper links</summary>
+
+| Metric | **Pareto DP** | A* | [LCG](https://doi.org/10.1287/ijoc.2014.0637) | [MIP](https://doi.org/10.1287/ijoc.2014.0637) | [CP](https://doi.org/10.1145/2034691.2034697) |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | P50 (ms) | $\color{green}{0.002}$ | 0.003 | 0.047 | 0.054 | 0.059 |
 | P95 (ms) | $\color{green}{0.010}$ | 0.016 | 0.432 | 1.075 | 1.857 |
 | Extra heap P95 (KiB) | $\color{green}{9.39}$ | 17.51 | 265.40 | 257.48 | 553.98 |
 | RSS P95 (KiB) | $\color{green}{2272.00}$ | $\color{green}{2272.00}$ | 3408.00 | 3376.00 | 3744.00 |
 | Completed | 1383/1383 | 1383/1383 | 1383/1383 | 1383/1383 | 1367/1383 |
+
+</details>
 
 One variant per exact-method family, selected by completion rate then P95. Unfinished runs count as 1 second in timing percentiles.
 
@@ -65,13 +72,20 @@ Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **26 MiniZinc public cases**, 
 
 Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-| Metric | **Pareto DP** | A* | [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) |
+![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](docs/assets/benchmark-minizinc.svg)
+
+<details>
+<summary>Table data and paper links</summary>
+
+| Metric | **Pareto DP** | A* | [LCG](https://doi.org/10.1145/2034691.2034697) | [MIP](https://doi.org/10.1287/ijoc.2014.0637) | [CP](https://doi.org/10.1145/2034691.2034697) |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | P50 (ms) | $\color{green}{0.163}$ | 0.246 | 4.781 | 4.448 | 1000.000 |
 | P95 (ms) | 2.008 | $\color{green}{0.843}$ | 17.582 | 26.624 | 1000.000 |
 | Extra heap P95 (KiB) | $\color{green}{264.41}$ | 640.64 | 2420.35 | 760.18 | 2272.55 |
 | RSS P95 (KiB) | $\color{green}{2848.00}$ | 2896.00 | 6176.00 | 4416.00 | 5856.00 |
 | Completed | 26/26 | 26/26 | 26/26 | 26/26 | 5/26 |
+
+</details>
 
 One variant per exact-method family, selected by completion rate then P95. Unfinished runs count as 1 second in timing percentiles.
 
