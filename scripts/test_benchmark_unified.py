@@ -42,6 +42,20 @@ time.sleep(20)
         self.assertEqual(run['status'], 'timeout')
         self.assertFalse(run['layout']['optimal'])
 
+    def test_deadline_kills_child_in_new_session(self):
+        # MiniZinc uses a separate process group; a new session is stricter.
+        code = """import subprocess, sys, time
+p = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(20)'], start_new_session=True)
+print(p.pid, flush=True)
+p.wait()
+"""
+        raw = run_process([sys.executable, '-c', code], 400)
+        self.assertTrue(raw['timeout'])
+        pid = int(raw['lines'][0][1])
+        self.assertIn(pid, raw['cleanup_pids'])
+        proc = subprocess.run(['ps','-o','stat=','-p',str(pid)], capture_output=True, text=True)
+        self.assertTrue(proc.returncode != 0 or proc.stdout.strip().startswith('Z'), proc.stdout)
+
     def test_finished_result_and_no_output_timeout(self):
         result = json.dumps({'kind':'result','status':'optimal','layout':self.layout})
         raw = run_process([sys.executable, '-c', f'print({result!r})'], 2000)

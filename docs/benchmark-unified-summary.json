@@ -1,7 +1,7 @@
 {
   "cases": 64,
   "repeats": 3,
-  "common_completed_cases": 62,
+  "common_completed_cases": 53,
   "common_selection": [
     [
       3,
@@ -109,22 +109,6 @@
     ],
     [
       105,
-      116
-    ],
-    [
-      105,
-      126
-    ],
-    [
-      105,
-      197
-    ],
-    [
-      105,
-      332
-    ],
-    [
-      105,
       467
     ],
     [
@@ -134,18 +118,6 @@
     [
       119,
       46
-    ],
-    [
-      134,
-      111
-    ],
-    [
-      134,
-      140
-    ],
-    [
-      134,
-      280
     ],
     [
       134,
@@ -217,14 +189,6 @@
     ],
     [
       226,
-      68
-    ],
-    [
-      226,
-      141
-    ],
-    [
-      226,
       1031
     ],
     [
@@ -258,24 +222,24 @@
       "optimal_cases": 64,
       "timeout_runs": 0,
       "capped_wall_ms": {
-        "median": 2.293541,
-        "p95": 120.20125,
-        "max": 223.963208
+        "median": 2.3231460000000004,
+        "p95": 119.903709,
+        "max": 224.84325
       },
       "successful_wall_ms": {
-        "median": 2.293541,
-        "p95": 120.20125,
-        "max": 223.963208
+        "median": 2.3231460000000004,
+        "p95": 119.903709,
+        "max": 224.84325
       },
       "common_wall_ms": {
-        "median": 2.2784785,
-        "p95": 120.20125,
-        "max": 223.963208
+        "median": 2.29025,
+        "p95": 201.008917,
+        "max": 224.84325
       },
       "native_total_ms": {
-        "median": 0.102771,
-        "p95": 118.074666,
-        "max": 221.554626
+        "median": 0.1029165,
+        "p95": 117.801584,
+        "max": 222.744292
       },
       "native_stats": {
         "generated": {
@@ -304,16 +268,16 @@
           "max": 0
         }
       },
-      "par2_ms": 19.409058161458333,
+      "par2_ms": 19.5107754375,
       "timeout_gap": null,
       "timeout_missing_feasible": 0,
       "equal_reference_cases": 64,
       "phase_common": {
-        "read_ns": 34562.5,
-        "fallback_ns": 3354.5,
-        "native_prepare_ns": 8083.0,
-        "native_search_ns": 76500.0,
-        "native_finalize_ns": 333.0,
+        "read_ns": 32625,
+        "fallback_ns": 3125,
+        "native_prepare_ns": 5792,
+        "native_search_ns": 42625,
+        "native_finalize_ns": 333,
         "export_ns": null,
         "flat_seconds": null,
         "init_seconds": null,
@@ -325,24 +289,24 @@
       "optimal_cases": 64,
       "timeout_runs": 0,
       "capped_wall_ms": {
-        "median": 2.1713744999999998,
-        "p95": 2.50775,
-        "max": 2.552875
+        "median": 2.185104,
+        "p95": 2.49225,
+        "max": 2.540041
       },
       "successful_wall_ms": {
-        "median": 2.1713744999999998,
-        "p95": 2.50775,
-        "max": 2.552875
+        "median": 2.185104,
+        "p95": 2.49225,
+        "max": 2.540041
       },
       "common_wall_ms": {
-        "median": 2.1833955,
-        "p95": 2.50775,
-        "max": 2.552875
+        "median": 2.170167,
+        "p95": 2.49225,
+        "max": 2.540041
       },
       "native_total_ms": {
-        "median": 0.013146,
-        "p95": 0.040292,
-        "max": 0.063376
+        "median": 0.013562000000000001,
+        "p95": 0.040375,
+        "max": 0.063791
       },
       "native_stats": {
         "generated": {
@@ -371,16 +335,16 @@
           "max": 1201
         }
       },
-      "par2_ms": 2.1653459375,
+      "par2_ms": 2.2130433854166665,
       "timeout_gap": null,
       "timeout_missing_feasible": 0,
       "equal_reference_cases": 64,
       "phase_common": {
-        "read_ns": 32562.5,
-        "fallback_ns": 2833.0,
-        "native_prepare_ns": 10270.5,
-        "native_search_ns": 1875.0,
-        "native_finalize_ns": 166.0,
+        "read_ns": 29833,
+        "fallback_ns": 2667,
+        "native_prepare_ns": 8708,
+        "native_search_ns": 1333,
+        "native_finalize_ns": 125,
         "export_ns": null,
         "flat_seconds": null,
         "init_seconds": null,
@@ -392,24 +356,24 @@
       "optimal_cases": 64,
       "timeout_runs": 0,
       "capped_wall_ms": {
-        "median": 2.208083,
-        "p95": 2.429667,
-        "max": 2.650791
+        "median": 2.2440625,
+        "p95": 2.486917,
+        "max": 2.68875
       },
       "successful_wall_ms": {
-        "median": 2.208083,
-        "p95": 2.429667,
-        "max": 2.650791
+        "median": 2.2440625,
+        "p95": 2.486917,
+        "max": 2.68875
       },
       "common_wall_ms": {
-        "median": 2.2061244999999996,
-        "p95": 2.380167,
-        "max": 2.576208
+        "median": 2.245083,
+        "p95": 2.486917,
+        "max": 2.68875
       },
       "native_total_ms": {
-        "median": 0.017542000000000002,
-        "p95": 0.082791,
-        "max": 0.128583
+        "median": 0.018,
+        "p95": 0.080668,
+        "max": 0.128541
       },
       "native_stats": {
         "generated": {
@@ -438,16 +402,16 @@
           "max": 0
         }
       },
-      "par2_ms": 2.2035522916666666,
+      "par2_ms": 2.2285829791666667,
       "timeout_gap": null,
       "timeout_missing_feasible": 0,
       "equal_reference_cases": 64,
       "phase_common": {
-        "read_ns": 33041.5,
-        "fallback_ns": 2937.5,
-        "native_prepare_ns": 9021.0,
-        "native_search_ns": 7812.5,
-        "native_finalize_ns": 250.0,
+        "read_ns": 29916,
+        "fallback_ns": 2791,
+        "native_prepare_ns": 7125,
+        "native_search_ns": 6542,
+        "native_finalize_ns": 250,
         "export_ns": null,
         "flat_seconds": null,
         "init_seconds": null,
@@ -459,24 +423,24 @@
       "optimal_cases": 0,
       "timeout_runs": 0,
       "capped_wall_ms": {
-        "median": 2.1312290000000003,
-        "p95": 2.372958,
-        "max": 2.556334
+        "median": 2.1608955,
+        "p95": 2.430959,
+        "max": 2.488791
       },
       "successful_wall_ms": {
-        "median": 2.1312290000000003,
-        "p95": 2.372958,
-        "max": 2.556334
+        "median": 2.1608955,
+        "p95": 2.430959,
+        "max": 2.488791
       },
       "common_wall_ms": {
-        "median": 2.1219585,
-        "p95": 2.334958,
-        "max": 2.556334
+        "median": 2.141708,
+        "p95": 2.430959,
+        "max": 2.488791
       },
       "native_total_ms": {
-        "median": 0.0009795,
-        "p95": 0.002042,
-        "max": 0.0025
+        "median": 0.000979,
+        "p95": 0.002458,
+        "max": 0.002625
       },
       "native_stats": {
         "generated": {
@@ -510,11 +474,11 @@
       "timeout_missing_feasible": 0,
       "equal_reference_cases": 30,
       "phase_common": {
-        "read_ns": 31333.5,
-        "fallback_ns": 2854.0,
-        "native_prepare_ns": 625.0,
-        "native_search_ns": 0.0,
-        "native_finalize_ns": 292.0,
+        "read_ns": 29459,
+        "fallback_ns": 2709,
+        "native_prepare_ns": 542,
+        "native_search_ns": 0,
+        "native_finalize_ns": 250,
         "export_ns": null,
         "flat_seconds": null,
         "init_seconds": null,
@@ -526,36 +490,36 @@
       "optimal_cases": 64,
       "timeout_runs": 0,
       "capped_wall_ms": {
-        "median": 77.721688,
-        "p95": 95.918916,
-        "max": 131.127333
+        "median": 77.644104,
+        "p95": 94.888583,
+        "max": 133.35075
       },
       "successful_wall_ms": {
-        "median": 77.721688,
-        "p95": 95.918916,
-        "max": 131.127333
+        "median": 77.644104,
+        "p95": 94.888583,
+        "max": 133.35075
       },
       "common_wall_ms": {
-        "median": 77.397417,
-        "p95": 95.918916,
-        "max": 131.127333
+        "median": 76.102417,
+        "p95": 93.180667,
+        "max": 102.099791
       },
       "native_total_ms": null,
       "native_stats": null,
-      "par2_ms": 80.76391863020834,
+      "par2_ms": 80.65879553645833,
       "timeout_gap": null,
       "timeout_missing_feasible": 0,
       "equal_reference_cases": 64,
       "phase_common": {
-        "read_ns": 31125.0,
-        "fallback_ns": 2791.5,
+        "read_ns": 29209,
+        "fallback_ns": 2708,
         "native_prepare_ns": null,
         "native_search_ns": null,
         "native_finalize_ns": null,
-        "export_ns": 83688.0,
-        "flat_seconds": 0.0401726,
-        "init_seconds": 0.0007472290000000001,
-        "solve_seconds": 0.00016470850000000002
+        "export_ns": 73333,
+        "flat_seconds": 0.0396288,
+        "init_seconds": 0.000609625,
+        "solve_seconds": 9.9208e-05
       }
     },
     "lcg2011_chuffed": {
@@ -563,23 +527,23 @@
       "optimal_cases": 62,
       "timeout_runs": 6,
       "capped_wall_ms": {
-        "median": 72.896625,
-        "p95": 751.153959,
+        "median": 73.512417,
+        "p95": 749.939333,
         "max": 1000
       },
       "successful_wall_ms": {
-        "median": 70.9033545,
-        "p95": 631.082041,
-        "max": 937.164042
+        "median": 70.813271,
+        "p95": 630.640084,
+        "max": 931.784667
       },
       "common_wall_ms": {
-        "median": 70.9033545,
-        "p95": 631.082041,
-        "max": 937.164042
+        "median": 68.289958,
+        "p95": 196.764208,
+        "max": 749.939333
       },
       "native_total_ms": null,
       "native_stats": null,
-      "par2_ms": 191.10839324479167,
+      "par2_ms": 190.85191013541666,
       "timeout_gap": {
         "median": 0.0,
         "p95": 0.0,
@@ -588,15 +552,15 @@
       "timeout_missing_feasible": 0,
       "equal_reference_cases": 64,
       "phase_common": {
-        "read_ns": 32312.5,
-        "fallback_ns": 2833.5,
+        "read_ns": 30667,
+        "fallback_ns": 2750,
         "native_prepare_ns": null,
         "native_search_ns": null,
         "native_finalize_ns": null,
-        "export_ns": 85062.0,
-        "flat_seconds": 0.0400262,
+        "export_ns": 75708,
+        "flat_seconds": 0.0394801,
         "init_seconds": 0.001,
-        "solve_seconds": 0.003
+        "solve_seconds": 0.001
       }
     },
     "lcg2015_cellfree": {
@@ -604,36 +568,36 @@
       "optimal_cases": 64,
       "timeout_runs": 0,
       "capped_wall_ms": {
-        "median": 69.4725415,
-        "p95": 499.339292,
-        "max": 516.105833
+        "median": 69.1574375,
+        "p95": 497.153833,
+        "max": 513.876375
       },
       "successful_wall_ms": {
-        "median": 69.4725415,
-        "p95": 499.339292,
-        "max": 516.105833
+        "median": 69.1574375,
+        "p95": 497.153833,
+        "max": 513.876375
       },
       "common_wall_ms": {
-        "median": 69.10374999999999,
-        "p95": 233.335916,
-        "max": 516.105833
+        "median": 67.191292,
+        "p95": 138.547625,
+        "max": 513.876375
       },
       "native_total_ms": null,
       "native_stats": null,
-      "par2_ms": 113.42933204166667,
+      "par2_ms": 113.37859461458333,
       "timeout_gap": null,
       "timeout_missing_feasible": 0,
       "equal_reference_cases": 64,
       "phase_common": {
-        "read_ns": 31208.5,
-        "fallback_ns": 2604.5,
+        "read_ns": 29583,
+        "fallback_ns": 2709,
         "native_prepare_ns": null,
         "native_search_ns": null,
         "native_finalize_ns": null,
-        "export_ns": 84229.0,
-        "flat_seconds": 0.0396134,
+        "export_ns": 77834,
+        "flat_seconds": 0.039248,
         "init_seconds": 0.0,
-        "solve_seconds": 0.003
+        "solve_seconds": 0.001
       }
     },
     "mip2015_unary": {
@@ -641,36 +605,36 @@
       "optimal_cases": 64,
       "timeout_runs": 0,
       "capped_wall_ms": {
-        "median": 75.732708,
-        "p95": 375.587,
-        "max": 729.423458
+        "median": 75.43047949999999,
+        "p95": 374.942917,
+        "max": 728.176542
       },
       "successful_wall_ms": {
-        "median": 75.732708,
-        "p95": 375.587,
-        "max": 729.423458
+        "median": 75.43047949999999,
+        "p95": 374.942917,
+        "max": 728.176542
       },
       "common_wall_ms": {
-        "median": 75.5142495,
-        "p95": 375.587,
-        "max": 729.423458
+        "median": 72.009542,
+        "p95": 92.996209,
+        "max": 94.811792
       },
       "native_total_ms": null,
       "native_stats": null,
-      "par2_ms": 115.63394621354166,
+      "par2_ms": 115.54394075,
       "timeout_gap": null,
       "timeout_missing_feasible": 0,
       "equal_reference_cases": 64,
       "phase_common": {
-        "read_ns": 32667.0,
-        "fallback_ns": 2812.5,
+        "read_ns": 28875,
+        "fallback_ns": 2667,
         "native_prepare_ns": null,
         "native_search_ns": null,
         "native_finalize_ns": null,
-        "export_ns": 80688.0,
-        "flat_seconds": 0.0446038,
+        "export_ns": 75792,
+        "flat_seconds": 0.0438812,
         "init_seconds": null,
-        "solve_seconds": 0.00295
+        "solve_seconds": 0.0024
       }
     },
     "mip2015_onehot": {
@@ -678,36 +642,188 @@
       "optimal_cases": 64,
       "timeout_runs": 0,
       "capped_wall_ms": {
-        "median": 77.0647295,
-        "p95": 302.617709,
-        "max": 507.839958
+        "median": 76.8427705,
+        "p95": 302.367458,
+        "max": 505.667166
       },
       "successful_wall_ms": {
-        "median": 77.0647295,
-        "p95": 302.617709,
-        "max": 507.839958
+        "median": 76.8427705,
+        "p95": 302.367458,
+        "max": 505.667166
       },
       "common_wall_ms": {
-        "median": 76.601042,
-        "p95": 302.617709,
-        "max": 507.839958
+        "median": 73.42825,
+        "p95": 101.438958,
+        "max": 152.381708
       },
       "native_total_ms": null,
       "native_stats": null,
-      "par2_ms": 103.15106902083333,
+      "par2_ms": 103.06691144270833,
       "timeout_gap": null,
       "timeout_missing_feasible": 0,
       "equal_reference_cases": 64,
       "phase_common": {
-        "read_ns": 31271.0,
-        "fallback_ns": 2771.0,
+        "read_ns": 30167,
+        "fallback_ns": 2583,
         "native_prepare_ns": null,
         "native_search_ns": null,
         "native_finalize_ns": null,
-        "export_ns": 78541.5,
-        "flat_seconds": 0.044359949999999995,
+        "export_ns": 69875,
+        "flat_seconds": 0.0437747,
         "init_seconds": null,
-        "solve_seconds": 0.0048000000000000004
+        "solve_seconds": 0.0032
+      }
+    },
+    "cp2011_chuffed_seq": {
+      "completed_cases": 55,
+      "optimal_cases": 55,
+      "timeout_runs": 27,
+      "capped_wall_ms": {
+        "median": 68.00456249999999,
+        "p95": 1000,
+        "max": 1000
+      },
+      "successful_wall_ms": {
+        "median": 66.241667,
+        "p95": 94.184875,
+        "max": 488.202625
+      },
+      "common_wall_ms": {
+        "median": 66.217791,
+        "p95": 84.764791,
+        "max": 488.202625
+      },
+      "native_total_ms": null,
+      "native_stats": null,
+      "par2_ms": 347.7304993125,
+      "timeout_gap": {
+        "median": 0.045454545454545456,
+        "p95": 0.10975609756097561,
+        "max": 0.10975609756097561
+      },
+      "timeout_missing_feasible": 0,
+      "equal_reference_cases": 56,
+      "phase_common": {
+        "read_ns": 30542,
+        "fallback_ns": 2667,
+        "native_prepare_ns": null,
+        "native_search_ns": null,
+        "native_finalize_ns": null,
+        "export_ns": 76208,
+        "flat_seconds": 0.0395887,
+        "init_seconds": 0.0,
+        "solve_seconds": 0.0
+      }
+    },
+    "lcg2011_chuffed_seq": {
+      "completed_cases": 64,
+      "optimal_cases": 64,
+      "timeout_runs": 0,
+      "capped_wall_ms": {
+        "median": 68.5546665,
+        "p95": 84.007792,
+        "max": 85.17875
+      },
+      "successful_wall_ms": {
+        "median": 68.5546665,
+        "p95": 84.007792,
+        "max": 85.17875
+      },
+      "common_wall_ms": {
+        "median": 66.399208,
+        "p95": 84.54825,
+        "max": 85.17875
+      },
+      "native_total_ms": null,
+      "native_stats": null,
+      "par2_ms": 69.67246527083333,
+      "timeout_gap": null,
+      "timeout_missing_feasible": 0,
+      "equal_reference_cases": 64,
+      "phase_common": {
+        "read_ns": 28917,
+        "fallback_ns": 2708,
+        "native_prepare_ns": null,
+        "native_search_ns": null,
+        "native_finalize_ns": null,
+        "export_ns": 78833,
+        "flat_seconds": 0.0397083,
+        "init_seconds": 0.001,
+        "solve_seconds": 0.0
+      }
+    },
+    "lcg2015_rcsv": {
+      "completed_cases": 64,
+      "optimal_cases": 64,
+      "timeout_runs": 0,
+      "capped_wall_ms": {
+        "median": 69.056292,
+        "p95": 299.729833,
+        "max": 411.049125
+      },
+      "successful_wall_ms": {
+        "median": 69.056292,
+        "p95": 299.729833,
+        "max": 411.049125
+      },
+      "common_wall_ms": {
+        "median": 67.982083,
+        "p95": 147.63975,
+        "max": 291.015666
+      },
+      "native_total_ms": null,
+      "native_stats": null,
+      "par2_ms": 104.50652690625,
+      "timeout_gap": null,
+      "timeout_missing_feasible": 0,
+      "equal_reference_cases": 64,
+      "phase_common": {
+        "read_ns": 29041,
+        "fallback_ns": 2708,
+        "native_prepare_ns": null,
+        "native_search_ns": null,
+        "native_finalize_ns": null,
+        "export_ns": 78542,
+        "flat_seconds": 0.0396368,
+        "init_seconds": 0.0,
+        "solve_seconds": 0.001
+      }
+    },
+    "mip2015_cellfree": {
+      "completed_cases": 64,
+      "optimal_cases": 64,
+      "timeout_runs": 0,
+      "capped_wall_ms": {
+        "median": 77.7438335,
+        "p95": 154.393375,
+        "max": 177.274208
+      },
+      "successful_wall_ms": {
+        "median": 77.7438335,
+        "p95": 154.393375,
+        "max": 177.274208
+      },
+      "common_wall_ms": {
+        "median": 72.188959,
+        "p95": 152.140584,
+        "max": 155.223708
+      },
+      "native_total_ms": null,
+      "native_stats": null,
+      "par2_ms": 92.10980858333333,
+      "timeout_gap": null,
+      "timeout_missing_feasible": 0,
+      "equal_reference_cases": 64,
+      "phase_common": {
+        "read_ns": 29875,
+        "fallback_ns": 2750,
+        "native_prepare_ns": null,
+        "native_search_ns": null,
+        "native_finalize_ns": null,
+        "export_ns": 70500,
+        "flat_seconds": 0.0447591,
+        "init_seconds": null,
+        "solve_seconds": 0.0011
       }
     }
   }

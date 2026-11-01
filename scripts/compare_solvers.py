@@ -16,6 +16,13 @@ METHODS = {
     'lcg2015_cellfree': ('chuffed', 'lcg2015.mzn', ['-f', '--vsids']),
     'mip2015_unary': ('highs', 'mip2015.mzn', []),
     'mip2015_onehot': ('highs', 'mip2015_onehot.mzn', []),
+    'cp2011_chuffed_seq': ('chuffed', 'cp2011_seq.mzn',
+        ['--fzn-flags', '--no-lazy --no-learn --no-vsids --no-toggle-vsids --restart none']),
+    'lcg2011_chuffed_seq': ('chuffed', 'cp2011_seq.mzn',
+        ['--fzn-flags', '--no-vsids --no-toggle-vsids --restart none']),
+    'lcg2015_rcsv': ('chuffed', 'lcg2015_rcsv.mzn',
+        ['--fzn-flags', '--vsids --no-toggle-vsids']),
+    'mip2015_cellfree': ('highs', 'mip2015_cellfree.mzn', []),
 }
 
 

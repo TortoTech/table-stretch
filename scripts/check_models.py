@@ -49,6 +49,12 @@ def main():
     instances = [generate(rng) for _ in range(12)]
     instances.append(json.loads(Path('tests/fixtures/minizinc-unary-regression.json').read_text()))
     impossible = generate(rng);impossible['budget']=0;instances.append(impossible)
+    # RCSV must retain an API lower bound between actual curve breakpoints.
+    # Both a budget cutoff and a lower bound beyond a dropped height are tested.
+    for lower,budget in [(2,3),(5,5)]:
+        instances.append(dict(n=1,m=1,lo=[lower],hi=[6],budget=budget,cells=1,
+            steps=3,first=[1],last=[3],cell_row=[1],cell_col=[1],
+            sw=[1,4,6],sh=[5,2,0],row_upper=[5]))
     with tempfile.TemporaryDirectory() as root:
         path = Path(root)/'instance.json'
         for i,data in enumerate(instances):

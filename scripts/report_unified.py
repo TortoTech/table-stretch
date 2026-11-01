@@ -10,10 +10,14 @@ from zoneinfo import ZoneInfo
 from benchmark_unified import METHODS, ROOT, sha, verify
 
 NAMES = {'pareto':'**Pareto DP（优化后，当前默认）**', 'pareto_baseline':'Pareto DP（优化前对照）', 'astar2011':'A* 2011（Rust）',
-         'html':'W3C 比例法（启发式）', 'cp2011_gecode':'2011 CP / Gecode',
-         'lcg2011_chuffed':'2011 CP/SAT＋LCG / Chuffed',
-         'lcg2015_cellfree':'2015 cell-free＋LCG / Chuffed',
-         'mip2015_unary':'2015 MIP unary / HiGHS', 'mip2015_onehot':'2015 MIP one-hot / HiGHS'}
+         'html':'W3C 比例法（启发式）', 'cp2011_gecode':'配置 CP / Gecode（旧适配，列宽搜索）',
+         'lcg2011_chuffed':'配置 LCG / Chuffed（旧适配，混合搜索）',
+         'lcg2015_cellfree':'cell-free LCG / Chuffed（旧适配，无 RCSV）',
+         'mip2015_unary':'基础 unary MIP / HiGHS', 'mip2015_onehot':'基础 one-hot MIP / HiGHS',
+         'cp2011_chuffed_seq':'2011 cp-w / Chuffed（最小格高搜索适配）',
+         'lcg2011_chuffed_seq':'2011 cp-seq / Chuffed（最小格高搜索适配）',
+         'lcg2015_rcsv':'2015 cpcf / Chuffed（RCSV 简单表格适配）',
+         'mip2015_cellfree':'2015 mipcf / HiGHS（RCSV＋unary 适配）'}
 
 
 def quantile(values, p):
@@ -111,12 +115,16 @@ def main():
         table+=f"| {NAMES[m]} | {s['completed_cases']}/{n} | {s['timeout_runs']}/{n*repeats} | {fmt(s['capped_wall_ms']['median'])} | {fmt(s['capped_wall_ms']['p95'])} | {fmt(s['par2_ms'])} |\n"
     date = datetime.fromisoformat(env['utc']).astimezone(ZoneInfo('US/Pacific')).strftime('%Y-%m-%d')
     rust_version = env['rustc'].splitlines()[0].split()[1]
-    participants = '8 种方法及 1 个优化前对照' if env.get('baseline') else '8 种方法'
+    participants = f'{len(methods)-bool(env.get("baseline"))} 种方法' + ('及 1 个优化前对照' if env.get('baseline') else '')
     lead = f"""实测日期：{date}（US/Pacific）。{env['machine']}、{env['memory_bytes']//2**30} GiB 内存、{env['platform']}、Rust {rust_version}，release 构建、单线程。
 
 **{participants}使用统一标准重测**：同一组 {n} 个复杂/多样场景、同一份曲线 JSON、相同的 Rust worker 协议；每次从启动进程前到进程退出及输出收完计时。输入读取、验证、方法自身预处理、模型编译、搜索、最终拉伸与输出全部计入；每次总墙钟限时 **{env['timeout_ms']/1000:g} 秒**。Rust 搜索次数限制在本次基准中关闭，生产库默认值不变。每场景/方法预热 1 次、测量 {repeats} 次，各方法按固定种子打乱顺序，串行运行。
 
 场景沿用此前外部测试的选择，来自 25 本书、317 个真实表格的 2332 个宽度场景，包含此前全部 8 个 Pareto 搜索超限案例。这是复杂场景子集，不是全书库的随机抽样。
+
+**研究对齐审计已更正方法标注**：旧配置 CP 不等于论文的 cp-w，旧 cell-free 缺少 RCSV，两个基础 MIP 不代表论文的 mipcf。此次保留旧版本，并加入最小单元格高度搜索、无学习 Chuffed、RCSV 与共享 unary cell-free MIP 对照。仍是当前工具链上的简单表格适配，非历史实现完整复现；详见[逐项审计](docs/research-audit.md)。
+
+**本轮同时修复超时清理后重测**：旧版仅清理 worker 进程组，可能留下另建进程组的 Chuffed，干扰后续计时。现在冻结并清理整个存活进程树。本轮数据取代此前可能受干扰的计时；模型前后比较均使用本轮结果。
 """
     definitions = f"""“完成场景”要求 {repeats} 次均在时限内完成；精确方法须证明最优，W3C 仅要求返回可行解。P50/P95 在**全部 {n} 个场景**上统计：先取每场景 {repeats} 次耗时的中位数，再取跨场景分位数；超时按 {env['timeout_ms']} ms 截断。PAR-2 对全部 {n*repeats} 次运行取平均：成功用实际耗时，超时罚为 {2*env['timeout_ms']} ms，越小越好；启发式不参与该精确求解评分。不能把截断耗时当作超时任务真正完成所需时间。
 """
@@ -134,7 +142,7 @@ def main():
     readme=readme_path.read_text()
     start,end=readme.index('## 当前 benchmark'),readme.index('## 运行')
     readme_path.write_text(readme[:start]+readme_section+readme[end:])
-    report='# 统一端到端 benchmark\n\n'+lead+'\n'+table+'\n'+definitions+'\n'+result_text.replace('(docs/','(')
+    report='# 统一端到端 benchmark\n\n'+lead.replace('(docs/','(')+'\n'+table+'\n'+definitions+'\n'+result_text.replace('(docs/','(')
     if optimization:
         report+='\n## Pareto 优化前后\n\n'+optimization
         report+='\n末列直接完成、上下界剪枝、前沿原地删除、延迟分配和父节点索引均计入新版本求解。算法仍保持精确最优；同高解的列宽选择可能改变。原生阶段的下表使用全部成功场景，单位 ms，与后文共同子集的分项表范围不同。\n\n'
@@ -183,10 +191,10 @@ def main():
 ## 可复现协议
 
 - 输入是 `Table` 的完整阶梯曲线。清单固定源表位置、容器宽度、列上下限、曲线、参考高度和规范 JSON 的 SHA-256；每个场景的全部方法读取完全相同的文件字节，方法特有的预处理在计时内完成。
-- 当前 8 种方法使用同一 `unified_worker`，旧版对照使用旧提交构建的同协议 worker。父进程在 `Popen` 前读单调时钟，收完 stdout/stderr 并等待退出后停止。参考答案校验在计时后统一进行；worker 内的解解析、校验、拉伸和序列化在计时内。临时目录和通用输入文件在计时前准备；MiniZinc 专用输入文件在计时内生成。
-- 统一限制为单线程、每次 1 秒总墙钟；不再使用 Rust 的 2000 万比较限制，也不再给予外部求解器“编译完后额外 1 秒”。所有方法都不另外设置内存配额。超时杀死独立进程组，清理后才运行下一方法；清理耗时另存，不进入 PAR-2。只接受截止前完整收到的输出行，输出了最优结果但未按时退出也按超时处理。
-- 外部引擎：MiniZinc 2.10.1、Gecode 6.4.0、Chuffed 0.14.0、HiGHS 1.15.1；单线程、种子 1、`-O0 --intermediate-solutions`，Chuffed 使用 `-f --vsids`。逐次新建进程，预热后测量，未清空操作系统文件缓存。方法顺序用种子 1 打乱；没有并发运行被测任务。
-- 每个最优解均与参考高度比较，所有可行解独立重算原始曲线上的行高，检查列上下限、恰好填满容器、目标和可行性。参考高度来自原有 A* 全语料运行；原生算法另有全整数宽度穷举差分测试，五种外部模型此前通过 70 个独立穷举模型/实例组合（包括编译器回归）。这些检查不等于证明求解器实现对所有输入正确。
+- 当前各方法使用同一 `unified_worker`，旧版对照使用旧提交构建的同协议 worker。父进程在 `Popen` 前读单调时钟，收完 stdout/stderr 并等待退出后停止。参考答案校验在计时后统一进行；worker 内的解解析、校验、拉伸和序列化在计时内。临时目录和通用输入文件在计时前准备；MiniZinc 专用输入文件在计时内生成。
+- 统一限制为单线程、每次 1 秒总墙钟；不再使用 Rust 的 2000 万比较限制，也不再给予外部求解器“编译完后额外 1 秒”。所有方法都不另外设置内存配额。超时冻结并清理整个存活进程树（包含求解器另建的进程组），清理后才运行下一方法；清理耗时另存，不进入 PAR-2。只接受截止前完整收到的输出行，输出了最优结果但未按时退出也按超时处理。
+- 外部引擎：MiniZinc 2.10.1、Gecode 6.4.0、Chuffed 0.14.0、HiGHS 1.15.1；单线程、种子 1、`-O0 --intermediate-solutions`，旧 Chuffed 适配使用 `-f --vsids`（混合搜索）；新增 cp-w/cp-seq 固定最小格高搜索，新增 cpcf 固定 VSIDS；逐方法参数写入元数据。逐次新建进程，预热后测量，未清空操作系统文件缓存。方法顺序用种子 1 打乱；没有并发运行被测任务。
+- 每个最优解均与参考高度比较，所有可行解独立重算原始曲线上的行高，检查列上下限、恰好填满容器、目标和可行性。参考高度来自原有 A* 全语料运行；原生算法另有全整数宽度穷举差分测试，九种外部模型通过 144 个独立穷举模型/实例组合（包括编译器回归、不可行实例、硬下限落在断点间）。这些检查不等于证明求解器实现对所有输入正确。
 - 当前输入是从真实 EPUB 内容提取的简化词宽/CJK 字符宽模型。不支持的合并单元格未入选；不含真实字体/CSS 排版成本，不能外推为任意表格的实时保证。
 
 ```sh
@@ -200,7 +208,7 @@ python3 scripts/report_unified.py
 bash scripts/check.sh
 ```
 
-计时脚本当前针对 macOS（环境信息使用 `sysctl`，超时使用 POSIX 进程组）。可省略 `--minizinc` 并将可执行路径写入 `.tools/minizinc-path.txt`。默认直接使用已提交的输入清单；`--rebuild-inputs` 从历史原始数据重建相同选择。测试运行可用 `--cases 1 --repeats 1 --output /tmp/smoke.jsonl`。正式报告要求完整场景集合，参数与源码/二进制哈希均存于首行元数据。
+计时脚本当前针对 macOS（环境信息使用 `sysctl`，超时清理使用 POSIX 信号和 `ps` 父子关系快照）。可省略 `--minizinc` 并将可执行路径写入 `.tools/minizinc-path.txt`。默认直接使用已提交的输入清单；`--rebuild-inputs` 从历史原始数据重建相同选择。测试运行可用 `--cases 1 --repeats 1 --output /tmp/smoke.jsonl`。正式报告要求完整场景集合，参数与源码/二进制哈希均存于首行元数据。
 
 数据：[逐次记录与状态](benchmark-unified.jsonl) · [输入清单](benchmark-unified-inputs.json) · [统计汇总](benchmark-unified-summary.json) · [算法及研究范围](algorithms.md)。历史不同计时口径的结果保留在[旧报告](benchmark.md)，不混入本表。
 '''

@@ -14,7 +14,7 @@
 | [Bilauca et al., *Automatic Minimal-Height Table Layout*, INFORMS JOC 2015](https://pubsonline.informs.org/doi/abs/10.1287/ijoc.2014.0637) | 将离散单元格配置建模为精确组合优化，评估 MIP 与采用 lazy clause generation 的 CP。为“最小高度”目标提供直接研究依据。 |
 | [GAMS tablelayout 模型](https://www.gams.com/latest/gamslib_ml/libhtml/gamslib_tablelayout.html) | 公开的宽高配置模型：列宽容纳各单元格，行高取相应需求，总行高为目标。引用 Bilauca/Healy 2010 模型。[原论文 DOI](https://doi.org/10.1145/1860559.1860594)。 |
 
-2011 年作者稿的搜索索引可读取摘要和部分正文，但直接 PDF 抓取返回 403；2015 年本次直接读取的是出版方摘要。算法实现与证明是本项目自行构建，未声称逐行复现这些论文的求解器或完整复现实验。
+初次调研只取得部分正文与摘要。后续审计已读取 2011 作者上传稿的模型与实验设置，并通过 2015 作者稿搜索索引核对 RCSV、cell-free、MIP 编码、求解器与实验口径段落。2015 完整 PDF 直接抓取仍被拦截，未取得作者源码；不能声称完整复现。旧版主表曾省略适配差异，已在[研究对齐审计](research-audit.md)更正并补充对照。
 
 ## 技术选择
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Uniform fresh-process, curves-to-layout benchmark for all eight methods."""
+"""Uniform fresh-process, curves-to-layout benchmark for every listed method."""
 import argparse
 from datetime import datetime, timezone
 import hashlib
@@ -14,10 +14,12 @@ import statistics
 import subprocess
 import tempfile
 import time
+from compare_solvers import METHODS as EXTERNAL_METHODS
 
 ROOT = Path(__file__).resolve().parents[1]
 METHODS = ['pareto', 'astar2011', 'html', 'cp2011_gecode', 'lcg2011_chuffed',
-           'lcg2015_cellfree', 'mip2015_unary', 'mip2015_onehot']
+           'lcg2015_cellfree', 'mip2015_unary', 'mip2015_onehot',
+           'cp2011_chuffed_seq', 'lcg2011_chuffed_seq', 'lcg2015_rcsv', 'mip2015_cellfree']
 
 
 def sha(path):
@@ -56,8 +58,47 @@ def make_inputs(native, previous):
     return inputs
 
 
+def kill_process_tree(proc):
+    """Stop live ancestors before enumerating/killing their descendants.
+
+    MiniZinc puts its FlatZinc solver in a separate process group. killpg on
+    the worker alone leaks that solver. The worker waits for MiniZinc, so the
+    parent links remain available at a timeout. Freeze ancestors while taking
+    snapshots so a child cannot keep spawning or reparenting during cleanup.
+    Normal completed workers have already waited for all solver processes.
+    """
+    if proc.poll() is not None:
+        return []
+    known, stopped = {proc.pid}, set()
+    while True:
+        for pid in known - stopped:
+            try:
+                os.kill(pid, signal.SIGSTOP)
+            except ProcessLookupError:
+                pass
+            stopped.add(pid)
+        pairs = [tuple(map(int, line.split())) for line in subprocess.check_output(
+            ['ps', '-axo', 'pid=,ppid='], text=True).splitlines()]
+        found = set(known)
+        while True:
+            children = {pid for pid, ppid in pairs if ppid in found}
+            if children <= found:
+                break
+            found |= children
+        if found <= known:
+            break
+        known = found
+    # Descendants first. Their stopped parents cannot reap/reuse the PIDs.
+    for pid in sorted(known - {proc.pid}, reverse=True) + [proc.pid]:
+        try:
+            os.kill(pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+    return sorted(known)
+
+
 def run_process(cmd, timeout_ms, env=None):
-    """Time from before spawn through pipe drain + exit. Kill the whole session.
+    """Time from before spawn through pipe drain + exit. Kill the process tree.
 
     Retain only complete output lines received by the deadline. Thus a solution
     emitted during watchdog cleanup cannot become a pre-deadline incumbent.
@@ -102,17 +143,13 @@ def run_process(cmd, timeout_ms, env=None):
         wall_ns = time.perf_counter_ns() - begin
         expired |= wall_ns > timeout_ms * 1_000_000
     finally:
-        # Even an early error/exit may leave a descendant holding a file or CPU.
-        # A new session makes this group belong exclusively to this run.
-        try:
-            os.killpg(proc.pid, signal.SIGKILL)
-        except ProcessLookupError:
-            pass
-        proc.communicate()
+        cleanup_pids = kill_process_tree(proc)
+        proc.communicate(timeout=5)
         proc.stdout.close()
         proc.stderr.close()
     return {'timeout': expired, 'wall_ns': wall_ns,
             'cleanup_ns': time.perf_counter_ns()-begin-wall_ns,
+            'cleanup_pids': cleanup_pids,
             'returncode': proc.returncode, 'lines': lines, 'stderr': stderr.decode()}
 
 
@@ -195,7 +232,8 @@ def main():
     env = {**os.environ, 'OMP_NUM_THREADS': '1', 'OPENBLAS_NUM_THREADS': '1',
            'MKL_NUM_THREADS': '1', 'VECLIB_MAXIMUM_THREADS': '1'}
     source_paths = [Path('Cargo.lock'), Path('Cargo.toml'), *Path('src').glob('*.rs'),
-                    Path('examples/unified_worker.rs'), Path(__file__), *Path('models').glob('*.mzn')]
+                    Path('examples/unified_worker.rs'), Path(__file__), Path('scripts/compare_solvers.py'),
+                    *Path('models').glob('*.mzn')]
     meta = {'kind': 'environment', 'utc': datetime.now(timezone.utc).isoformat(),
             'platform': platform.platform(), 'machine': subprocess.check_output(['sysctl','-n','machdep.cpu.brand_string'], text=True).strip(),
             'memory_bytes': int(subprocess.check_output(['sysctl','-n','hw.memsize'], text=True)),
@@ -204,12 +242,14 @@ def main():
             'solvers': json.loads(subprocess.check_output([str(mini),'--solvers-json'], text=True)),
             'selection': [[r['sample_index'], r['width']] for r in inputs],
             'methods': methods, 'repeats': args.repeats, 'warmups': 1,
+            'external_models_and_flags': EXTERNAL_METHODS,
             'baseline': {'commit': args.baseline_commit, 'worker_sha256': sha(baseline)} if baseline else None,
             'timeout_ms': args.timeout_ms, 'threads': 1, 'seed': 1, 'compiler_optimization': 0,
             'native_count_limits': 'disabled', 'deadline_scope': 'before common worker spawn through exit and stdout/stderr drain',
             'profile_construction': 'excluded for every method; identical canonical curve JSON input',
             'fallback': 'common HTML fallback charged to every run, not passed to search; optimized Pareto separately computes its own incumbent within timed preparation',
             'cache': 'fresh processes; one warmup; OS filesystem caches not flushed',
+            'timeout_cleanup': 'freeze and kill live worker descendants, including separate solver process groups',
             'input_manifest_sha256': sha(args.inputs), 'worker_sha256': sha(worker),
             'source_sha256': {str(p.relative_to(ROOT) if p.is_absolute() else p): sha(p) for p in source_paths}}
     rng = random.Random(1)
