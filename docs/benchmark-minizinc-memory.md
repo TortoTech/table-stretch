@@ -1,6 +1,6 @@
 # MiniZinc memory benchmark
 
-26 cases, 3 fresh processes per method/case, 1-second solve limit. Apple M6, 16 GiB RAM. Recorded at 2026-11-01T08:04:27.900888+00:00.
+26 cases, 3 fresh processes per method/case, 1-second solve limit. Apple M6, 16 GiB RAM. Recorded at 2026-11-01T08:34:54.322081+00:00.
 
 The six implementations are fixed to those selected by the corresponding timing benchmark. Rows retain its P95 time order. Completion counts below belong to this separate instrumented memory pass.
 
@@ -8,10 +8,10 @@ The six implementations are fixed to those selected by the corresponding timing 
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | HTML heuristic | 26/26 | 26/26 | 0.266 | 0.570 | 0.812 | 2.250 |
 | A* | 26/26 | 26/26 | 228.922 | 640.637 | 916.078 | 2.828 |
-| **Pareto DP** | 26/26 | 26/26 | 65.924 | 264.414 | 367.035 | 2.734 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 26/26 | 520.884 | 792.184 | 824.227 | 4.266 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 26/26 | 6937.904 | 12943.137 | 13505.301 | 16.172 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 26/26 | 5009.641 | 9217.203 | 11508.906 | 14.469 |
+| **Pareto DP** | 26/26 | 26/26 | 65.924 | 264.414 | 367.035 | 2.781 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 26/26 | 1367.275 | 2420.348 | 3438.680 | 6.031 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 26/26 | 433.248 | 760.180 | 792.291 | 4.312 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 26/26 | 1296.109 | 2272.547 | 2356.770 | 5.719 |
 
 Each case contributes the median of its repetitions; P50/P95/max summarize those case medians. Timeout memory is included as observed, with no artificial memory penalty. It is not an upper bound on memory required to finish. If any case lacks telemetry, that method’s aggregate memory values are withheld; missing values are never zero-filled.
 

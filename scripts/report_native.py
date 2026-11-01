@@ -46,6 +46,7 @@ def p95(values):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--suite', choices=['ebooks', 'minizinc'], default='ebooks')
+    parser.add_argument('--without-memory', action='store_true', help='Refresh timing before collecting new memory results')
     args = parser.parse_args()
     mini = args.suite == 'minizinc'
     stem = 'benchmark-minizinc' if mini else 'benchmark-native'
@@ -94,12 +95,15 @@ def main():
                                statuses=dict(statuses), phases_ms={k:statistics.median(p[k] for p in phases)/1e6 for k in phases[0]} if phases else {})
     selected = {family:min(methods, key=lambda m:(-summary[m]['completed'],summary[m]['p95_ms'],summary[m]['p50_ms'])) for family,methods in FAMILIES.items()}
     memory_path = ROOT/f'docs/{stem}-memory-summary.json'
-    memory = json.loads(memory_path.read_text()) if memory_path.exists() else None
+    memory = json.loads(memory_path.read_text()) if memory_path.exists() and not args.without_memory else None
     if memory:
         assert memory['environment']['selected'] == selected
         assert memory['environment']['input_manifest_sha256'] == env['input_manifest_sha256']
         assert memory['raw_sha256'] == sha(ROOT/f'docs/{stem}-memory.jsonl')
         assert memory['environment']['timing_summary_sha256'] == sha(ROOT/f'docs/{stem}-summary.json')
+        for source, digest in env['source_sha256'].items():
+            if source.startswith('src/') or source in ('Cargo.toml', 'Cargo.lock'):
+                assert memory['environment']['source_sha256'][source] == digest, 'Stale memory measurements: rerun memory benchmark'
     date = datetime.fromisoformat(env['utc']).astimezone(ZoneInfo('US/Pacific')).date()
     dataset = 'MiniZinc public cases' if mini else 'real ebook cases'
     intro = f'Latest run: **{date}**, {env["machine"]}, {env["memory_bytes"]//2**30} GiB RAM. **{n} {dataset}**, single thread, {repeats} measurements per case, {env["timeout_ms"]/1000:g}-second limit.\n\n'
@@ -145,8 +149,10 @@ def main():
         report += '| '+paper_name(NAMES[m], m)+' | '+' | '.join(f'{values[k]:.4f}' if k in values else '—' for k in ['prepare_ns','model_ns','search_ns','finalize_ns'])+' |\n'
     commands = ('python3 scripts/build_minizinc_inputs.py\n'
                 'python3 scripts/benchmark_native.py --inputs docs/benchmark-minizinc-inputs.json --output docs/benchmark-minizinc.jsonl\n'
-                'python3 scripts/report_native.py --suite minizinc' if mini else
-                'python3 scripts/benchmark_native.py\npython3 scripts/report_native.py')
+                'python3 scripts/report_native.py --suite minizinc --without-memory' if mini else
+                'python3 scripts/benchmark_native.py\npython3 scripts/report_native.py --without-memory')
+    if memory:
+        commands += f'\npython3 scripts/benchmark_memory.py --suite {args.suite}\npython3 scripts/report_memory.py --suite {args.suite}\npython3 scripts/report_native.py --suite {args.suite}'
     report += '\n## Reproduce\n\n```sh\n'+commands+'\n```\n\n'
     report += 'One warmup per method/case precedes the measured repetitions. Method order is shuffled with seed 1. Every call creates a fresh solver; there is no reused model or cross-method incumbent. All methods share the full-call wall limit; a watchdog kills and restarts the worker if cooperative termination overruns by two seconds. Raw records preserve errors, actual elapsed times and worker generations. Count limits are disabled for this benchmark.\n\n'
     report += f'[Raw measurements]({stem}.jsonl) · [Summary]({stem}-summary.json) · [Inputs]({path.name}) · [Model mappings](native-models.md)\n\n'

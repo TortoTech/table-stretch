@@ -6,12 +6,12 @@ Timing uses **Rust library calls in one persistent process**. Times include prep
 
 | Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (MiB) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| HTML heuristic | 26/26 | 0.003 | 0.007 | 0.570 | 2.250 |
-| A* | 26/26 | 0.260 | 0.875 | 640.637 | 2.828 |
-| **Pareto DP** | 26/26 | 0.159 | 1.991 | 264.414 | 2.734 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.293 | 26.629 | 792.184 | 4.266 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 14.525 | 37.895 | 12943.137 | 16.172 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 | 9217.203 | 14.469 |
+| HTML heuristic | 26/26 | 0.003 | 0.006 | 0.570 | 2.250 |
+| A* | 26/26 | 0.246 | 0.843 | 640.637 | 2.828 |
+| **Pareto DP** | 26/26 | 0.163 | 2.008 | 264.414 | 2.781 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 4.781 | 17.582 | 2420.348 | 6.031 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.448 | 26.624 | 760.180 | 4.312 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 | 2272.547 | 5.719 |
 
 One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in timing percentiles. HTML matched the optimum in 0/26 cases.
 
@@ -25,12 +25,12 @@ Memory is measured separately in fresh processes: extra live heap during solving
 
 | Method | Completed | P50 (ms) | P95 (ms) |
 | --- | ---: | ---: | ---: |
-| HTML heuristic | 26/26 | 0.003 | 0.007 |
-| A* | 26/26 | 0.260 | 0.875 |
-| **Pareto DP** | 26/26 | 0.159 | 1.991 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 26/26 | 4.293 | 26.629 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 26/26 | 14.525 | 37.895 |
-| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 22/26 | 9.868 | 1000.000 |
+| HTML heuristic | 26/26 | 0.003 | 0.006 |
+| A* | 26/26 | 0.246 | 0.843 |
+| **Pareto DP** | 26/26 | 0.163 | 2.008 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 26/26 | 4.781 | 17.582 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 26/26 | 4.448 | 26.624 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 18/26 | 3.910 | 1000.000 |
 | [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 5/26 | 1000.000 | 1000.000 |
 | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 1/26 | 1000.000 | 1000.000 |
 | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | 0/26 | 1000.000 | 1000.000 |
@@ -43,14 +43,14 @@ Medians over completed cases only; each case uses the median of its repetitions.
 
 | Method | Prepare (ms) | Model (ms) | Search (ms) | Finalize (ms) |
 | --- | ---: | ---: | ---: | ---: |
-| HTML heuristic | 0.0020 | 0.0000 | 0.0000 | 0.0008 |
-| A* | 0.0166 | 0.0000 | 0.2272 | 0.0006 |
-| **Pareto DP** | 0.0201 | 0.0000 | 0.1402 | 0.0005 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 0.0191 | 0.0299 | 4.2346 | 0.0018 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0211 | 0.4447 | 14.0241 | 0.0019 |
-| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 0.0201 | 0.4009 | 7.3867 | 0.0018 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0165 | 0.4081 | 252.7725 | 0.0018 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 0.0177 | 0.0300 | 953.6810 | 0.0018 |
+| HTML heuristic | 0.0019 | 0.0000 | 0.0000 | 0.0009 |
+| A* | 0.0171 | 0.0000 | 0.2152 | 0.0006 |
+| **Pareto DP** | 0.0200 | 0.0000 | 0.1415 | 0.0005 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0221 | 0.2350 | 4.5487 | 0.0019 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 0.0198 | 0.0256 | 4.3920 | 0.0018 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 0.0202 | 0.1397 | 2.3461 | 0.0016 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0165 | 0.1683 | 219.4429 | 0.0017 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 0.0222 | 0.0229 | 643.7144 | 0.0020 |
 | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | — | — | — | — |
 
 ## Reproduce
@@ -58,6 +58,9 @@ Medians over completed cases only; each case uses the median of its repetitions.
 ```sh
 python3 scripts/build_minizinc_inputs.py
 python3 scripts/benchmark_native.py --inputs docs/benchmark-minizinc-inputs.json --output docs/benchmark-minizinc.jsonl
+python3 scripts/report_native.py --suite minizinc --without-memory
+python3 scripts/benchmark_memory.py --suite minizinc
+python3 scripts/report_memory.py --suite minizinc
 python3 scripts/report_native.py --suite minizinc
 ```
 

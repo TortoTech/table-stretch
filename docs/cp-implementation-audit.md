@@ -2,6 +2,8 @@
 
 Reviewed baseline: [`5d3d36b`](https://github.com/TortoTech/table-stretch/tree/5d3d36b300b976eae8bd4acb410fc2b7326922b8).
 
+Later memory optimization replaces explicit sparse holes with gap clauses, removes constant domains and folds fixed cells into shared bounds. The old sparse-gap rejection regression now requires a correct optimum for a two-million-unit gap. See [current model construction](native-models.md#compact-model-construction) and [before/after measurements](memory-optimization.md). The findings below describe the earlier audit and its original implementation.
+
 No incorrect optimum was found in the tested inputs. Three implementation issues were found and fixed; they concern resource handling and benchmark robustness, rather than the table feasibility model.
 
 ## Findings and fixes

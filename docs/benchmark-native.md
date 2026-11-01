@@ -7,11 +7,11 @@ Timing uses **Rust library calls in one persistent process**. Times include prep
 | Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (MiB) |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | HTML heuristic | 1383/1383 | <0.001 | <0.001 | 0.176 | 2.141 |
-| **Pareto DP** | 1383/1383 | 0.002 | 0.011 | 9.395 | 2.203 |
-| A* | 1383/1383 | 0.003 | 0.017 | 17.512 | 2.219 |
-| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 0.061 | 0.514 | 1360.227 | 3.531 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 0.063 | 1.155 | 271.570 | 3.344 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1367/1383 | 0.081 | 2.079 | 1336.410 | 4.422 |
+| **Pareto DP** | 1383/1383 | 0.002 | 0.010 | 9.395 | 2.219 |
+| A* | 1383/1383 | 0.003 | 0.016 | 17.512 | 2.219 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 0.047 | 0.432 | 265.398 | 3.328 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 0.054 | 1.075 | 257.479 | 3.297 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1367/1383 | 0.059 | 1.857 | 553.984 | 3.656 |
 
 One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in timing percentiles. HTML matched the optimum in 733/1383 cases.
 
@@ -26,14 +26,14 @@ Memory is measured separately in fresh processes: extra live heap during solving
 | Method | Completed | P50 (ms) | P95 (ms) |
 | --- | ---: | ---: | ---: |
 | HTML heuristic | 1383/1383 | <0.001 | <0.001 |
-| **Pareto DP** | 1383/1383 | 0.002 | 0.011 |
-| A* | 1383/1383 | 0.003 | 0.017 |
-| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 1383/1383 | 0.061 | 0.514 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 1383/1383 | 0.088 | 0.831 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 1383/1383 | 0.063 | 1.155 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 1383/1383 | 0.059 | 1.164 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 1367/1383 | 0.081 | 2.079 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | 1379/1383 | 0.081 | 2.757 |
+| **Pareto DP** | 1383/1383 | 0.002 | 0.010 |
+| A* | 1383/1383 | 0.003 | 0.016 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 1383/1383 | 0.047 | 0.432 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 1383/1383 | 0.065 | 0.659 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 1383/1383 | 0.054 | 1.075 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 1383/1383 | 0.055 | 1.171 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 1367/1383 | 0.059 | 1.857 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | 1382/1383 | 0.068 | 2.403 |
 
 Each percentile uses one median per case. Failures and timeouts are censored at the common limit, including in selection. A case completes only when every measured repetition completes. All returned layouts are checked against the original profiles and the fixed reference optimum.
 
@@ -44,20 +44,23 @@ Medians over completed cases only; each case uses the median of its repetitions.
 | Method | Prepare (ms) | Model (ms) | Search (ms) | Finalize (ms) |
 | --- | ---: | ---: | ---: | ---: |
 | HTML heuristic | 0.0002 | 0.0000 | 0.0000 | 0.0000 |
-| **Pareto DP** | 0.0017 | 0.0000 | 0.0002 | 0.0000 |
-| A* | 0.0013 | 0.0000 | 0.0017 | 0.0001 |
-| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 0.0016 | 0.0248 | 0.0333 | 0.0001 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0017 | 0.0300 | 0.0549 | 0.0001 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 0.0016 | 0.0044 | 0.0563 | 0.0001 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 0.0017 | 0.0050 | 0.0508 | 0.0001 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0016 | 0.0295 | 0.0460 | 0.0001 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | 0.0016 | 0.0057 | 0.0727 | 0.0001 |
+| **Pareto DP** | 0.0016 | 0.0000 | 0.0002 | 0.0000 |
+| A* | 0.0012 | 0.0000 | 0.0016 | 0.0001 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 0.0016 | 0.0172 | 0.0272 | 0.0001 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0016 | 0.0199 | 0.0369 | 0.0001 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 0.0016 | 0.0033 | 0.0485 | 0.0001 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 0.0016 | 0.0038 | 0.0482 | 0.0001 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0016 | 0.0194 | 0.0318 | 0.0001 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | 0.0016 | 0.0036 | 0.0622 | 0.0001 |
 
 ## Reproduce
 
 ```sh
 python3 scripts/benchmark_native.py
-python3 scripts/report_native.py
+python3 scripts/report_native.py --without-memory
+python3 scripts/benchmark_memory.py --suite ebooks
+python3 scripts/report_memory.py --suite ebooks
+python3 scripts/report_native.py --suite ebooks
 ```
 
 One warmup per method/case precedes the measured repetitions. Method order is shuffled with seed 1. Every call creates a fresh solver; there is no reused model or cross-method incumbent. All methods share the full-call wall limit; a watchdog kills and restarts the worker if cooperative termination overruns by two seconds. Raw records preserve errors, actual elapsed times and worker generations. Count limits are disabled for this benchmark.

@@ -64,9 +64,18 @@ fn data(table: &Table) -> Result<Data, Error> {
         d.widths.push(widths);
         d.cells.push(cells);
     }
-    for h in &mut d.heights {
+    for (r, h) in d.heights.iter_mut().enumerate() {
         h.sort_unstable();
         h.dedup();
+        // Every row must accommodate even the shortest configuration of each
+        // cell. This also folds fixed cells into a shared row lower bound.
+        let minimum = d
+            .cells
+            .iter()
+            .map(|c| c[r].last().unwrap().height)
+            .max()
+            .unwrap();
+        h.retain(|&value| value >= minimum);
     }
     Ok(d)
 }
@@ -76,6 +85,27 @@ impl TerminationCondition for Deadline {
     fn should_stop(&mut self) -> bool {
         self.0.is_some_and(|d| Instant::now() >= d)
     }
+}
+
+// Represent a finite value set using bounds and one disjunction per gap.
+// Pumpkin's sparse integer constructor records every missing integer; these
+// clauses instead exclude whole open intervals with O(number of values) space.
+fn discrete_integer(solver: &mut Solver, values: &[u32]) -> DomainId {
+    debug_assert!(!values.is_empty() && values.windows(2).all(|p| p[0] < p[1]));
+    let var = solver.new_bounded_integer(values[0] as i32, *values.last().unwrap() as i32);
+    for pair in values.windows(2) {
+        if pair[1] - pair[0] > 1 {
+            let tag = solver.new_constraint_tag();
+            solver.add_clause(
+                [
+                    predicate!(var <= pair[0] as i32),
+                    predicate!(var >= pair[1] as i32),
+                ],
+                tag,
+            );
+        }
+    }
+    var
 }
 
 // 2011 sequential search: select the cell with smallest minimum height,
@@ -143,23 +173,20 @@ fn cp(
 ) -> Result<(Vec<u32>, u64), Error> {
     let no_learning = matches!(algorithm, NativeAlgorithm::Cp2011);
     let cellfree = matches!(algorithm, NativeAlgorithm::Lcg2015);
-    // Bounded integer domains are compact; their absolute values do not
-    // determine allocation. In 0.5.0, new_sparse_integer scans its complete
-    // interval and records every missing value in the trail and hole set.
-    // Bound that construction work plus model entries before allocating.
+    // Count model entries, not numeric interval spans. Gap clauses avoid
+    // allocating one trail/hole entry per missing integer.
     let sum_h: u64 = d.heights.iter().map(|v| *v.last().unwrap() as u64).sum();
     let sum_w: u64 = d.hi.iter().map(|&v| v as u64).sum();
     if sum_h >= i32::MAX as u64 / 2 || sum_w >= i32::MAX as u64 / 2 {
         return Err(Error::Overflow);
     }
-    let span = |lo: u32, hi: u32| u64::from(hi) - u64::from(lo) + 1;
     let mut construction_work = (d.lo.len() + d.heights.len() + 1) as u64;
     if cellfree {
         construction_work += d
             .widths
             .iter()
             .chain(&d.heights)
-            .map(|v| span(v[0], *v.last().unwrap()))
+            .map(|v| v.len() as u64)
             .sum::<u64>();
         construction_work += d
             .cells
@@ -172,12 +199,8 @@ fn cp(
             .cells
             .iter()
             .flatten()
-            .map(|c| {
-                span(c.last().unwrap().height, c[0].height)
-                    + span(c[0].width, c.last().unwrap().width)
-                    + 3
-                    + 4 * c.len() as u64
-            })
+            .filter(|c| c.len() > 1)
+            .map(|c| 3 + 6 * c.len() as u64)
             .sum::<u64>();
     }
     if construction_work > 1_000_000 {
@@ -189,34 +212,34 @@ fn cp(
         } else {
             ConflictResolverType::OneUIP
         },
-        memory_preallocated: 1,
+        memory_preallocated: 0,
         ..SolverOptions::default()
     });
-    let w: Vec<_> = d
-        .lo
-        .iter()
-        .zip(&d.hi)
-        .enumerate()
-        .map(|(j, (&lo, &hi))| {
-            if cellfree {
-                solver.new_sparse_integer(d.widths[j].iter().map(|&v| v as i32).collect::<Vec<_>>())
-            } else {
-                solver.new_bounded_integer(lo as i32, hi as i32)
-            }
-        })
-        .collect();
+    let w: Vec<_> =
+        d.lo.iter()
+            .zip(&d.hi)
+            .enumerate()
+            .map(|(j, (&lo, &hi))| {
+                if cellfree {
+                    discrete_integer(&mut solver, &d.widths[j])
+                } else {
+                    solver.new_bounded_integer(lo as i32, hi as i32)
+                }
+            })
+            .collect();
     let h: Vec<_> = d
         .heights
         .iter()
         .map(|v| {
             if cellfree {
-                solver.new_sparse_integer(v.iter().map(|&x| x as i32).collect::<Vec<_>>())
+                discrete_integer(&mut solver, v)
             } else {
                 solver.new_bounded_integer(*v.first().unwrap() as i32, *v.last().unwrap() as i32)
             }
         })
         .collect();
-    let objective = solver.new_bounded_integer(0, sum_h as i32);
+    let min_h: u32 = d.heights.iter().map(|v| v[0]).sum();
+    let objective = solver.new_bounded_integer(min_h as i32, sum_h as i32);
     let tag = solver.new_constraint_tag();
     solver
         .add_constraint(less_than_or_equals(
@@ -236,12 +259,11 @@ fn cp(
     for (j, column) in d.cells.iter().enumerate() {
         clock.check()?;
         for (r, curve) in column.iter().enumerate() {
+            // Width is already covered by d.lo; height by the row minimum.
+            if curve.len() == 1 {
+                continue;
+            }
             if cellfree {
-                let tag = solver.new_constraint_tag();
-                solver.add_clause(
-                    [predicate!(h[r] >= curve.last().unwrap().height as i32)],
-                    tag,
-                );
                 for pair in curve.windows(2) {
                     let tag = solver.new_constraint_tag();
                     solver.add_clause(
@@ -254,19 +276,18 @@ fn cp(
                 }
             } else {
                 let idx = solver.new_bounded_integer(0, (curve.len() - 1) as i32);
-                let ch = solver
-                    .new_sparse_integer(curve.iter().map(|s| s.height as i32).collect::<Vec<_>>());
-                let cw = solver
-                    .new_sparse_integer(curve.iter().map(|s| s.width as i32).collect::<Vec<_>>());
-                // Constant domains implement the paper's element arrays.
-                let hs: Vec<_> = curve
-                    .iter()
-                    .map(|s| solver.new_bounded_integer(s.height as i32, s.height as i32))
-                    .collect();
-                let ws: Vec<_> = curve
-                    .iter()
-                    .map(|s| solver.new_bounded_integer(s.width as i32, s.width as i32))
-                    .collect();
+                let ch = discrete_integer(
+                    &mut solver,
+                    &curve.iter().rev().map(|s| s.height).collect::<Vec<_>>(),
+                );
+                let cw = discrete_integer(
+                    &mut solver,
+                    &curve.iter().map(|s| s.width).collect::<Vec<_>>(),
+                );
+                // Pumpkin supports literal integers in element arrays: no
+                // constant domains, watches or trail entries are needed.
+                let hs: Vec<_> = curve.iter().map(|s| s.height as i32).collect();
+                let ws: Vec<_> = curve.iter().map(|s| s.width as i32).collect();
                 let tag = solver.new_constraint_tag();
                 solver.add_constraint(element(idx, hs, ch, tag)).post();
                 let tag = solver.new_constraint_tag();
@@ -357,6 +378,9 @@ impl Unary {
     }
 }
 fn clause(p: &mut Problem, a: (Option<Variable>, f64), b: (Option<Variable>, f64)) {
+    if a.1 + b.1 >= 1. {
+        return;
+    }
     let terms: Vec<_> = [a.0, b.0].into_iter().flatten().map(|v| (v, 1.)).collect();
     p.add_constraint(terms, Op::Ge, 1. - a.1 - b.1);
 }
@@ -405,11 +429,6 @@ fn mip(
         for (j, col) in d.cells.iter().enumerate() {
             clock.check()?;
             for (r, curve) in col.iter().enumerate() {
-                clause(
-                    &mut p,
-                    uh[r].threshold(curve.last().unwrap().height),
-                    (None, 0.),
-                );
                 for pair in curve.windows(2) {
                     clause(
                         &mut p,
@@ -438,6 +457,9 @@ fn mip(
         for (j, col) in d.cells.iter().enumerate() {
             clock.check()?;
             for (r, curve) in col.iter().enumerate() {
+                if curve.len() == 1 {
+                    continue;
+                }
                 let mut wt = vec![(w[j], 1.)];
                 let mut ht = vec![(h[r], 1.)];
                 if matches!(algorithm, NativeAlgorithm::Mip2015Onehot) {

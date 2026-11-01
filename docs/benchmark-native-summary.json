@@ -1,14 +1,14 @@
 {
   "environment": {
     "kind": "environment",
-    "utc": "2026-11-01T07:10:11.265686+00:00",
+    "utc": "2026-11-01T08:33:07.187923+00:00",
     "platform": "macOS-27.0-arm64-arm-64bit",
     "machine": "Apple M6",
     "memory_bytes": 17179869184,
     "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)\nbinary: rustc\ncommit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67\ncommit-date: 2026-10-13\nhost: aarch64-apple-darwin\nrelease: 1.99.1\nLLVM version: 23.1.1\n",
     "input_manifest": "docs/benchmark-library-inputs.json",
     "input_manifest_sha256": "d7342d73448d903e6370dcd692e2d70c5886ad2c35e1e2db86f71ff6116eeb2e",
-    "worker_sha256": "2ac025f410df941b0e384cb13ec07739298003097c97137bc5419da9ffc9fc85",
+    "worker_sha256": "22092fb90e0cab358902b2fba40e32391524d7b85caaff5bbc1617b79926fa03",
     "source_sha256": {
       "Cargo.toml": "8090fe9d5ad1196f6d6a0a7c30877898fc29706eb93a312daf5f1850228eb077",
       "Cargo.lock": "e63e4fd55801e46cca3b1041c6059f3f46bdc04205aa309574b8314ca21aa7ef",
@@ -17,7 +17,7 @@
       "src/main.rs": "9a13838aeaf59c5f7979f986d7aaceb92217df1d9478e4ced3333c8d72d850b0",
       "src/model_data.rs": "78d8d7c793aa54d2592611c7efe845c547d2a0de61e00eaa504823f8ba8d32a1",
       "src/pareto.rs": "ddfbe65bce007debcb2a9f22bdb52a64fcff3c2f9ee9648f263980b79d53912c",
-      "src/research.rs": "3c5af14cdcb851909492efa9cd6764246553962fe7b8e6f6bc3d5b79a3ced0b8",
+      "src/research.rs": "ab6d72eefa85736b27da8fb96b01f3d98d66a55c28049c30a93446cf0cbb6fc4",
       "examples/native_worker.rs": "74a0c87e646449966d3009ea2caaa2697201f69a795ac56c9a5bd5eb418a294e",
       "scripts/benchmark_native.py": "78fc85e3f4e833c961741c1cfe473e6d6fdc81a5f48c9c9a75075102cc8677da",
       "scripts/benchmark_unified.py": "090eb5a7b57bf27e43b400a9e993f7933dbda75a1c0323b1a6e78c3b867abde6"
@@ -5595,32 +5595,32 @@
       "completed": 1383,
       "optimal": 1383,
       "matched": 1383,
-      "p50_ms": 0.002333,
-      "p95_ms": 0.0105,
+      "p50_ms": 0.00225,
+      "p95_ms": 0.010459,
       "statuses": {
         "optimal": 4149
       },
       "phases_ms": {
         "finalize_ns": 4.2e-05,
         "model_ns": 0.0,
-        "prepare_ns": 0.001666,
-        "search_ns": 0.000167
+        "prepare_ns": 0.001584,
+        "search_ns": 0.000208
       }
     },
     "astar2011": {
       "completed": 1383,
       "optimal": 1383,
       "matched": 1383,
-      "p50_ms": 0.003375,
-      "p95_ms": 0.017167,
+      "p50_ms": 0.003334,
+      "p95_ms": 0.016375,
       "statuses": {
         "optimal": 4149
       },
       "phases_ms": {
         "finalize_ns": 8.3e-05,
         "model_ns": 0.0,
-        "prepare_ns": 0.00125,
-        "search_ns": 0.001666
+        "prepare_ns": 0.001208,
+        "search_ns": 0.001584
       }
     },
     "html": {
@@ -5628,7 +5628,7 @@
       "optimal": 0,
       "matched": 733,
       "p50_ms": 0.000375,
-      "p95_ms": 0.000833,
+      "p95_ms": 0.00075,
       "statuses": {
         "heuristic": 4149
       },
@@ -5643,98 +5643,98 @@
       "completed": 1367,
       "optimal": 1367,
       "matched": 1367,
-      "p50_ms": 0.081167,
-      "p95_ms": 2.0795,
+      "p50_ms": 0.058875,
+      "p95_ms": 1.857209,
       "statuses": {
-        "optimal": 4102,
-        "timeout": 47
+        "optimal": 4101,
+        "timeout": 48
       },
       "phases_ms": {
-        "finalize_ns": 0.000125,
-        "model_ns": 0.029458,
-        "prepare_ns": 0.001625,
-        "search_ns": 0.045958
+        "finalize_ns": 8.4e-05,
+        "model_ns": 0.019375,
+        "prepare_ns": 0.001584,
+        "search_ns": 0.031833
       }
     },
     "lcg2011": {
       "completed": 1383,
       "optimal": 1383,
       "matched": 1383,
-      "p50_ms": 0.088084,
-      "p95_ms": 0.831375,
+      "p50_ms": 0.065458,
+      "p95_ms": 0.659125,
       "statuses": {
         "optimal": 4149
       },
       "phases_ms": {
-        "finalize_ns": 0.000125,
-        "model_ns": 0.029959,
-        "prepare_ns": 0.001666,
-        "search_ns": 0.054917
+        "finalize_ns": 8.4e-05,
+        "model_ns": 0.019917,
+        "prepare_ns": 0.001625,
+        "search_ns": 0.036875
       }
     },
     "lcg2015": {
       "completed": 1383,
       "optimal": 1383,
       "matched": 1383,
-      "p50_ms": 0.060667,
-      "p95_ms": 0.5145,
+      "p50_ms": 0.046666,
+      "p95_ms": 0.432,
       "statuses": {
         "optimal": 4149
       },
       "phases_ms": {
-        "finalize_ns": 0.000125,
-        "model_ns": 0.02475,
+        "finalize_ns": 8.4e-05,
+        "model_ns": 0.017166,
         "prepare_ns": 0.001625,
-        "search_ns": 0.03325
+        "search_ns": 0.027208
       }
     },
     "mip2015_unary": {
       "completed": 1383,
       "optimal": 1383,
       "matched": 1383,
-      "p50_ms": 0.063291,
-      "p95_ms": 1.155375,
+      "p50_ms": 0.054,
+      "p95_ms": 1.074792,
       "statuses": {
         "optimal": 4149
       },
       "phases_ms": {
         "finalize_ns": 0.000125,
-        "model_ns": 0.004375,
-        "prepare_ns": 0.001625,
-        "search_ns": 0.056292
+        "model_ns": 0.003292,
+        "prepare_ns": 0.001584,
+        "search_ns": 0.0485
       }
     },
     "mip2015_onehot": {
-      "completed": 1379,
-      "optimal": 1379,
-      "matched": 1379,
-      "p50_ms": 0.081375,
-      "p95_ms": 2.757333,
+      "completed": 1382,
+      "optimal": 1382,
+      "matched": 1382,
+      "p50_ms": 0.068083,
+      "p95_ms": 2.402666,
       "statuses": {
-        "optimal": 4137,
-        "timeout": 12
+        "optimal": 4146,
+        "timeout": 3
       },
       "phases_ms": {
-        "finalize_ns": 0.000125,
-        "model_ns": 0.00575,
+        "finalize_ns": 8.4e-05,
+        "model_ns": 0.003625,
         "prepare_ns": 0.001625,
-        "search_ns": 0.072667
+        "search_ns": 0.062167
       }
     },
     "mip2015_cellfree": {
       "completed": 1383,
       "optimal": 1383,
       "matched": 1383,
-      "p50_ms": 0.058708,
-      "p95_ms": 1.163625,
+      "p50_ms": 0.055167,
+      "p95_ms": 1.170833,
       "statuses": {
         "optimal": 4149
       },
       "phases_ms": {
         "finalize_ns": 0.000125,
-        "model_ns": 0.005041,
-        "prepare_ns": 0.001666,
-        "search_ns": 0.050833
+        "model_ns": 0.003833,
+        "prepare_ns": 0.001584,
+        "search_ns": 0.048167
       }
     }
   }

@@ -1,6 +1,6 @@
 use table_stretch::{
     Column, Error, Limits, NativeAlgorithm, Profile, Step, Table, solve, solve_astar, solve_html,
-    solve_measured,
+    solve_measured, solve_measured_with_timeout,
 };
 
 fn profile(points: &[(u32, u32)]) -> Profile {
@@ -520,7 +520,7 @@ fn cp_large_fixed_units_do_not_consume_a_sparse_domain_budget() {
 }
 
 #[test]
-fn cp_sparse_gap_limit_is_checked_before_constructing_domains() {
+fn cp_large_sparse_gaps_use_compact_domains() {
     let t = Table {
         width: 2,
         reserved_width: 0,
@@ -535,10 +535,15 @@ fn cp_sparse_gap_limit_is_checked_before_constructing_domains() {
         NativeAlgorithm::Lcg2011,
         NativeAlgorithm::Lcg2015,
     ] {
-        assert_eq!(
-            solve_measured(&t, Limits::default(), a).unwrap_err(),
-            Error::Limit("CP model construction")
-        );
+        let (layout, _) = solve_measured_with_timeout(
+            &t,
+            Limits::default(),
+            a,
+            Some(std::time::Duration::from_secs(2)),
+        )
+        .unwrap();
+        assert_eq!(layout.total_height, 0);
+        assert!(layout.optimal);
     }
 }
 
@@ -578,5 +583,62 @@ fn cp_gapped_configurations_and_interior_backtracking_match_oracle() {
             ],
         };
         check(&t);
+    }
+}
+
+#[test]
+fn cp_fixed_cells_and_large_gaps_preserve_row_maxima() {
+    // Literal element arrays, gap exclusions and folded singleton cells must
+    // agree even when a fixed cell dominates another cell's shortest layouts.
+    for width in 3..=12 {
+        let mut t = Table {
+            width,
+            reserved_width: 0,
+            columns: vec![
+                Column {
+                    min_width: 1,
+                    max_width: 4,
+                    cells: vec![profile(&[(1, 2_000), (2, 200), (4, 0)]), profile(&[(1, 0)])],
+                },
+                Column {
+                    min_width: 1,
+                    max_width: 4,
+                    cells: vec![
+                        profile(&[(1, 1_700), (3, 300), (4, 10)]),
+                        profile(&[(1, 9), (2, 4), (4, 0)]),
+                    ],
+                },
+                Column {
+                    min_width: 1,
+                    max_width: 4,
+                    cells: vec![profile(&[(1, 100)]), profile(&[(1, 5)])],
+                },
+            ],
+        };
+        // This regression targets integer CP domain representation. The
+        // original microlp cell-free model rejects this input on its existing
+        // numerical objective check, independently of these optimizations.
+        for col in &mut t.columns {
+            for step in &mut col.cells[0].steps {
+                step.height *= 1000;
+            }
+        }
+        let expected = brute(&t).unwrap();
+        for algorithm in [
+            NativeAlgorithm::Cp2011,
+            NativeAlgorithm::Lcg2011,
+            NativeAlgorithm::Lcg2015,
+        ] {
+            let (layout, _) = solve_measured_with_timeout(
+                &t,
+                Limits::default(),
+                algorithm,
+                Some(std::time::Duration::from_secs(2)),
+            )
+            .unwrap();
+            assert!(layout.optimal);
+            assert_eq!(layout.total_height, expected);
+            assert_eq!(layout.column_widths.iter().sum::<u32>(), width);
+        }
     }
 }

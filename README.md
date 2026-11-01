@@ -44,11 +44,11 @@ Timing uses **Rust library calls in one persistent process**. Times include prep
 | Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (MiB) |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | HTML heuristic | 1383/1383 | <0.001 | <0.001 | 0.176 | 2.141 |
-| **Pareto DP** | 1383/1383 | 0.002 | 0.011 | 9.395 | 2.203 |
-| A* | 1383/1383 | 0.003 | 0.017 | 17.512 | 2.219 |
-| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 0.061 | 0.514 | 1360.227 | 3.531 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 0.063 | 1.155 | 271.570 | 3.344 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1367/1383 | 0.081 | 2.079 | 1336.410 | 4.422 |
+| **Pareto DP** | 1383/1383 | 0.002 | 0.010 | 9.395 | 2.219 |
+| A* | 1383/1383 | 0.003 | 0.016 | 17.512 | 2.219 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 0.047 | 0.432 | 265.398 | 3.328 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 0.054 | 1.075 | 257.479 | 3.297 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1367/1383 | 0.059 | 1.857 | 553.984 | 3.656 |
 
 One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in timing percentiles. HTML matched the optimum in 733/1383 cases.
 
@@ -68,12 +68,12 @@ Timing uses **Rust library calls in one persistent process**. Times include prep
 
 | Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (MiB) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| HTML heuristic | 26/26 | 0.003 | 0.007 | 0.570 | 2.250 |
-| A* | 26/26 | 0.260 | 0.875 | 640.637 | 2.828 |
-| **Pareto DP** | 26/26 | 0.159 | 1.991 | 264.414 | 2.734 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.293 | 26.629 | 792.184 | 4.266 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 14.525 | 37.895 | 12943.137 | 16.172 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 | 9217.203 | 14.469 |
+| HTML heuristic | 26/26 | 0.003 | 0.006 | 0.570 | 2.250 |
+| A* | 26/26 | 0.246 | 0.843 | 640.637 | 2.828 |
+| **Pareto DP** | 26/26 | 0.163 | 2.008 | 264.414 | 2.781 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 4.781 | 17.582 | 2420.348 | 6.031 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.448 | 26.624 | 760.180 | 4.312 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 | 2272.547 | 5.719 |
 
 One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in timing percentiles. HTML matched the optimum in 0/26 cases.
 
@@ -95,7 +95,7 @@ cargo test --locked --all-targets
 bash scripts/check.sh  # Rust checks and Lean 4.19.0 proofs
 ```
 
-[Algorithms](docs/algorithms.md) · [Mathematical proof](docs/proof.md) · [Lean proof](proof/Optimality.lean) · [Research audit](docs/research-audit.md)
+[Algorithms](docs/algorithms.md) · [Mathematical proof](docs/proof.md) · [Lean proof](proof/Optimality.lean) · [Research audit](docs/research-audit.md) · [Memory optimization](docs/memory-optimization.md)
 
 ## License
 

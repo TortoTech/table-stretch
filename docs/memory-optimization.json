@@ -1,0 +1,104 @@
+{
+  "baseline_commit": "ae9faf0a989eb738b3d0295e4d6b042fa1db8c49",
+  "comparisons": [
+    {
+      "suite": "Ebooks",
+      "family": "LCG (Pumpkin)",
+      "before_method": "lcg2015",
+      "after_method": "lcg2015",
+      "same_variant": true,
+      "before_heap_p95_bytes": 1392872,
+      "after_heap_p95_bytes": 271768,
+      "heap_reduction_percent": 80.48865940301765,
+      "before_time_p95_ms": 0.5145,
+      "after_time_p95_ms": 0.432,
+      "before_completed": 1383,
+      "after_completed": 1383,
+      "cases": 1383
+    },
+    {
+      "suite": "Ebooks",
+      "family": "MIP (microlp)",
+      "before_method": "mip2015_unary",
+      "after_method": "mip2015_unary",
+      "same_variant": true,
+      "before_heap_p95_bytes": 278088,
+      "after_heap_p95_bytes": 263658,
+      "heap_reduction_percent": 5.189004919306117,
+      "before_time_p95_ms": 1.155375,
+      "after_time_p95_ms": 1.074792,
+      "before_completed": 1383,
+      "after_completed": 1383,
+      "cases": 1383
+    },
+    {
+      "suite": "Ebooks",
+      "family": "CP (Pumpkin)",
+      "before_method": "cp2011",
+      "after_method": "cp2011",
+      "same_variant": true,
+      "before_heap_p95_bytes": 1368484,
+      "after_heap_p95_bytes": 567280,
+      "heap_reduction_percent": 58.546829922746625,
+      "before_time_p95_ms": 2.0795,
+      "after_time_p95_ms": 1.857209,
+      "before_completed": 1367,
+      "after_completed": 1367,
+      "cases": 1383
+    },
+    {
+      "suite": "MiniZinc",
+      "family": "LCG (Pumpkin)",
+      "before_method": "lcg2011",
+      "after_method": "lcg2011",
+      "same_variant": true,
+      "before_heap_p95_bytes": 13253772,
+      "after_heap_p95_bytes": 2478436,
+      "heap_reduction_percent": 81.30014610180407,
+      "before_time_p95_ms": 37.894916,
+      "after_time_p95_ms": 17.581667,
+      "before_completed": 26,
+      "after_completed": 26,
+      "cases": 26
+    },
+    {
+      "suite": "MiniZinc",
+      "family": "MIP (microlp)",
+      "before_method": "mip2015_cellfree",
+      "after_method": "mip2015_cellfree",
+      "same_variant": true,
+      "before_heap_p95_bytes": 811196,
+      "after_heap_p95_bytes": 778424,
+      "heap_reduction_percent": 4.039960749313365,
+      "before_time_p95_ms": 26.628958,
+      "after_time_p95_ms": 26.623708,
+      "before_completed": 26,
+      "after_completed": 26,
+      "cases": 26
+    },
+    {
+      "suite": "MiniZinc",
+      "family": "CP (Pumpkin)",
+      "before_method": "cp2011",
+      "after_method": "cp2011",
+      "same_variant": true,
+      "before_heap_p95_bytes": 9438416,
+      "after_heap_p95_bytes": 2327088,
+      "heap_reduction_percent": 75.34450695964237,
+      "before_time_p95_ms": 1000.0,
+      "after_time_p95_ms": 1000.0,
+      "before_completed": 5,
+      "after_completed": 5,
+      "cases": 26
+    }
+  ],
+  "completion_regressions": [
+    {
+      "suite": "MiniZinc",
+      "method": "lcg2015",
+      "before": 22,
+      "after": 18,
+      "cases": 26
+    }
+  ]
+}
