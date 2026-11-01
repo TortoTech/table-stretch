@@ -4,17 +4,17 @@ Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **26 MiniZinc public cases**, 
 
 Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](assets/benchmark-minizinc.svg?v=a7583ed1dfcc)
+![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](assets/benchmark-minizinc.svg?v=d95fc6de7555)
 
 <details>
 <summary>Table data and paper links</summary>
 
 | Metric | **Pareto DP** | A* | [LCG](https://doi.org/10.1145/2034691.2034697) | [MIP](https://doi.org/10.1287/ijoc.2014.0637) | [CP](https://doi.org/10.1145/2034691.2034697) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| P50 (ms) | $\color{green}{0.163}$ | 0.246 | 4.781 | 4.448 | > 1000.00 |
-| P95 (ms) | 2.008 | $\color{green}{0.843}$ | 17.582 | 26.624 | > 1000.00 |
-| Extra heap P95 (KiB) | $\color{green}{264.41}$ | 640.64 | 2420.35 | 760.18 | 2272.55 |
-| RSS P95 (KiB) | $\color{green}{2848.00}$ | 2896.00 | 6176.00 | 4416.00 | 5856.00 |
+| P50 (ms) | $\color{green}{0.160}$ | 0.162 | 3.884 | 1.960 | > 1000.00 |
+| P95 (ms) | 1.987 | $\color{green}{0.770}$ | 10.744 | 24.733 | > 1000.00 |
+| Extra heap P95 (KiB) | 264.41 | $\color{green}{162.27}$ | 2375.33 | 707.65 | 2120.96 |
+| RSS P95 (KiB) | 2752.00 | $\color{green}{2512.00}$ | 6016.00 | 4256.00 | 5664.00 |
 | Completed | 26/26 | 26/26 | 26/26 | 26/26 | 5/26 |
 
 </details>
@@ -31,14 +31,14 @@ Memory is measured separately in fresh processes: extra live heap during solving
 
 | Method | Completed | P50 (ms) | P95 (ms) |
 | --- | ---: | ---: | ---: |
-| HTML heuristic | 26/26 | 0.003 | 0.006 |
-| A* | 26/26 | 0.246 | 0.843 |
-| **Pareto DP** | 26/26 | 0.163 | 2.008 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 26/26 | 4.781 | 17.582 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 26/26 | 4.448 | 26.624 |
-| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 18/26 | 3.910 | > 1000.00 |
+| HTML heuristic | 26/26 | 0.003 | 0.005 |
+| A* | 26/26 | 0.162 | 0.770 |
+| **Pareto DP** | 26/26 | 0.160 | 1.987 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 25/26 | 1.160 | 2.763 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 26/26 | 3.884 | 10.744 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 26/26 | 1.960 | 24.733 |
 | [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 5/26 | > 1000.00 | > 1000.00 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 1/26 | > 1000.00 | > 1000.00 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 5/26 | > 1000.00 | > 1000.00 |
 | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | 0/26 | > 1000.00 | > 1000.00 |
 
 HTML matched the optimum in 0/26 cases.
@@ -51,14 +51,14 @@ Medians over completed cases only; each case uses the median of its repetitions.
 
 | Method | Prepare (ms) | Model (ms) | Search (ms) | Finalize (ms) |
 | --- | ---: | ---: | ---: | ---: |
-| HTML heuristic | 0.0019 | 0.0000 | 0.0000 | 0.0009 |
-| A* | 0.0171 | 0.0000 | 0.2152 | 0.0006 |
-| **Pareto DP** | 0.0200 | 0.0000 | 0.1415 | 0.0005 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0221 | 0.2350 | 4.5487 | 0.0019 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 0.0198 | 0.0256 | 4.3920 | 0.0018 |
-| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 0.0202 | 0.1397 | 2.3461 | 0.0016 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0165 | 0.1683 | 219.4429 | 0.0017 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 0.0222 | 0.0229 | 643.7144 | 0.0020 |
+| HTML heuristic | 0.0016 | 0.0000 | 0.0000 | 0.0007 |
+| A* | 0.0181 | 0.0000 | 0.1387 | 0.0004 |
+| **Pareto DP** | 0.0188 | 0.0000 | 0.1424 | 0.0004 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 0.0222 | 0.1330 | 0.8843 | 0.0013 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0230 | 0.2215 | 3.5603 | 0.0015 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 0.0212 | 0.0253 | 1.8985 | 0.0015 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0178 | 0.1698 | 113.8832 | 0.0014 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 0.0182 | 0.0179 | 833.7249 | 0.0017 |
 | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | — | — | — | — |
 
 ## Reproduce
@@ -72,7 +72,7 @@ python3 scripts/report_memory.py --suite minizinc
 python3 scripts/report_native.py --suite minizinc
 ```
 
-One warmup per method/case precedes the measured repetitions. Method order is shuffled with seed 1. Every call creates a fresh solver; there is no reused model or cross-method incumbent. All methods share the full-call wall limit; a watchdog kills and restarts the worker if cooperative termination overruns by two seconds. Raw records preserve errors, actual elapsed times and worker generations. Count limits are disabled for this benchmark.
+One warmup per method/case precedes the measured repetitions. Method order is shuffled with seed 1. Each call prepares its input independently and creates a fresh solver when needed; there is no reused model or cross-method incumbent. Shared bounds can certify an optimum before a backend is built, and this preparation is timed. All methods share the full-call wall limit; a watchdog kills and restarts the worker if cooperative termination overruns by two seconds. Raw records preserve errors, actual elapsed times and worker generations. Count limits are disabled for this benchmark.
 
 [Raw measurements](benchmark-minizinc.jsonl) · [Summary](benchmark-minizinc-summary.json) · [Inputs](benchmark-minizinc-inputs.json) · [Model mappings](native-models.md)
 

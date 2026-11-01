@@ -265,6 +265,63 @@ fn terminal_completion_and_bounds_match_integer_oracle() {
 }
 
 #[test]
+fn astar_does_not_return_the_first_completed_tail() {
+    // The first (widest) prefix completes at height 10, as does HTML. A later
+    // prefix completes at 9. Generating a full layout is not an A* certificate.
+    let table = Table {
+        width: 6,
+        reserved_width: 0,
+        columns: vec![
+            Column {
+                min_width: 1,
+                max_width: 5,
+                cells: vec![profile(&[(1, 10), (2, 9), (4, 0)])],
+            },
+            Column {
+                min_width: 1,
+                max_width: 5,
+                cells: vec![profile(&[(1, 10), (3, 0)])],
+            },
+        ],
+    };
+    assert_eq!(solve_html(&table).unwrap().total_height, 10);
+    assert_eq!(brute(&table), Some(9));
+    check(&table);
+}
+
+#[test]
+fn shared_bounds_can_certify_without_building_a_solver() {
+    let table = Table {
+        width: 6,
+        reserved_width: 0,
+        columns: vec![
+            Column {
+                min_width: 1,
+                max_width: 3,
+                cells: vec![profile(&[(1, 10), (3, 2)])]
+            };
+            2
+        ],
+    };
+    for algorithm in [
+        NativeAlgorithm::Astar2011,
+        NativeAlgorithm::Cp2011,
+        NativeAlgorithm::Lcg2011,
+        NativeAlgorithm::Lcg2015,
+        NativeAlgorithm::Mip2015Unary,
+        NativeAlgorithm::Mip2015Onehot,
+        NativeAlgorithm::Mip2015Cellfree,
+    ] {
+        let (layout, phases) = solve_measured(&table, Limits::default(), algorithm).unwrap();
+        assert!(layout.optimal);
+        assert_eq!(layout.total_height, brute(&table).unwrap());
+        assert_eq!(layout.column_widths.iter().sum::<u32>(), 6);
+        assert_eq!(layout.stats.generated, 0);
+        assert_eq!(phases.model_ns, 0);
+    }
+}
+
+#[test]
 fn adversarial_frontiers_and_path_reconstruction_match_oracle() {
     // Independent row costs create incomparable intermediate labels. The
     // optimal allocation is deliberately different from the HTML incumbent.

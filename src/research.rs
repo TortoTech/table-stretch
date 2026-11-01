@@ -75,7 +75,19 @@ fn data(table: &Table) -> Result<Data, Error> {
             .map(|c| c[r].last().unwrap().height)
             .max()
             .unwrap();
-        h.retain(|&value| value >= minimum);
+        // H_r * budget >= sum_j min_w(w * h_jr(w)). Each minimum is
+        // attained at a retained plateau start, including the clipped lo.
+        let area = d.cells.iter().try_fold(0u128, |sum, c| {
+            sum.checked_add(
+                c[r].iter()
+                    .map(|s| s.width as u128 * s.height as u128)
+                    .min()
+                    .unwrap(),
+            )
+            .ok_or(Error::Overflow)
+        })?;
+        let minimum = (minimum as u128).max(area.div_ceil(d.budget as u128));
+        h.retain(|&value| value as u128 >= minimum);
     }
     Ok(d)
 }
@@ -170,6 +182,7 @@ fn cp(
     d: &Data,
     algorithm: NativeAlgorithm,
     clock: &mut PhaseClock,
+    upper: u64,
 ) -> Result<(Vec<u32>, u64), Error> {
     let no_learning = matches!(algorithm, NativeAlgorithm::Cp2011);
     let cellfree = matches!(algorithm, NativeAlgorithm::Lcg2015);
@@ -239,7 +252,7 @@ fn cp(
         })
         .collect();
     let min_h: u32 = d.heights.iter().map(|v| v[0]).sum();
-    let objective = solver.new_bounded_integer(min_h as i32, sum_h as i32);
+    let objective = solver.new_bounded_integer(min_h as i32, sum_h.min(upper) as i32);
     let tag = solver.new_constraint_tag();
     solver
         .add_constraint(less_than_or_equals(
@@ -400,6 +413,7 @@ fn mip(
     d: &Data,
     algorithm: NativeAlgorithm,
     clock: &mut PhaseClock,
+    upper: u64,
 ) -> Result<(Vec<u32>, u64), Error> {
     if d.hi
         .iter()
@@ -421,6 +435,11 @@ fn mip(
             .map(|v| Unary::new(&mut p, v, 1.))
             .collect();
         offset = uh.iter().map(|v| v.values[0] as u64).sum();
+        p.add_constraint(
+            uh.iter().flat_map(Unary::terms).collect::<Vec<_>>(),
+            Op::Le,
+            (upper - offset) as f64,
+        );
         p.add_constraint(
             uw.iter().flat_map(Unary::terms).collect::<Vec<_>>(),
             Op::Le,
@@ -453,6 +472,11 @@ fn mip(
             w.iter().map(|&v| (v, 1.)).collect::<Vec<_>>(),
             Op::Le,
             d.budget as f64,
+        );
+        p.add_constraint(
+            h.iter().map(|&v| (v, 1.)).collect::<Vec<_>>(),
+            Op::Le,
+            upper as f64,
         );
         for (j, col) in d.cells.iter().enumerate() {
             clock.check()?;
@@ -520,14 +544,38 @@ pub(super) fn solve_impl(
     algorithm: NativeAlgorithm,
     clock: &mut PhaseClock,
 ) -> Result<Layout, Error> {
-    let d = data(table)?;
+    let mut d = data(table)?;
+    let initial = solve_html(table)?;
+    let upper = initial.total_height;
+    let lower = d.heights.iter().try_fold(0u64, |sum, h| {
+        sum.checked_add(h[0] as u64).ok_or(Error::Overflow)
+    })?;
+    // Keep at least one global optimum: the feasible incumbent proves that
+    // height > upper is unnecessary. Other rows must still meet their floors.
+    for heights in &mut d.heights {
+        let cap = upper - (lower - heights[0] as u64);
+        heights.retain(|&h| h as u64 <= cap);
+    }
     clock.check()?;
     clock.prepared();
+    if lower == upper {
+        return finish_measured(
+            table,
+            d.budget,
+            initial.column_widths,
+            Stats {
+                bound_pruned: 1,
+                ..Stats::default()
+            },
+            true,
+            Some(clock),
+        );
+    }
     let (widths, objective) = match algorithm {
         NativeAlgorithm::Cp2011 | NativeAlgorithm::Lcg2011 | NativeAlgorithm::Lcg2015 => {
-            cp(&d, algorithm, clock)?
+            cp(&d, algorithm, clock, upper)?
         }
-        _ => mip(&d, algorithm, clock)?,
+        _ => mip(&d, algorithm, clock, upper)?,
     };
     clock.check()?;
     clock.searched();

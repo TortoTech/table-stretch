@@ -1,17 +1,17 @@
 # MiniZinc memory benchmark
 
-26 cases, 3 fresh processes per method/case, 1-second solve limit. Apple M6, 16 GiB RAM. Recorded at 2026-11-01T08:34:54.322081+00:00.
+26 cases, 3 fresh processes per method/case, 1-second solve limit. Apple M6, 16 GiB RAM. Recorded at 2026-11-01T14:32:34.932585+00:00.
 
 The six implementations are fixed to those selected by the corresponding timing benchmark. Rows retain its P95 time order. Completion counts below belong to this separate instrumented memory pass.
 
 | Method | Completed | Measured | Extra heap P50 (KiB) | Extra heap P95 (KiB) | Extra heap max (KiB) | RSS P95 (KiB) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| HTML heuristic | 26/26 | 26/26 | 0.266 | 0.57 | 0.812 | 2304.00 |
-| A* | 26/26 | 26/26 | 228.922 | 640.64 | 916.078 | 2896.00 |
-| **Pareto DP** | 26/26 | 26/26 | 65.924 | 264.41 | 367.035 | 2848.00 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 26/26 | 1367.275 | 2420.35 | 3438.680 | 6176.00 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 26/26 | 433.248 | 760.18 | 792.291 | 4416.00 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 26/26 | 1296.109 | 2272.55 | 2356.770 | 5856.00 |
+| HTML heuristic | 26/26 | 26/26 | 0.266 | 0.57 | 0.812 | 2272.00 |
+| A* | 26/26 | 26/26 | 53.584 | 162.27 | 182.316 | 2512.00 |
+| **Pareto DP** | 26/26 | 26/26 | 65.924 | 264.41 | 367.035 | 2752.00 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 26/26 | 1346.326 | 2375.33 | 2979.777 | 6016.00 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 26/26 | 434.736 | 707.65 | 760.809 | 4256.00 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 26/26 | 1242.400 | 2120.96 | 2293.930 | 5664.00 |
 
 Each case contributes the median of its repetitions; P50/P95/max summarize those case medians. Timeout memory is included as observed, with no artificial memory penalty. It is not an upper bound on memory required to finish. If any case lacks telemetry, that method’s aggregate memory values are withheld; missing values are never zero-filled.
 

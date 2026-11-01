@@ -13,13 +13,13 @@ struct Link {
     width: u32,
 }
 
-struct Bounds {
+pub(super) struct Bounds {
     area: Vec<Vec<u128>>,
     floor: Vec<Vec<u32>>,
 }
 
 impl Bounds {
-    fn new(candidates: &Options, rows: usize) -> Result<Self, Error> {
+    pub(super) fn new(candidates: &Options, rows: usize) -> Result<Self, Error> {
         let n = candidates.len();
         let mut area = vec![vec![0u128; rows]; n + 1];
         let mut floor = vec![vec![0; rows]; n + 1];
@@ -47,6 +47,17 @@ impl Bounds {
         remaining: u32,
         upper: u64,
     ) -> Result<bool, Error> {
+        Ok(self.lower_bound(heights, next, remaining, upper)? >= upper)
+    }
+
+    // Stop accumulating once a caller's incumbent has already been reached.
+    pub(super) fn lower_bound(
+        &self,
+        heights: &[u32],
+        next: usize,
+        remaining: u32,
+        upper: u64,
+    ) -> Result<u64, Error> {
         let mut lower = 0u64;
         for (r, &height) in heights.iter().enumerate() {
             let area = self.area[next][r].div_ceil(remaining as u128);
@@ -55,10 +66,10 @@ impl Bounds {
                 .checked_add(u64::try_from(value).map_err(|_| Error::Overflow)?)
                 .ok_or(Error::Overflow)?;
             if lower >= upper {
-                return Ok(true);
+                return Ok(lower);
             }
         }
-        Ok(lower >= upper)
+        Ok(lower)
     }
 }
 

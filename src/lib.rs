@@ -276,13 +276,6 @@ impl fmt::Display for Error {
 }
 impl std::error::Error for Error {}
 
-#[derive(Clone)]
-struct State {
-    used: u32,
-    heights: Vec<u32>,
-    widths: Vec<u32>,
-}
-
 fn total_height(heights: &[u32]) -> Result<u64, Error> {
     heights
         .iter()

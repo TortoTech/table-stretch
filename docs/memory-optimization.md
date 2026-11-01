@@ -1,5 +1,7 @@
 # Model memory optimization
 
+Historical snapshot after [6ceddbd](https://github.com/TortoTech/table-stretch/tree/6ceddbd). For subsequent search changes, see [shared-bound optimization](bound-optimization.md).
+
 Compared with [the published baseline](https://github.com/TortoTech/table-stretch/tree/ae9faf0a989eb738b3d0295e4d6b042fa1db8c49), using the same 1,383 ebook cases and 26 MiniZinc cases, hardware, 1-second solve limit and three repetitions. Timing and memory remain separate measurement passes.
 
 ## Changes
@@ -43,6 +45,6 @@ Reduced model memory does not guarantee faster search: the gap-clause representa
 
 All returned exact layouts are checked against the fixed reference optima. Regression tests cover large gaps, zero-height cells, fixed cells dominating row heights, and exhaustive small-width oracles. Rust tests, Clippy, Python checks and the existing abstract Lean proofs pass. MIP numerical acceptance tolerances are unchanged; these results do not constitute a rational optimality certificate for the floating-point backend.
 
-[Ebook results](benchmark-native.md) · [MiniZinc results](benchmark-minizinc.md) · [Comparison data](memory-optimization.json)
+[Ebook results](https://github.com/TortoTech/table-stretch/blob/6ceddbd/docs/benchmark-native.md) · [MiniZinc results](https://github.com/TortoTech/table-stretch/blob/6ceddbd/docs/benchmark-minizinc.md) · [Comparison data](memory-optimization.json)
 
-Regenerate this comparison with `python3 scripts/report_memory_optimization.py` after refreshing both timing and memory reports.
+Regenerate this fixed historical comparison with `python3 scripts/report_memory_optimization.py`.

@@ -2,7 +2,7 @@
   "environment": {
     "kind": "environment",
     "suite": "minizinc",
-    "utc": "2026-11-01T08:34:54.322081+00:00",
+    "utc": "2026-11-01T14:32:34.932585+00:00",
     "platform": "macOS-27.0-arm64-arm-64bit",
     "machine": "Apple M6",
     "memory_bytes": 17179869184,
@@ -10,7 +10,7 @@
     "input_manifest": "docs/benchmark-minizinc-inputs.json",
     "input_manifest_sha256": "2c0a28a25858877f03233369fa0f22418f1aaec9452fcc2e066702c1272ac98b",
     "timing_summary": "docs/benchmark-minizinc-summary.json",
-    "timing_summary_sha256": "e45cab129907fca3f6050f45331293605cada016e7cdab207c839af9bb4c0be2",
+    "timing_summary_sha256": "8cbfbbcb5ab7633a053265d65ea78b07a0a44d9e92468d2162f1786ee6c8be6e",
     "selected": {
       "Pareto DP": "pareto",
       "A*": "astar2011",
@@ -32,16 +32,16 @@
     "seed": 1,
     "threads": 1,
     "timeout_ms": 1000,
-    "worker_sha256": "0fe27e3a1ab8ce53ec9abb94f80f5ba90f6e0a2fa326f30d60db8305c07fa29a",
+    "worker_sha256": "3b9744e62b6fbdd5a18e168db85a2af438211e33a1ce698b91277d85883d535b",
     "source_sha256": {
       "Cargo.toml": "8090fe9d5ad1196f6d6a0a7c30877898fc29706eb93a312daf5f1850228eb077",
       "Cargo.lock": "e63e4fd55801e46cca3b1041c6059f3f46bdc04205aa309574b8314ca21aa7ef",
-      "src/algorithms.rs": "179f6382d391b40b432f6c646506880f5ef397ab5509a112fcc675a74244eed3",
-      "src/lib.rs": "9d200420c0cfec2fc595bddad7f965a33f5540210640b11ca62a718c3fa7b7f0",
+      "src/algorithms.rs": "afc2c4728f819834d5afc89679621231ff9ac4716f9f78e04cd2897a3e2a29e6",
+      "src/lib.rs": "809d4bf0e8d7ea11664ad2fc55f75c2e1da8b9fc30b844efb5994a077ef73f0e",
       "src/main.rs": "9a13838aeaf59c5f7979f986d7aaceb92217df1d9478e4ced3333c8d72d850b0",
       "src/model_data.rs": "78d8d7c793aa54d2592611c7efe845c547d2a0de61e00eaa504823f8ba8d32a1",
-      "src/pareto.rs": "ddfbe65bce007debcb2a9f22bdb52a64fcff3c2f9ee9648f263980b79d53912c",
-      "src/research.rs": "ab6d72eefa85736b27da8fb96b01f3d98d66a55c28049c30a93446cf0cbb6fc4",
+      "src/pareto.rs": "75df36bef12a2ec4c8ba1b1de1d014bacfacd14c75dda44cf19d29460bfb7b7c",
+      "src/research.rs": "93dd27e8ecfd101ecda1c9174a06e79b0c075f9dbc179be406edad7606ab21b4",
       "examples/memory_worker.rs": "d31dfe6884962751c378ccc12ceba9653d344ffdd1fdafed6d91f1f286c80667",
       "scripts/benchmark_memory.py": "27f08f3618f906914a7a1b5f6eaed1d075034d34a3768367286a3031ceb3812f",
       "scripts/benchmark_unified.py": "090eb5a7b57bf27e43b400a9e993f7933dbda75a1c0323b1a6e78c3b867abde6"
@@ -52,7 +52,7 @@
     "deadline": "same solve wall limit as timing pass, plus two-second process watchdog grace; unfinished runs retain observed memory, not a bound for completed solves",
     "timing": "instrumented elapsed times are diagnostic only; existing uninstrumented timing results are preserved"
   },
-  "raw_sha256": "4cc475dec82d834aa25d63914bd8c07249ef80bf1708f11a94bfa7a688a6916d",
+  "raw_sha256": "cd7255e96961082d0e5805211f177e02d8fb923daf09129766db0a1f93f9e36a",
   "methods": {
     "pareto": {
       "completed": 26,
@@ -78,9 +78,9 @@
           "maximum": 408392
         },
         "rss_peak_bytes": {
-          "p50": 2441216.0,
-          "p95": 2916352,
-          "maximum": 2916352
+          "p50": 2408448.0,
+          "p95": 2818048,
+          "maximum": 2867200
         }
       }
     },
@@ -93,9 +93,9 @@
       },
       "metrics": {
         "heap_extra_peak_bytes": {
-          "p50": 234416.0,
-          "p95": 656012,
-          "maximum": 938064
+          "p50": 54870.0,
+          "p95": 166168,
+          "maximum": 186692
         },
         "heap_baseline_bytes": {
           "p50": 19524.0,
@@ -103,14 +103,14 @@
           "maximum": 94660
         },
         "heap_peak_bytes": {
-          "p50": 255020.0,
-          "p95": 668112,
-          "maximum": 958868
+          "p50": 73310.0,
+          "p95": 219240,
+          "maximum": 249292
         },
         "rss_peak_bytes": {
-          "p50": 2703360.0,
-          "p95": 2965504,
-          "maximum": 3375104
+          "p50": 2367488.0,
+          "p95": 2572288,
+          "maximum": 2670592
         }
       }
     },
@@ -138,9 +138,9 @@
           "maximum": 95492
         },
         "rss_peak_bytes": {
-          "p50": 2277376.0,
-          "p95": 2359296,
-          "maximum": 2457600
+          "p50": 2244608.0,
+          "p95": 2326528,
+          "maximum": 2424832
         }
       }
     },
@@ -154,9 +154,9 @@
       },
       "metrics": {
         "heap_extra_peak_bytes": {
-          "p50": 1327216.0,
-          "p95": 2327088,
-          "maximum": 2413332
+          "p50": 1272218.0,
+          "p95": 2171864,
+          "maximum": 2348984
         },
         "heap_baseline_bytes": {
           "p50": 19524.0,
@@ -164,14 +164,14 @@
           "maximum": 94660
         },
         "heap_peak_bytes": {
-          "p50": 1344708.0,
-          "p95": 2345172,
-          "maximum": 2440536
+          "p50": 1287054.0,
+          "p95": 2204412,
+          "maximum": 2367068
         },
         "rss_peak_bytes": {
-          "p50": 4816896.0,
-          "p95": 5996544,
-          "maximum": 6012928
+          "p50": 4743168.0,
+          "p95": 5799936,
+          "maximum": 5898240
         }
       }
     },
@@ -184,9 +184,9 @@
       },
       "metrics": {
         "heap_extra_peak_bytes": {
-          "p50": 1400090.0,
-          "p95": 2478436,
-          "maximum": 3521208
+          "p50": 1378638.0,
+          "p95": 2432336,
+          "maximum": 3051292
         },
         "heap_baseline_bytes": {
           "p50": 19524.0,
@@ -194,14 +194,14 @@
           "maximum": 94660
         },
         "heap_peak_bytes": {
-          "p50": 1417758.0,
-          "p95": 2496520,
-          "maximum": 3548412
+          "p50": 1396306.0,
+          "p95": 2450420,
+          "maximum": 3078496
         },
         "rss_peak_bytes": {
-          "p50": 5062656.0,
-          "p95": 6324224,
-          "maximum": 7421952
+          "p50": 4980736.0,
+          "p95": 6160384,
+          "maximum": 6586368
         }
       }
     },
@@ -214,9 +214,9 @@
       },
       "metrics": {
         "heap_extra_peak_bytes": {
-          "p50": 443646.0,
-          "p95": 778424,
-          "maximum": 811306
+          "p50": 445170.0,
+          "p95": 724630,
+          "maximum": 779068
         },
         "heap_baseline_bytes": {
           "p50": 19524.0,
@@ -224,14 +224,14 @@
           "maximum": 94660
         },
         "heap_peak_bytes": {
-          "p50": 465669.0,
-          "p95": 805628,
-          "maximum": 826190
+          "p50": 457270.0,
+          "p95": 740090,
+          "maximum": 793952
         },
         "rss_peak_bytes": {
-          "p50": 3915776.0,
-          "p95": 4521984,
-          "maximum": 4554752
+          "p50": 3817472.0,
+          "p95": 4358144,
+          "maximum": 4440064
         }
       }
     }

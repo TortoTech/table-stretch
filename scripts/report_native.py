@@ -194,7 +194,7 @@ def main():
     if memory:
         commands += f'\npython3 scripts/benchmark_memory.py --suite {args.suite}\npython3 scripts/report_memory.py --suite {args.suite}\npython3 scripts/report_native.py --suite {args.suite}'
     report += '\n## Reproduce\n\n```sh\n'+commands+'\n```\n\n'
-    report += 'One warmup per method/case precedes the measured repetitions. Method order is shuffled with seed 1. Every call creates a fresh solver; there is no reused model or cross-method incumbent. All methods share the full-call wall limit; a watchdog kills and restarts the worker if cooperative termination overruns by two seconds. Raw records preserve errors, actual elapsed times and worker generations. Count limits are disabled for this benchmark.\n\n'
+    report += 'One warmup per method/case precedes the measured repetitions. Method order is shuffled with seed 1. Each call prepares its input independently and creates a fresh solver when needed; there is no reused model or cross-method incumbent. Shared bounds can certify an optimum before a backend is built, and this preparation is timed. All methods share the full-call wall limit; a watchdog kills and restarts the worker if cooperative termination overruns by two seconds. Raw records preserve errors, actual elapsed times and worker generations. Count limits are disabled for this benchmark.\n\n'
     report += f'[Raw measurements]({stem}.jsonl) · [Summary]({stem}-summary.json) · [Inputs]({path.name}) · [Model mappings](native-models.md)\n\n'
     report += 'The [external-solver benchmark](benchmark-unified.md) remains a separate process-level reference. Its timings include startup and MiniZinc compilation and must not be mixed with this table.\n'
     (ROOT/f'docs/{stem}.md').write_text(report)

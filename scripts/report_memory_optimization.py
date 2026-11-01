@@ -2,16 +2,21 @@
 """Compare published memory results against the pre-optimization commit."""
 import json
 import subprocess
+import hashlib
 
 from benchmark_native import ROOT
-from benchmark_unified import sha
 from report_native import NAMES, paper_name
 
 BASELINE = 'ae9faf0'
+AFTER = '6ceddbd'
 
 
-def previous(name):
-    return json.loads(subprocess.check_output(['git','show',f'{BASELINE}:docs/{name}'],cwd=ROOT))
+def snapshot(name, revision=BASELINE):
+    return subprocess.check_output(['git','show',f'{revision}:docs/{name}'],cwd=ROOT)
+
+
+def previous(name, revision=BASELINE):
+    return json.loads(snapshot(name, revision))
 
 
 def main():
@@ -21,11 +26,11 @@ def main():
     for suite, stem in [('Ebooks','benchmark-native'),('MiniZinc','benchmark-minizinc')]:
         old_time = previous(f'{stem}-summary.json')
         old_mem = previous(f'{stem}-memory-summary.json')
-        new_time = json.loads((ROOT/f'docs/{stem}-summary.json').read_text())
-        new_mem = json.loads((ROOT/f'docs/{stem}-memory-summary.json').read_text())
+        new_time = previous(f'{stem}-summary.json', AFTER)
+        new_mem = previous(f'{stem}-memory-summary.json', AFTER)
         assert old_time['environment']['input_manifest_sha256'] == new_time['environment']['input_manifest_sha256']
         assert old_mem['environment']['input_manifest_sha256'] == new_mem['environment']['input_manifest_sha256']
-        assert new_mem['environment']['timing_summary_sha256'] == sha(ROOT/f'docs/{stem}-summary.json')
+        assert new_mem['environment']['timing_summary_sha256'] == hashlib.sha256(snapshot(f'{stem}-summary.json', AFTER)).hexdigest()
         for before, after in [(old_time, new_time), (old_mem, new_mem)]:
             for key in ['machine', 'memory_bytes', 'timeout_ms', 'repeats']:
                 assert before['environment'][key] == after['environment'][key], (suite, key)
@@ -50,6 +55,7 @@ def main():
     results.sort(key=lambda r:(r['suite']=='MiniZinc',r['after_time_p95_ms']))
     (ROOT/'docs/memory-optimization.json').write_text(json.dumps(dict(baseline_commit=commit,comparisons=results,completion_regressions=completion_regressions),indent=2)+'\n')
     text = '# Model memory optimization\n\n'
+    text += f'Historical snapshot after [{AFTER}](https://github.com/TortoTech/table-stretch/tree/{AFTER}). For subsequent search changes, see [shared-bound optimization](bound-optimization.md).\n\n'
     text += f'Compared with [the published baseline](https://github.com/TortoTech/table-stretch/tree/{commit}), using the same 1,383 ebook cases and 26 MiniZinc cases, hardware, 1-second solve limit and three repetitions. Timing and memory remain separate measurement passes.\n\n'
     text += '## Changes\n\n'
     text += '- Grow the Pumpkin nogood arena on demand instead of reserving 1 MB.\n- Encode sparse integer domains with interval-exclusion clauses instead of explicit holes.\n- Use literal constants in element arrays and fold fixed cells into row/column lower bounds.\n- Remove impossible low row heights and redundant MIP clauses and fixed-cell configuration variables.\n\n'
@@ -71,7 +77,7 @@ def main():
             text += f'- {r["suite"]}: {paper_name(NAMES[r["method"]],r["method"])} completion fell from {r["before"]}/{r["cases"]} to {r["after"]}/{r["cases"]} at the same time limit.\n'
         text += '\nReduced model memory does not guarantee faster search: the gap-clause representation changes propagation and conflict explanations. These regressions remain visible in the all-variant reports; family selection still prioritizes completion before P95 time.\n'
     text += '\nAll returned exact layouts are checked against the fixed reference optima. Regression tests cover large gaps, zero-height cells, fixed cells dominating row heights, and exhaustive small-width oracles. Rust tests, Clippy, Python checks and the existing abstract Lean proofs pass. MIP numerical acceptance tolerances are unchanged; these results do not constitute a rational optimality certificate for the floating-point backend.\n\n'
-    text += '[Ebook results](benchmark-native.md) · [MiniZinc results](benchmark-minizinc.md) · [Comparison data](memory-optimization.json)\n\nRegenerate this comparison with `python3 scripts/report_memory_optimization.py` after refreshing both timing and memory reports.\n'
+    text += f'[Ebook results](https://github.com/TortoTech/table-stretch/blob/{AFTER}/docs/benchmark-native.md) · [MiniZinc results](https://github.com/TortoTech/table-stretch/blob/{AFTER}/docs/benchmark-minizinc.md) · [Comparison data](memory-optimization.json)\n\nRegenerate this fixed historical comparison with `python3 scripts/report_memory_optimization.py`.\n'
     (ROOT/'docs/memory-optimization.md').write_text(text)
     print(json.dumps(results,indent=2))
 

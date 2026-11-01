@@ -2,7 +2,7 @@
   "environment": {
     "kind": "environment",
     "suite": "ebooks",
-    "utc": "2026-11-01T08:36:05.594262+00:00",
+    "utc": "2026-11-01T14:33:43.759978+00:00",
     "platform": "macOS-27.0-arm64-arm-64bit",
     "machine": "Apple M6",
     "memory_bytes": 17179869184,
@@ -10,14 +10,14 @@
     "input_manifest": "docs/benchmark-library-inputs.json",
     "input_manifest_sha256": "d7342d73448d903e6370dcd692e2d70c5886ad2c35e1e2db86f71ff6116eeb2e",
     "timing_summary": "docs/benchmark-native-summary.json",
-    "timing_summary_sha256": "370943dfb1b5a2a97309235b9360c018813568dc05346f74f2e694c981881503",
+    "timing_summary_sha256": "27d1f7fcb10073816a818125bb1a10cdb1e3c45b529df6c4c59d09296a948b68",
     "selected": {
       "Pareto DP": "pareto",
       "A*": "astar2011",
       "HTML heuristic": "html",
       "CP (Pumpkin)": "cp2011",
       "LCG (Pumpkin)": "lcg2015",
-      "MIP (microlp)": "mip2015_unary"
+      "MIP (microlp)": "mip2015_cellfree"
     },
     "methods": [
       "pareto",
@@ -25,23 +25,23 @@
       "html",
       "cp2011",
       "lcg2015",
-      "mip2015_unary"
+      "mip2015_cellfree"
     ],
     "repeats": 3,
     "warmups": 0,
     "seed": 1,
     "threads": 1,
     "timeout_ms": 1000,
-    "worker_sha256": "0fe27e3a1ab8ce53ec9abb94f80f5ba90f6e0a2fa326f30d60db8305c07fa29a",
+    "worker_sha256": "3b9744e62b6fbdd5a18e168db85a2af438211e33a1ce698b91277d85883d535b",
     "source_sha256": {
       "Cargo.toml": "8090fe9d5ad1196f6d6a0a7c30877898fc29706eb93a312daf5f1850228eb077",
       "Cargo.lock": "e63e4fd55801e46cca3b1041c6059f3f46bdc04205aa309574b8314ca21aa7ef",
-      "src/algorithms.rs": "179f6382d391b40b432f6c646506880f5ef397ab5509a112fcc675a74244eed3",
-      "src/lib.rs": "9d200420c0cfec2fc595bddad7f965a33f5540210640b11ca62a718c3fa7b7f0",
+      "src/algorithms.rs": "afc2c4728f819834d5afc89679621231ff9ac4716f9f78e04cd2897a3e2a29e6",
+      "src/lib.rs": "809d4bf0e8d7ea11664ad2fc55f75c2e1da8b9fc30b844efb5994a077ef73f0e",
       "src/main.rs": "9a13838aeaf59c5f7979f986d7aaceb92217df1d9478e4ced3333c8d72d850b0",
       "src/model_data.rs": "78d8d7c793aa54d2592611c7efe845c547d2a0de61e00eaa504823f8ba8d32a1",
-      "src/pareto.rs": "ddfbe65bce007debcb2a9f22bdb52a64fcff3c2f9ee9648f263980b79d53912c",
-      "src/research.rs": "ab6d72eefa85736b27da8fb96b01f3d98d66a55c28049c30a93446cf0cbb6fc4",
+      "src/pareto.rs": "75df36bef12a2ec4c8ba1b1de1d014bacfacd14c75dda44cf19d29460bfb7b7c",
+      "src/research.rs": "93dd27e8ecfd101ecda1c9174a06e79b0c075f9dbc179be406edad7606ab21b4",
       "examples/memory_worker.rs": "d31dfe6884962751c378ccc12ceba9653d344ffdd1fdafed6d91f1f286c80667",
       "scripts/benchmark_memory.py": "27f08f3618f906914a7a1b5f6eaed1d075034d34a3768367286a3031ceb3812f",
       "scripts/benchmark_unified.py": "090eb5a7b57bf27e43b400a9e993f7933dbda75a1c0323b1a6e78c3b867abde6"
@@ -52,7 +52,7 @@
     "deadline": "same solve wall limit as timing pass, plus two-second process watchdog grace; unfinished runs retain observed memory, not a bound for completed solves",
     "timing": "instrumented elapsed times are diagnostic only; existing uninstrumented timing results are preserved"
   },
-  "raw_sha256": "53c5d52e650cb669191b8aaf450c614215a96414a4055b7a6fdea213ee0006c9",
+  "raw_sha256": "0fd5527259d20b3d795804a0a5183194892888892dd55e280f92cd73b7203daa",
   "methods": {
     "pareto": {
       "completed": 1383,
@@ -78,9 +78,9 @@
           "maximum": 138876
         },
         "rss_peak_bytes": {
-          "p50": 2260992,
-          "p95": 2326528,
-          "maximum": 2605056
+          "p50": 2195456,
+          "p95": 2277376,
+          "maximum": 2572288
         }
       }
     },
@@ -93,9 +93,9 @@
       },
       "metrics": {
         "heap_extra_peak_bytes": {
-          "p50": 3252,
-          "p95": 17932,
-          "maximum": 178896
+          "p50": 2400,
+          "p95": 9544,
+          "maximum": 106408
         },
         "heap_baseline_bytes": {
           "p50": 2244,
@@ -103,14 +103,14 @@
           "maximum": 32804
         },
         "heap_peak_bytes": {
-          "p50": 5668,
-          "p95": 23924,
-          "maximum": 211700
+          "p50": 4824,
+          "p95": 16092,
+          "maximum": 139212
         },
         "rss_peak_bytes": {
-          "p50": 2260992,
-          "p95": 2326528,
-          "maximum": 2703360
+          "p50": 2195456,
+          "p95": 2277376,
+          "maximum": 2572288
         }
       }
     },
@@ -138,25 +138,25 @@
           "maximum": 33164
         },
         "rss_peak_bytes": {
-          "p50": 2211840,
-          "p95": 2244608,
-          "maximum": 2408448
+          "p50": 2162688,
+          "p95": 2211840,
+          "maximum": 2375680
         }
       }
     },
     "cp2011": {
-      "completed": 1367,
+      "completed": 1375,
       "measured": 1383,
       "cases": 1383,
       "statuses": {
-        "optimal": 4101,
-        "timeout": 48
+        "optimal": 4125,
+        "timeout": 24
       },
       "metrics": {
         "heap_extra_peak_bytes": {
-          "p50": 155448,
-          "p95": 567280,
-          "maximum": 4225648
+          "p50": 104296,
+          "p95": 525574,
+          "maximum": 3747356
         },
         "heap_baseline_bytes": {
           "p50": 2244,
@@ -164,14 +164,14 @@
           "maximum": 32804
         },
         "heap_peak_bytes": {
-          "p50": 157336,
-          "p95": 575220,
-          "maximum": 4258452
+          "p50": 105984,
+          "p95": 531562,
+          "maximum": 3780160
         },
         "rss_peak_bytes": {
-          "p50": 3080192,
-          "p95": 3833856,
-          "maximum": 8404992
+          "p50": 2867200,
+          "p95": 3686400,
+          "maximum": 7536640
         }
       }
     },
@@ -184,9 +184,9 @@
       },
       "metrics": {
         "heap_extra_peak_bytes": {
-          "p50": 101714,
-          "p95": 271768,
-          "maximum": 1997416
+          "p50": 72826,
+          "p95": 209124,
+          "maximum": 1506026
         },
         "heap_baseline_bytes": {
           "p50": 2244,
@@ -194,18 +194,18 @@
           "maximum": 32804
         },
         "heap_peak_bytes": {
-          "p50": 103990,
-          "p95": 281128,
-          "maximum": 2030220
+          "p50": 74444,
+          "p95": 214760,
+          "maximum": 1538830
         },
         "rss_peak_bytes": {
-          "p50": 3014656,
-          "p95": 3489792,
-          "maximum": 6078464
+          "p50": 2785280,
+          "p95": 3244032,
+          "maximum": 5308416
         }
       }
     },
-    "mip2015_unary": {
+    "mip2015_cellfree": {
       "completed": 1383,
       "measured": 1383,
       "cases": 1383,
@@ -214,9 +214,9 @@
       },
       "metrics": {
         "heap_extra_peak_bytes": {
-          "p50": 50804,
-          "p95": 263658,
-          "maximum": 3605661
+          "p50": 17778,
+          "p95": 224137,
+          "maximum": 2889432
         },
         "heap_baseline_bytes": {
           "p50": 2244,
@@ -224,14 +224,14 @@
           "maximum": 32804
         },
         "heap_peak_bytes": {
-          "p50": 52977,
-          "p95": 267678,
-          "maximum": 3638465
+          "p50": 20232,
+          "p95": 228600,
+          "maximum": 2922236
         },
         "rss_peak_bytes": {
-          "p50": 2867200,
-          "p95": 3457024,
-          "maximum": 7700480
+          "p50": 2654208,
+          "p95": 3260416,
+          "maximum": 6881280
         }
       }
     }

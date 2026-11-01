@@ -41,18 +41,18 @@ Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **1383 real ebook cases**, sin
 
 Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](docs/assets/benchmark-native.svg?v=a7fe80c13c54)
+![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](docs/assets/benchmark-native.svg?v=3dfa7254d786)
 
 <details>
 <summary>Table data and paper links</summary>
 
 | Metric | **Pareto DP** | A* | [LCG](https://doi.org/10.1287/ijoc.2014.0637) | [MIP](https://doi.org/10.1287/ijoc.2014.0637) | [CP](https://doi.org/10.1145/2034691.2034697) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| P50 (ms) | $\color{green}{0.002}$ | 0.003 | 0.047 | 0.054 | 0.059 |
-| P95 (ms) | $\color{green}{0.010}$ | 0.016 | 0.432 | 1.075 | 1.857 |
-| Extra heap P95 (KiB) | $\color{green}{9.39}$ | 17.51 | 265.40 | 257.48 | 553.98 |
-| RSS P95 (KiB) | $\color{green}{2272.00}$ | $\color{green}{2272.00}$ | 3408.00 | 3376.00 | 3744.00 |
-| Completed | 1383/1383 | 1383/1383 | 1383/1383 | 1383/1383 | 1367/1383 |
+| P50 (ms) | $\color{green}{0.002}$ | 0.002 | 0.018 | 0.016 | 0.028 |
+| P95 (ms) | $\color{green}{0.010}$ | 0.011 | 0.140 | 0.362 | 0.909 |
+| Extra heap P95 (KiB) | 9.39 | $\color{green}{9.32}$ | 204.22 | 218.88 | 513.26 |
+| RSS P95 (KiB) | $\color{green}{2224.00}$ | $\color{green}{2224.00}$ | 3168.00 | 3184.00 | 3600.00 |
+| Completed | 1383/1383 | 1383/1383 | 1383/1383 | 1383/1383 | 1375/1383 |
 
 </details>
 
@@ -72,17 +72,17 @@ Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **26 MiniZinc public cases**, 
 
 Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](docs/assets/benchmark-minizinc.svg?v=a7583ed1dfcc)
+![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.](docs/assets/benchmark-minizinc.svg?v=d95fc6de7555)
 
 <details>
 <summary>Table data and paper links</summary>
 
 | Metric | **Pareto DP** | A* | [LCG](https://doi.org/10.1145/2034691.2034697) | [MIP](https://doi.org/10.1287/ijoc.2014.0637) | [CP](https://doi.org/10.1145/2034691.2034697) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| P50 (ms) | $\color{green}{0.163}$ | 0.246 | 4.781 | 4.448 | > 1000.00 |
-| P95 (ms) | 2.008 | $\color{green}{0.843}$ | 17.582 | 26.624 | > 1000.00 |
-| Extra heap P95 (KiB) | $\color{green}{264.41}$ | 640.64 | 2420.35 | 760.18 | 2272.55 |
-| RSS P95 (KiB) | $\color{green}{2848.00}$ | 2896.00 | 6176.00 | 4416.00 | 5856.00 |
+| P50 (ms) | $\color{green}{0.160}$ | 0.162 | 3.884 | 1.960 | > 1000.00 |
+| P95 (ms) | 1.987 | $\color{green}{0.770}$ | 10.744 | 24.733 | > 1000.00 |
+| Extra heap P95 (KiB) | 264.41 | $\color{green}{162.27}$ | 2375.33 | 707.65 | 2120.96 |
+| RSS P95 (KiB) | 2752.00 | $\color{green}{2512.00}$ | 6016.00 | 4256.00 | 5664.00 |
 | Completed | 26/26 | 26/26 | 26/26 | 26/26 | 5/26 |
 
 </details>
@@ -107,7 +107,7 @@ cargo test --locked --all-targets
 bash scripts/check.sh  # Rust checks and Lean 4.19.0 proofs
 ```
 
-[Algorithms](docs/algorithms.md) · [Mathematical proof](docs/proof.md) · [Lean proof](proof/Optimality.lean) · [Research audit](docs/research-audit.md) · [Memory optimization](docs/memory-optimization.md)
+[Algorithms](docs/algorithms.md) · [Mathematical proof](docs/proof.md) · [Lean proof](proof/Optimality.lean) · [Research audit](docs/research-audit.md) · [Memory optimization](docs/memory-optimization.md) · [Shared-bound optimization](docs/bound-optimization.md)
 
 ## License
 

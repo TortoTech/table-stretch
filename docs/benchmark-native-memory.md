@@ -1,17 +1,17 @@
 # Ebook memory benchmark
 
-1383 cases, 3 fresh processes per method/case, 1-second solve limit. Apple M6, 16 GiB RAM. Recorded at 2026-11-01T08:36:05.594262+00:00.
+1383 cases, 3 fresh processes per method/case, 1-second solve limit. Apple M6, 16 GiB RAM. Recorded at 2026-11-01T14:33:43.759978+00:00.
 
 The six implementations are fixed to those selected by the corresponding timing benchmark. Rows retain its P95 time order. Completion counts below belong to this separate instrumented memory pass.
 
 | Method | Completed | Measured | Extra heap P50 (KiB) | Extra heap P95 (KiB) | Extra heap max (KiB) | RSS P95 (KiB) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| HTML heuristic | 1383/1383 | 1383/1383 | 0.086 | 0.18 | 0.625 | 2192.00 |
-| **Pareto DP** | 1383/1383 | 1383/1383 | 2.141 | 9.39 | 103.586 | 2272.00 |
-| A* | 1383/1383 | 1383/1383 | 3.176 | 17.51 | 174.703 | 2272.00 |
-| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 1383/1383 | 99.330 | 265.40 | 1950.602 | 3408.00 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 1383/1383 | 49.613 | 257.48 | 3521.153 | 3376.00 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1367/1383 | 1383/1383 | 151.805 | 553.98 | 4126.609 | 3744.00 |
+| HTML heuristic | 1383/1383 | 1383/1383 | 0.086 | 0.18 | 0.625 | 2160.00 |
+| **Pareto DP** | 1383/1383 | 1383/1383 | 2.141 | 9.39 | 103.586 | 2224.00 |
+| A* | 1383/1383 | 1383/1383 | 2.344 | 9.32 | 103.914 | 2224.00 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 1383/1383 | 71.119 | 204.22 | 1470.729 | 3168.00 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 1383/1383 | 17.361 | 218.88 | 2821.711 | 3184.00 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1375/1383 | 1383/1383 | 101.852 | 513.26 | 3659.527 | 3600.00 |
 
 Each case contributes the median of its repetitions; P50/P95/max summarize those case medians. Timeout memory is included as observed, with no artificial memory penalty. It is not an upper bound on memory required to finish. If any case lacks telemetry, that method’s aggregate memory values are withheld; missing values are never zero-filled.
 

@@ -45,6 +45,14 @@ The nogood arena grows on demand (`memory_preallocated = 0`) instead of reservin
 
 These equivalences are mathematical arguments. The existing Lean development proves the abstract Pareto kernel, not Pumpkin, microlp, or this model construction. Independent integer-width enumeration tests all six new implementations on randomized and adversarial inputs, including plateaus, hard minima, zero-height cells, and infeasible budgets.
 
+### Objective bounds
+
+For row `r`, compute `A_r = sum_j min_w(w * h_jr(w))` over each cell's feasible clipped curve. Its minimum occurs at a plateau start, so there is no enumeration of all integer widths. For any layout, `H_r * B >= H_r * sum_j(w_j) >= sum_j(w_j * h_jr(w_j)) >= A_r`. Therefore `ceil(A_r / B)` is a valid integer lower bound on that row. Combine it with the largest cell minimum, and round up to the next value in the row's allowed height union. Every actual row maximum is in that union, so this rounding also preserves an optimum.
+
+The proportional heuristic supplies a feasible total height `U`. Let the row floors be `L_r` and `L = sum_r L_r`. Restricting the objective to `sum_r H_r <= U` retains a global optimum, though it can discard worse feasible layouts. For each row, `H_r <= U - (L - L_r)` is then valid. These bounds reduce the row domains before model construction. CP uses `U` as the objective-domain upper bound; both MIP encodings add an objective cutoff, with the cell-free constant offset subtracted exactly.
+
+If `L == U`, the feasible layout is already certified optimal and no backend is constructed. Otherwise CP/LCG keep their original branchers and learning settings, and MIP keeps its original integrality requirements and numerical acceptance checks. No shared solver state, cross-call incumbent, or precomputed reference optimum is used. These preprocessing costs and direct certificates are included in the benchmark. A timeout still returns an error, not the feasible heuristic as an alleged optimum.
+
 ## Library and limits
 
 ```rust

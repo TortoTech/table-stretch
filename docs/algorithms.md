@@ -5,13 +5,25 @@ All exact methods minimize total row height under a shared width budget and colu
 | Family | Featured implementation | Approach |
 | --- | --- | --- |
 | Pareto DP | Rust | Column-wise Pareto frontiers, lower/upper bounds, direct final-column completion. |
-| A* | Rust | Best-first search with a remaining-area lower bound and column-minimality pruning. |
+| A* | Rust | Best-first search with a feasible incumbent, area/floor bounds, column-minimality pruning, direct final-column completion and parent links. |
 | HTML | Rust | Proportional width allocation; a fast heuristic. |
 | CP | Rust / Pumpkin | Cell configuration indices and element constraints, learning disabled. |
 | CP/SAT (LCG) | Rust / Pumpkin | Configuration and cell-free models with lazy clause generation. |
 | MIP | Rust / microlp | Unary, one-hot, and shared cell-free encodings; LP and branch-and-bound. |
 
 The [native benchmark](benchmark-native.md) compares all methods as Rust library calls and features one variant per family, ranked by completion rate then P95. See [native model mappings and correctness](native-models.md). External MiniZinc implementations remain in `models/` and the separate [process-level reference](benchmark-unified.md).
+
+## Bounds shared with other exact methods
+
+Pareto DP and A* use the same suffix area/floor bound implementation. Both initialize an upper bound from the proportional heuristic, clip column options against other columns' mandatory widths, and prune any prefix whose lower bound reaches that upper bound. A* retains best-first order and the original column-minimality rule; it does not add a Pareto frontier. Queue entries store parent links instead of complete width vectors.
+
+Completing the final column at its maximum feasible width is optimal for that prefix because cell heights are non-increasing. In A* this completion only updates the incumbent: the solver continues until OPEN is empty or its minimum lower bound cannot improve the incumbent. Finding the first complete layout is not sufficient. Bounds that stop accumulating at the incumbent are used only to reject a node; every queued node retains its full lower bound.
+
+Worst-case search remains exponential. Parent links remove per-node width-vector copying, but the path arena retains accepted ancestors until the search ends; this does not guarantee a lower peak on every input. Bounds and domain reductions can also change propagation order and search traces. Runtime, memory and completion are therefore measured independently.
+
+CP, LCG and MIP use an independently computed root area/floor bound and the same proportional feasible solution. They restrict the model to heights no worse than that solution, and can certify it immediately when the bounds meet. Otherwise their original engines, encodings and branching rules remain in use. Preparation, including the heuristic and any direct certificate, is timed for every method. These implementations are enhanced adaptations, not unmodified historical algorithms. [Model reductions and correctness](native-models.md#objective-bounds).
+
+The existing abstract Lean bound and terminal-column lemmas justify the individual reductions. A* queue/path handling and solver model construction are validated against independent exhaustive and fixed corpus optima; they are not end-to-end Lean-verified implementations.
 
 ## Research
 
