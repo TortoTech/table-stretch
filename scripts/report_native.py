@@ -7,6 +7,7 @@ import statistics
 from collections import Counter
 from pathlib import Path
 from datetime import datetime
+from decimal import Decimal, ROUND_HALF_UP
 from zoneinfo import ZoneInfo
 from benchmark_native import ROOT, METHODS
 from benchmark_unified import sha, verify
@@ -41,6 +42,10 @@ def paper_name(name, method):
 
 def p95(values):
     return sorted(values)[math.ceil(len(values)*.95)-1]
+
+
+def fmt_kib(value):
+    return str((Decimal(str(value)) / 1024).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP))
 
 
 def main():
@@ -114,19 +119,20 @@ def main():
     def table(featured, with_memory=False):
         text = '| Method | Completed | P50 (ms) | P95 (ms) |\n| --- | ---: | ---: | ---: |\n'
         if with_memory:
-            text = '| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (MiB) |\n| --- | ---: | ---: | ---: | ---: | ---: |\n'
+            text = '| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (KiB) |\n| --- | ---: | ---: | ---: | ---: | ---: |\n'
         for name,m in sorted(featured, key=lambda item: (summary[item[1]]['p95_ms'], summary[item[1]]['p50_ms'])):
             s = summary[m]
             text += f'| {paper_name(name, m)} | {s["completed"]}/{n} | {fmt_ms(s["p50_ms"])} | {fmt_ms(s["p95_ms"])} |'
             if with_memory:
                 metrics = memory['methods'][m]['metrics']
-                for key, divisor in [('heap_extra_peak_bytes',1024),('rss_peak_bytes',1024**2)]:
+                for key in ['heap_extra_peak_bytes', 'rss_peak_bytes']:
                     metric = metrics[key]
-                    text += f' {metric["p95"]/divisor:.3f} |' if metric is not None else ' — |'
+                    text += f' {fmt_kib(metric["p95"])} |' if metric is not None else ' — |'
             text += '\n'
         return text
-    featured = intro + table(selected.items(), with_memory=bool(memory))
-    featured += f'\nOne variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as {env["timeout_ms"]/1000:g} second in timing percentiles. HTML matched the optimum in {summary["html"]["matched"]}/{n} cases.\n'
+    featured_methods = [(name, m) for name, m in selected.items() if m != 'html']
+    featured = intro + table(featured_methods, with_memory=bool(memory))
+    featured += f'\nOne variant per exact-method family, selected by completion rate then P95. Rows are sorted by P95 time ascending. Unfinished runs count as {env["timeout_ms"]/1000:g} second in timing percentiles.\n'
     if memory:
         featured += '\nMemory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.\n'
     readme_path = ROOT/'README.md'; readme = readme_path.read_text()
@@ -142,6 +148,7 @@ def main():
     else:
         report += '\n[Dataset coverage and extraction](library-coverage.md). The expanded dataset includes complete EPUB tables, rectangular bodies, and visually reviewed PDF tables.\n'
     report += '\n## All variants\n\n'+table((NAMES[m],m) for m in METHODS)
+    report += f'\nHTML matched the optimum in {summary["html"]["matched"]}/{n} cases.\n'
     report += '\nEach percentile uses one median per case. Failures and timeouts are censored at the common limit, including in selection. A case completes only when every measured repetition completes. All returned layouts are checked against the original profiles and the fixed reference optimum.\n'
     report += '\n## Phase medians\n\nMedians over completed cases only; each case uses the median of its repetitions. These component medians need not sum to the total median. Solver teardown is included in search.\n\n| Method | Prepare (ms) | Model (ms) | Search (ms) | Finalize (ms) |\n| --- | ---: | ---: | ---: | ---: |\n'
     for m in sorted(METHODS, key=lambda m: (summary[m]['p95_ms'], summary[m]['p50_ms'])):
@@ -159,7 +166,7 @@ def main():
     report += 'The [external-solver benchmark](benchmark-unified.md) remains a separate process-level reference. Its timings include startup and MiniZinc compilation and must not be mixed with this table.\n'
     (ROOT/f'docs/{stem}.md').write_text(report)
     (ROOT/f'docs/{stem}-summary.json').write_text(json.dumps({'environment':env,'selected':selected,'methods':summary},indent=2)+'\n')
-    print(table(selected.items(), with_memory=bool(memory)))
+    print(table(featured_methods, with_memory=bool(memory)))
 
 
 if __name__ == '__main__':

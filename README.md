@@ -41,16 +41,15 @@ Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **1383 real ebook cases**, sin
 
 Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (MiB) |
+| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (KiB) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| HTML heuristic | 1383/1383 | <0.001 | <0.001 | 0.176 | 2.141 |
-| **Pareto DP** | 1383/1383 | 0.002 | 0.010 | 9.395 | 2.219 |
-| A* | 1383/1383 | 0.003 | 0.016 | 17.512 | 2.219 |
-| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 0.047 | 0.432 | 265.398 | 3.328 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 0.054 | 1.075 | 257.479 | 3.297 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1367/1383 | 0.059 | 1.857 | 553.984 | 3.656 |
+| **Pareto DP** | 1383/1383 | 0.002 | 0.010 | 9.39 | 2272.00 |
+| A* | 1383/1383 | 0.003 | 0.016 | 17.51 | 2272.00 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 0.047 | 0.432 | 265.40 | 3408.00 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 0.054 | 1.075 | 257.48 | 3376.00 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1367/1383 | 0.059 | 1.857 | 553.98 | 3744.00 |
 
-One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in timing percentiles. HTML matched the optimum in 733/1383 cases.
+One variant per exact-method family, selected by completion rate then P95. Rows are sorted by P95 time ascending. Unfinished runs count as 1 second in timing percentiles.
 
 Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
 <!-- benchmark:end -->
@@ -66,16 +65,15 @@ Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **26 MiniZinc public cases**, 
 
 Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (MiB) |
+| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (KiB) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| HTML heuristic | 26/26 | 0.003 | 0.006 | 0.570 | 2.250 |
-| A* | 26/26 | 0.246 | 0.843 | 640.637 | 2.828 |
-| **Pareto DP** | 26/26 | 0.163 | 2.008 | 264.414 | 2.781 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 4.781 | 17.582 | 2420.348 | 6.031 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.448 | 26.624 | 760.180 | 4.312 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 | 2272.547 | 5.719 |
+| A* | 26/26 | 0.246 | 0.843 | 640.64 | 2896.00 |
+| **Pareto DP** | 26/26 | 0.163 | 2.008 | 264.41 | 2848.00 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 4.781 | 17.582 | 2420.35 | 6176.00 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.448 | 26.624 | 760.18 | 4416.00 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 | 2272.55 | 5856.00 |
 
-One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in timing percentiles. HTML matched the optimum in 0/26 cases.
+One variant per exact-method family, selected by completion rate then P95. Rows are sorted by P95 time ascending. Unfinished runs count as 1 second in timing percentiles.
 
 Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
 <!-- benchmark-minizinc:end -->

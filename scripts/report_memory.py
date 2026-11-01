@@ -8,7 +8,7 @@ from collections import Counter
 
 from benchmark_native import ROOT
 from benchmark_unified import sha, verify
-from report_native import paper_name
+from report_native import fmt_kib, paper_name
 
 
 def distribution(values):
@@ -77,15 +77,17 @@ def main():
     report = f'# {title} memory benchmark\n\n'
     report += f'{len(inputs)} cases, {env["repeats"]} fresh processes per method/case, {env["timeout_ms"]/1000:g}-second solve limit. {env["machine"]}, {env["memory_bytes"]//2**30} GiB RAM. Recorded at {env["utc"]}.\n\n'
     report += 'The six implementations are fixed to those selected by the corresponding timing benchmark. Rows retain its P95 time order. Completion counts below belong to this separate instrumented memory pass.\n\n'
-    report += '| Method | Completed | Measured | Extra heap P50 (KiB) | Extra heap P95 (KiB) | Extra heap max (KiB) | RSS P95 (MiB) |\n| --- | ---: | ---: | ---: | ---: | ---: | ---: |\n'
+    report += '| Method | Completed | Measured | Extra heap P50 (KiB) | Extra heap P95 (KiB) | Extra heap max (KiB) | RSS P95 (KiB) |\n| --- | ---: | ---: | ---: | ---: | ---: | ---: |\n'
     def value(s, key, percentile, divisor):
         metric = s['metrics'][key]
+        if metric is not None and percentile == 'p95':
+            return fmt_kib(metric[percentile])
         return f'{metric[percentile]/divisor:.3f}' if metric is not None else '—'
     for name, method in sorted(env['selected'].items(),key=lambda p:(timing['methods'][p[1]]['p95_ms'],timing['methods'][p[1]]['p50_ms'])):
         s = results[method]
         report += f'| {paper_name(name,method)} | {s["completed"]}/{len(inputs)} | {s["measured"]}/{len(inputs)} | '
         report += ' | '.join([value(s,'heap_extra_peak_bytes',k,1024) for k in ['p50','p95','maximum']]
-                             +[value(s,'rss_peak_bytes','p95',1024**2)])+' |\n'
+                             +[value(s,'rss_peak_bytes','p95',1024)])+' |\n'
     report += '\nEach case contributes the median of its repetitions; P50/P95/max summarize those case medians. Timeout memory is included as observed, with no artificial memory penalty. It is not an upper bound on memory required to finish. If any case lacks telemetry, that method’s aggregate memory values are withheld; missing values are never zero-filled.\n\n'
     report += '## Measurement scope\n\n'
     report += '- **Extra heap:** peak live bytes requested through Rust’s global allocator during the library call, minus live bytes just before it. Includes preparation, models, search and the returned layout. Excludes the already loaded input, JSON serialization, stack, allocator metadata/caches and transient buffers internal to realloc. Counts live bytes, not cumulative allocation traffic.\n'

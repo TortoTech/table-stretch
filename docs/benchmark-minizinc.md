@@ -4,16 +4,15 @@ Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **26 MiniZinc public cases**, 
 
 Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (MiB) |
+| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (KiB) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| HTML heuristic | 26/26 | 0.003 | 0.006 | 0.570 | 2.250 |
-| A* | 26/26 | 0.246 | 0.843 | 640.637 | 2.828 |
-| **Pareto DP** | 26/26 | 0.163 | 2.008 | 264.414 | 2.781 |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 4.781 | 17.582 | 2420.348 | 6.031 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.448 | 26.624 | 760.180 | 4.312 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 | 2272.547 | 5.719 |
+| A* | 26/26 | 0.246 | 0.843 | 640.64 | 2896.00 |
+| **Pareto DP** | 26/26 | 0.163 | 2.008 | 264.41 | 2848.00 |
+| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 4.781 | 17.582 | 2420.35 | 6176.00 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.448 | 26.624 | 760.18 | 4416.00 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 | 2272.55 | 5856.00 |
 
-One variant per family, selected by completion rate then P95. Rows are sorted by P95 ascending. Unfinished runs count as 1 second in timing percentiles. HTML matched the optimum in 0/26 cases.
+One variant per exact-method family, selected by completion rate then P95. Rows are sorted by P95 time ascending. Unfinished runs count as 1 second in timing percentiles.
 
 Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
 
@@ -34,6 +33,8 @@ Memory is measured separately in fresh processes: extra live heap during solving
 | [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 5/26 | 1000.000 | 1000.000 |
 | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 1/26 | 1000.000 | 1000.000 |
 | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | 0/26 | 1000.000 | 1000.000 |
+
+HTML matched the optimum in 0/26 cases.
 
 Each percentile uses one median per case. Failures and timeouts are censored at the common limit, including in selection. A case completes only when every measured repetition completes. All returned layouts are checked against the original profiles and the fixed reference optimum.
 
