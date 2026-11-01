@@ -43,8 +43,8 @@ Timing uses **Rust library calls in one persistent process**. Times include prep
 
 | Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (KiB) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| **Pareto DP** | 1383/1383 | 0.002 | 0.010 | 9.39 | 2272.00 |
-| A* | 1383/1383 | 0.003 | 0.016 | 17.51 | 2272.00 |
+| **Pareto DP** | 1383/1383 | $\color{green}{0.002}$ | $\color{green}{0.010}$ | $\color{green}{9.39}$ | $\color{green}{2272.00}$ |
+| A* | 1383/1383 | 0.003 | 0.016 | 17.51 | $\color{green}{2272.00}$ |
 | [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 0.047 | 0.432 | 265.40 | 3408.00 |
 | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 0.054 | 1.075 | 257.48 | 3376.00 |
 | [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1367/1383 | 0.059 | 1.857 | 553.98 | 3744.00 |
@@ -67,8 +67,8 @@ Timing uses **Rust library calls in one persistent process**. Times include prep
 
 | Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (KiB) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| A* | 26/26 | 0.246 | 0.843 | 640.64 | 2896.00 |
-| **Pareto DP** | 26/26 | 0.163 | 2.008 | 264.41 | 2848.00 |
+| A* | 26/26 | 0.246 | $\color{green}{0.843}$ | 640.64 | 2896.00 |
+| **Pareto DP** | 26/26 | $\color{green}{0.163}$ | 2.008 | $\color{green}{264.41}$ | $\color{green}{2848.00}$ |
 | [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 4.781 | 17.582 | 2420.35 | 6176.00 |
 | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.448 | 26.624 | 760.18 | 4416.00 |
 | [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 | 2272.55 | 5856.00 |

@@ -6,8 +6,8 @@ Timing uses **Rust library calls in one persistent process**. Times include prep
 
 | Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (KiB) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| **Pareto DP** | 1383/1383 | 0.002 | 0.010 | 9.39 | 2272.00 |
-| A* | 1383/1383 | 0.003 | 0.016 | 17.51 | 2272.00 |
+| **Pareto DP** | 1383/1383 | $\color{green}{0.002}$ | $\color{green}{0.010}$ | $\color{green}{9.39}$ | $\color{green}{2272.00}$ |
+| A* | 1383/1383 | 0.003 | 0.016 | 17.51 | $\color{green}{2272.00}$ |
 | [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 0.047 | 0.432 | 265.40 | 3408.00 |
 | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 0.054 | 1.075 | 257.48 | 3376.00 |
 | [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 1367/1383 | 0.059 | 1.857 | 553.98 | 3744.00 |

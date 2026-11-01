@@ -116,22 +116,33 @@ def main():
     def fmt_ms(value):
         return '<0.001' if 0 < value < 0.001 else f'{value:.3f}'
 
-    def table(featured, with_memory=False):
+    def table(featured, with_memory=False, highlight_min=False):
+        featured = sorted(featured, key=lambda item: (summary[item[1]]['p95_ms'], summary[item[1]]['p50_ms']))
+        values = {}
+        for _, m in featured:
+            values[m] = [summary[m]['p50_ms'], summary[m]['p95_ms']]
+            if with_memory:
+                for key in ['heap_extra_peak_bytes', 'rss_peak_bytes']:
+                    metric = memory['methods'][m]['metrics'][key]
+                    values[m].append(metric['p95'] if metric is not None else None)
+        # Compare unrounded values within the displayed methods; include ties.
+        minima = [min((v for v in column if v is not None), default=None)
+                  for column in zip(*values.values())] if highlight_min else []
         text = '| Method | Completed | P50 (ms) | P95 (ms) |\n| --- | ---: | ---: | ---: |\n'
         if with_memory:
             text = '| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (KiB) |\n| --- | ---: | ---: | ---: | ---: | ---: |\n'
-        for name,m in sorted(featured, key=lambda item: (summary[item[1]]['p95_ms'], summary[item[1]]['p50_ms'])):
+        for name,m in featured:
             s = summary[m]
-            text += f'| {paper_name(name, m)} | {s["completed"]}/{n} | {fmt_ms(s["p50_ms"])} | {fmt_ms(s["p95_ms"])} |'
-            if with_memory:
-                metrics = memory['methods'][m]['metrics']
-                for key in ['heap_extra_peak_bytes', 'rss_peak_bytes']:
-                    metric = metrics[key]
-                    text += f' {fmt_kib(metric["p95"])} |' if metric is not None else ' — |'
+            text += f'| {paper_name(name, m)} | {s["completed"]}/{n} |'
+            for i, value in enumerate(values[m]):
+                label = '—' if value is None else fmt_ms(value) if i < 2 else fmt_kib(value)
+                if highlight_min and value is not None and value == minima[i]:
+                    label = r'$\color{green}{' + label + '}$'
+                text += f' {label} |'
             text += '\n'
         return text
     featured_methods = [(name, m) for name, m in selected.items() if m != 'html']
-    featured = intro + table(featured_methods, with_memory=bool(memory))
+    featured = intro + table(featured_methods, with_memory=bool(memory), highlight_min=True)
     featured += f'\nOne variant per exact-method family, selected by completion rate then P95. Rows are sorted by P95 time ascending. Unfinished runs count as {env["timeout_ms"]/1000:g} second in timing percentiles.\n'
     if memory:
         featured += '\nMemory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.\n'
@@ -166,7 +177,7 @@ def main():
     report += 'The [external-solver benchmark](benchmark-unified.md) remains a separate process-level reference. Its timings include startup and MiniZinc compilation and must not be mixed with this table.\n'
     (ROOT/f'docs/{stem}.md').write_text(report)
     (ROOT/f'docs/{stem}-summary.json').write_text(json.dumps({'environment':env,'selected':selected,'methods':summary},indent=2)+'\n')
-    print(table(featured_methods, with_memory=bool(memory)))
+    print(table(featured_methods, with_memory=bool(memory), highlight_min=True))
 
 
 if __name__ == '__main__':
