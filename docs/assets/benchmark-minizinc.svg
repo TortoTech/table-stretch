@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="764" height="260" viewBox="0 0 764 260" role="img" aria-labelledby="title description">
 <title id="title">MiniZinc benchmark</title>
-<desc id="description">P50 (ms): Pareto DP 0.163, A* 0.246, LCG 4.781, MIP 4.448, CP 1000.000; P95 (ms): Pareto DP 2.008, A* 0.843, LCG 17.582, MIP 26.624, CP 1000.000; Extra heap P95 (KiB): Pareto DP 264.41, A* 640.64, LCG 2420.35, MIP 760.18, CP 2272.55; RSS P95 (KiB): Pareto DP 2848.00, A* 2896.00, LCG 6176.00, MIP 4416.00, CP 5856.00; Completed: Pareto DP 26/26, A* 26/26, LCG 26/26, MIP 26/26, CP 5/26</desc>
+<desc id="description">P50 (ms): Pareto DP 0.163, A* 0.246, LCG 4.781, MIP 4.448, CP &gt; 1000; P95 (ms): Pareto DP 2.008, A* 0.843, LCG 17.582, MIP 26.624, CP &gt; 1000; Extra heap P95 (KiB): Pareto DP 264.41, A* 640.64, LCG 2420.35, MIP 760.18, CP 2272.55; RSS P95 (KiB): Pareto DP 2848.00, A* 2896.00, LCG 6176.00, MIP 4416.00, CP 5856.00; Completed: Pareto DP 26/26, A* 26/26, LCG 26/26, MIP 26/26, CP 5/26</desc>
 <style>
 text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 14px; fill: #1f2328; font-variant-numeric: tabular-nums; }
 .background { fill: #ffffff; }
@@ -41,13 +41,13 @@ text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Ar
 <text x="416" y="74" text-anchor="end">0.246</text>
 <text x="526" y="74" text-anchor="end">4.781</text>
 <text x="636" y="74" text-anchor="end">4.448</text>
-<text x="746" y="74" text-anchor="end">1000.000</text>
+<text x="746" y="74" text-anchor="end">&gt; 1000</text>
 <text x="18" y="116" text-anchor="start">P95 (ms)</text>
 <text x="306" y="116" text-anchor="end">2.008</text>
 <text x="416" y="116" text-anchor="end" class="best">0.843</text>
 <text x="526" y="116" text-anchor="end">17.582</text>
 <text x="636" y="116" text-anchor="end">26.624</text>
-<text x="746" y="116" text-anchor="end">1000.000</text>
+<text x="746" y="116" text-anchor="end">&gt; 1000</text>
 <text x="18" y="158" text-anchor="start">Extra heap P95 (KiB)</text>
 <text x="306" y="158" text-anchor="end" class="best">264.41</text>
 <text x="416" y="158" text-anchor="end">640.64</text>

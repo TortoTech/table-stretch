@@ -115,6 +115,8 @@ def main():
     intro = f'Latest run: **{date}**, {env["machine"]}, {env["memory_bytes"]//2**30} GiB RAM. **{n} {dataset}**, single thread, {repeats} measurements per case, {env["timeout_ms"]/1000:g}-second limit.\n\n'
     intro += 'Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.\n\n'
     def fmt_ms(value):
+        if value >= env['timeout_ms']:
+            return f'> {env["timeout_ms"]:g}'
         return '<0.001' if 0 < value < 0.001 else f'{value:.3f}'
 
     def table(featured, with_memory=False, highlight_min=False, transpose=False, svg_path=None):
@@ -161,7 +163,7 @@ def main():
                        svg_path=ROOT/image_path)
     featured = intro + f'![Benchmark results; Pareto DP outlined in blue, minimum values in green. Full data below.]({image_path})\n\n'
     featured += '<details>\n<summary>Table data and paper links</summary>\n\n' + data_table + '\n</details>\n'
-    featured += f'\nOne variant per exact-method family, selected by completion rate then P95. Unfinished runs count as {env["timeout_ms"]/1000:g} second in timing percentiles.\n'
+    featured += f'\nOne variant per exact-method family, selected by completion rate then P95. Timing percentiles reaching the timeout limit are shown as **> {env["timeout_ms"]:g} ms**.\n'
     if memory:
         featured += '\nMemory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.\n'
     readme_path = ROOT/'README.md'; readme = readme_path.read_text()

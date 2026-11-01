@@ -11,15 +11,15 @@ Timing uses **Rust library calls in one persistent process**. Times include prep
 
 | Metric | **Pareto DP** | A* | [LCG](https://doi.org/10.1145/2034691.2034697) | [MIP](https://doi.org/10.1287/ijoc.2014.0637) | [CP](https://doi.org/10.1145/2034691.2034697) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| P50 (ms) | $\color{green}{0.163}$ | 0.246 | 4.781 | 4.448 | 1000.000 |
-| P95 (ms) | 2.008 | $\color{green}{0.843}$ | 17.582 | 26.624 | 1000.000 |
+| P50 (ms) | $\color{green}{0.163}$ | 0.246 | 4.781 | 4.448 | > 1000 |
+| P95 (ms) | 2.008 | $\color{green}{0.843}$ | 17.582 | 26.624 | > 1000 |
 | Extra heap P95 (KiB) | $\color{green}{264.41}$ | 640.64 | 2420.35 | 760.18 | 2272.55 |
 | RSS P95 (KiB) | $\color{green}{2848.00}$ | 2896.00 | 6176.00 | 4416.00 | 5856.00 |
 | Completed | 26/26 | 26/26 | 26/26 | 26/26 | 5/26 |
 
 </details>
 
-One variant per exact-method family, selected by completion rate then P95. Unfinished runs count as 1 second in timing percentiles.
+One variant per exact-method family, selected by completion rate then P95. Timing percentiles reaching the timeout limit are shown as **> 1000 ms**.
 
 Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
 
@@ -36,10 +36,10 @@ Memory is measured separately in fresh processes: extra live heap during solving
 | **Pareto DP** | 26/26 | 0.163 | 2.008 |
 | [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 26/26 | 4.781 | 17.582 |
 | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (cell-free, microlp) | 26/26 | 4.448 | 26.624 |
-| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 18/26 | 3.910 | 1000.000 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 5/26 | 1000.000 | 1000.000 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 1/26 | 1000.000 | 1000.000 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | 0/26 | 1000.000 | 1000.000 |
+| [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 18/26 | 3.910 | > 1000 |
+| [CP](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 5/26 | > 1000 | > 1000 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (unary, microlp) | 1/26 | > 1000 | > 1000 |
+| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (one-hot, microlp) | 0/26 | > 1000 | > 1000 |
 
 HTML matched the optimum in 0/26 cases.
 

@@ -19,7 +19,7 @@ Timing uses **Rust library calls in one persistent process**. Times include prep
 
 </details>
 
-One variant per exact-method family, selected by completion rate then P95. Unfinished runs count as 1 second in timing percentiles.
+One variant per exact-method family, selected by completion rate then P95. Timing percentiles reaching the timeout limit are shown as **> 1000 ms**.
 
 Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
 
