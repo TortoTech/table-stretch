@@ -7,7 +7,7 @@ All methods run as **Rust library calls in one process**. Times include preparat
 | Method | Completed | P50 (ms) | P95 (ms) |
 | --- | ---: | ---: | ---: |
 | HTML heuristic | 1383/1383 | <0.001 | <0.001 |
-| Pareto DP | 1383/1383 | 0.002 | 0.011 |
+| **Pareto DP** | 1383/1383 | 0.002 | 0.011 |
 | A* | 1383/1383 | 0.003 | 0.017 |
 | [LCG](https://doi.org/10.1287/ijoc.2014.0637) (Pumpkin) | 1383/1383 | 0.061 | 0.514 |
 | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 1383/1383 | 0.063 | 1.155 |
@@ -22,7 +22,7 @@ One variant per family, selected by completion rate then P95. Rows are sorted by
 | Method | Completed | P50 (ms) | P95 (ms) |
 | --- | ---: | ---: | ---: |
 | HTML heuristic | 1383/1383 | <0.001 | <0.001 |
-| Pareto DP | 1383/1383 | 0.002 | 0.011 |
+| **Pareto DP** | 1383/1383 | 0.002 | 0.011 |
 | A* | 1383/1383 | 0.003 | 0.017 |
 | [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 1383/1383 | 0.061 | 0.514 |
 | [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 1383/1383 | 0.088 | 0.831 |
@@ -40,7 +40,7 @@ Medians over completed cases only; each case uses the median of its repetitions.
 | Method | Prepare (ms) | Model (ms) | Search (ms) | Finalize (ms) |
 | --- | ---: | ---: | ---: | ---: |
 | HTML heuristic | 0.0002 | 0.0000 | 0.0000 | 0.0000 |
-| Pareto DP | 0.0017 | 0.0000 | 0.0002 | 0.0000 |
+| **Pareto DP** | 0.0017 | 0.0000 | 0.0002 | 0.0000 |
 | A* | 0.0013 | 0.0000 | 0.0017 | 0.0001 |
 | [LCG](https://doi.org/10.1287/ijoc.2014.0637) (2015 cell-free, Pumpkin) | 0.0016 | 0.0248 | 0.0333 | 0.0001 |
 | [LCG](https://doi.org/10.1145/2034691.2034697) (2011, Pumpkin) | 0.0017 | 0.0300 | 0.0549 | 0.0001 |

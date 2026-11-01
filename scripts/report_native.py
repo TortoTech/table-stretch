@@ -30,6 +30,8 @@ PAPERS = {
 
 
 def paper_name(name, method):
+    if method == 'pareto':
+        return f'**{name}**'
     if method not in PAPERS:
         return name
     label, separator, suffix = name.partition(' ')
