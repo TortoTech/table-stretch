@@ -116,8 +116,10 @@ def main():
     def fmt_ms(value):
         return '<0.001' if 0 < value < 0.001 else f'{value:.3f}'
 
-    def table(featured, with_memory=False, highlight_min=False):
-        featured = sorted(featured, key=lambda item: (summary[item[1]]['p95_ms'], summary[item[1]]['p50_ms']))
+    def table(featured, with_memory=False, highlight_min=False, transpose=False):
+        featured = list(featured)
+        if not transpose:
+            featured.sort(key=lambda item: (summary[item[1]]['p95_ms'], summary[item[1]]['p50_ms']))
         values = {}
         for _, m in featured:
             values[m] = [summary[m]['p50_ms'], summary[m]['p95_ms']]
@@ -128,22 +130,30 @@ def main():
         # Compare unrounded values within the displayed methods; include ties.
         minima = [min((v for v in column if v is not None), default=None)
                   for column in zip(*values.values())] if highlight_min else []
-        text = '| Method | Completed | P50 (ms) | P95 (ms) |\n| --- | ---: | ---: | ---: |\n'
+        headers = ['Method', 'Completed', 'P50 (ms)', 'P95 (ms)']
         if with_memory:
-            text = '| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (KiB) |\n| --- | ---: | ---: | ---: | ---: | ---: |\n'
+            headers += ['Extra heap P95 (KiB)', 'RSS P95 (KiB)']
+        rows = []
         for name,m in featured:
             s = summary[m]
-            text += f'| {paper_name(name, m)} | {s["completed"]}/{n} |'
+            row = [paper_name(name, m), f'{s["completed"]}/{n}']
             for i, value in enumerate(values[m]):
                 label = '—' if value is None else fmt_ms(value) if i < 2 else fmt_kib(value)
                 if highlight_min and value is not None and value == minima[i]:
                     label = r'$\color{green}{' + label + '}$'
-                text += f' {label} |'
-            text += '\n'
-        return text
-    featured_methods = [(name, m) for name, m in selected.items() if m != 'html']
-    featured = intro + table(featured_methods, with_memory=bool(memory), highlight_min=True)
-    featured += f'\nOne variant per exact-method family, selected by completion rate then P95. Rows are sorted by P95 time ascending. Unfinished runs count as {env["timeout_ms"]/1000:g} second in timing percentiles.\n'
+                row.append(label)
+            rows.append(row)
+        if transpose:
+            metric_rows = [[headers[i]] + [row[i] for row in rows]
+                           for i in [*range(2, len(headers)), 1]]
+            headers = ['Metric'] + [row[0] for row in rows]
+            rows = metric_rows
+        return ''.join('| ' + ' | '.join(row) + ' |\n'
+                       for row in [headers, ['---'] + ['---:'] * (len(headers) - 1), *rows])
+    featured_methods = [(name, selected[name]) for name in
+                        ['Pareto DP', 'A*', 'LCG (Pumpkin)', 'MIP (microlp)', 'CP (Pumpkin)']]
+    featured = intro + table(featured_methods, with_memory=bool(memory), highlight_min=True, transpose=True)
+    featured += f'\nOne variant per exact-method family, selected by completion rate then P95. Unfinished runs count as {env["timeout_ms"]/1000:g} second in timing percentiles.\n'
     if memory:
         featured += '\nMemory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.\n'
     readme_path = ROOT/'README.md'; readme = readme_path.read_text()
@@ -177,7 +187,7 @@ def main():
     report += 'The [external-solver benchmark](benchmark-unified.md) remains a separate process-level reference. Its timings include startup and MiniZinc compilation and must not be mixed with this table.\n'
     (ROOT/f'docs/{stem}.md').write_text(report)
     (ROOT/f'docs/{stem}-summary.json').write_text(json.dumps({'environment':env,'selected':selected,'methods':summary},indent=2)+'\n')
-    print(table(featured_methods, with_memory=bool(memory), highlight_min=True))
+    print(table(featured_methods, with_memory=bool(memory), highlight_min=True, transpose=True))
 
 
 if __name__ == '__main__':

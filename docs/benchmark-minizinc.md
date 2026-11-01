@@ -4,15 +4,15 @@ Latest run: **2026-11-01**, Apple M6, 16 GiB RAM. **26 MiniZinc public cases**, 
 
 Timing uses **Rust library calls in one persistent process**. Times include preparation, model construction, search, and final layout; exclude text measurement, JSON parsing, and process startup.
 
-| Method | Completed | P50 (ms) | P95 (ms) | Extra heap P95 (KiB) | RSS P95 (KiB) |
+| Metric | **Pareto DP** | A* | [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| A* | 26/26 | 0.246 | $\color{green}{0.843}$ | 640.64 | 2896.00 |
-| **Pareto DP** | 26/26 | $\color{green}{0.163}$ | 2.008 | $\color{green}{264.41}$ | $\color{green}{2848.00}$ |
-| [LCG](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 26/26 | 4.781 | 17.582 | 2420.35 | 6176.00 |
-| [MIP](https://doi.org/10.1287/ijoc.2014.0637) (microlp) | 26/26 | 4.448 | 26.624 | 760.18 | 4416.00 |
-| [CP](https://doi.org/10.1145/2034691.2034697) (Pumpkin) | 5/26 | 1000.000 | 1000.000 | 2272.55 | 5856.00 |
+| P50 (ms) | $\color{green}{0.163}$ | 0.246 | 4.781 | 4.448 | 1000.000 |
+| P95 (ms) | 2.008 | $\color{green}{0.843}$ | 17.582 | 26.624 | 1000.000 |
+| Extra heap P95 (KiB) | $\color{green}{264.41}$ | 640.64 | 2420.35 | 760.18 | 2272.55 |
+| RSS P95 (KiB) | $\color{green}{2848.00}$ | 2896.00 | 6176.00 | 4416.00 | 5856.00 |
+| Completed | 26/26 | 26/26 | 26/26 | 26/26 | 5/26 |
 
-One variant per exact-method family, selected by completion rate then P95. Rows are sorted by P95 time ascending. Unfinished runs count as 1 second in timing percentiles.
+One variant per exact-method family, selected by completion rate then P95. Unfinished runs count as 1 second in timing percentiles.
 
 Memory is measured separately in fresh processes: extra live heap during solving and whole-process peak RSS. Includes observed timeout memory; completion counts above are from the timing pass.
 
